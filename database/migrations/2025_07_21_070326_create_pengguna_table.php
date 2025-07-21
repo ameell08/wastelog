@@ -5,6 +5,9 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
+    /**
+     * Jalankan migration untuk tabel pengguna
+     */
     public function up(): void
     {
         Schema::create('pengguna', function (Blueprint $table) {
@@ -12,10 +15,20 @@ return new class extends Migration {
             $table->string('nama');
             $table->string('email')->unique();
             $table->string('password');
-            $table->enum('peran', ['admin1', 'admin2', 'pimpinan', 'superadmin']);
+            $table->unsignedBigInteger('id_jenis_pengguna');  // Kolom FK
+
+            $table->foreign('id_jenis_pengguna')
+                ->references('id_jenis_pengguna')
+                ->on('jenis_pengguna')
+                ->onDelete('cascade');
+
             $table->timestamps();
         });
     }
+
+    /**
+     * Rollback migration
+     */
     public function down(): void
     {
         Schema::dropIfExists('pengguna');
