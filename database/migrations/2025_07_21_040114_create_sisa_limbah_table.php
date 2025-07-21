@@ -7,17 +7,17 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('pengguna', function (Blueprint $table) {
+        Schema::create('sisa_limbah', function (Blueprint $table) {
             $table->id();
-            $table->string('nama');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->enum('peran', ['admin1', 'admin2', 'pimpinan', 'superadmin']);
+            $table->date('tanggal'); // hari rekap
+            $table->foreignId('kode_limbah_id')->constrained('kode_limbah')->onDelete('cascade');
+            $table->integer('berat_kg'); // sisa = masuk - diolah
             $table->timestamps();
         });
     }
+
     public function down(): void
     {
-        Schema::dropIfExists('pengguna');
+        Schema::dropIfExists('sisa_limbah');
     }
 };
