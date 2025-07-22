@@ -45,7 +45,7 @@
              </li>
          @endif
 
-         <!-- Sidebar Pimpinan -->
+         <!-- Sidebar superadmin -->
          @if (Auth::user()->getRole() == 'SDM')
              <li class="nav-header">Dashboard </li>
              <li class="nav-item">
