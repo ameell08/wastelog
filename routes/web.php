@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\Controller;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,3 +18,9 @@ Route::get('/', function () {
     return view('landingpage');
 });
 
+Route::get('/login', [LoginController::class, 'login'])->name('login');
+Route::post('/login', [LoginController::class, 'postlogin'])->name('login.authenticate');
+Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::get('/dashboard', function () {
+    return 'Berhasil login! Selamat datang di dashboard.';
+})->middleware('auth');
