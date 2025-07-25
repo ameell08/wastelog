@@ -139,7 +139,7 @@
 
         newRow.innerHTML = `
             <td>
-                <select name="detail[${rowIndex}][mesin_id]" class="form-select" required>
+                <select name="detail[${rowIndex}][mesin_id]" class="form-control" required>
                     <option value="">Pilih Mesin</option>
                     @foreach ($mesin as $m)
                         <option value="{{ $m->id }}">{{ $m->no_mesin }}</option>
@@ -147,7 +147,7 @@
                 </select>
             </td>
             <td>
-                <select name="detail[${rowIndex}][kode_limbah_id]" class="form-select" required>
+                <select name="detail[${rowIndex}][kode_limbah_id]" class="form-control" required>
                     <option value="">Pilih Kode Limbah</option>
                     @foreach ($kodeLimbah as $kode)
                         <option value="{{ $kode->id }}">{{ $kode->kode }} - {{ $kode->deskripsi }}</option>
@@ -155,12 +155,10 @@
                 </select>
             </td>
             <td>
-                <input type="number" name="detail[${rowIndex}][berat_kg]" class="form-control" required min="1" step="0.01">
+                <input type="number" name="detail[${rowIndex}][berat_kg]" class="form-control" required min="1">
             </td>
             <td>
-                <button type="button" class="btn btn-sm btn-danger remove-row">
-                    <i class="fas fa-trash"></i>
-                </button>
+                <button type="button" class="btn btn-sm btn-danger remove-row">Hapus</button>
             </td>
         `;
 
