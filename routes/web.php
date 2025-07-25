@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LimbahDiolahController;
+use App\Http\Controllers\DataLimbahMasukController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\LimbahMasukController;
 /*
@@ -32,6 +33,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/inputlimbahmasuk', [LimbahMasukController::class, 'index'])->name('limbahmasuk.index');
     Route::post('/inputlimbahmasuk', [LimbahMasukController::class, 'store'])->name('limbahmasuk.store');
 });
+
+// DataLimbahMasuk
+Route::get('/datalimbahmasuk', [DataLimbahMasukController::class, 'index'])->name('datalimbahmasuk.index');
+Route::get('/detaillimbahmasuk/{id}', [DataLimbahMasukController::class, 'show'])->name('datalimbahmasuk.show');
 
 //LimbahDiolah
 Route::middleware('auth')->group(function () {
