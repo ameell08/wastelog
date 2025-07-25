@@ -46,7 +46,11 @@ class LimbahDiolahController extends Controller
                 ];
             });
 
-        return view('admin2.InputLimbahOlah', compact('mesin', 'kodeLimbah', 'dataDiolah', 'antreanLimbah'));
+           $breadcrumb = (object)[
+            'title' => 'Input Limbah Diolah',
+            'list' => ['Login', 'Input Limbah Olah']
+        ];
+        return view('admin2.InputLimbahOlah', compact('mesin', 'kodeLimbah', 'dataDiolah', 'antreanLimbah', 'breadcrumb'))->with('activeMenu', 'limbahdiolah');
     }
 
     public function store(Request $request)
