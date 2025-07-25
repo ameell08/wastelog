@@ -13,13 +13,13 @@
 <style>
     .main-footer {
         background: #ffffff;
-        color: #2EAF7D;
+        color: #8f8f8f;
         padding: 1rem;
         font-size: 0.9rem;
     }
 
     .main-footer a {
-        color: #3498db;
+        color: #2EAF7D;
         text-decoration: none;
         transition: color 0.3s ease;
     }
