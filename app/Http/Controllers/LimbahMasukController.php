@@ -17,7 +17,7 @@ class LimbahMasukController extends Controller
         $kodeLimbahs = KodeLimbah::all();
         $breadcrumb = (object)[
         'title' => 'Input Limbah Masuk',
-        'list' => ['Dashboard', 'Input Limbah Masuk']
+        'list' => ['Login','Input Limbah Masuk']
     ];
 
     return view('admin1.InputLimbahMasuk', compact('truks', 'kodeLimbahs', 'breadcrumb'))->with('activeMenu', 'inputlimbahmasuk');

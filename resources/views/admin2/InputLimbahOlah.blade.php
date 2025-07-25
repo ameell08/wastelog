@@ -4,11 +4,6 @@
 <div class="content">
     <div class="container-fluid">
 
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h4 class="text-dark">Input Limbah Diolah</h4>
-        </div>
-
         @if (session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ session('success') }}
