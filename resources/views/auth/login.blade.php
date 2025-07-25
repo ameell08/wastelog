@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
-    <title>Login - PRIA</title>
+    <title>Login - WasteLog </title>
+    <link rel="icon" href="{{ asset('logo2.png') }}" type="image/png" />
     <style>
         body {
             margin: 0;
@@ -79,12 +81,13 @@
         }
     </style>
 </head>
+
 <body>
     <div class="login-container">
         <h2>Selamat Datang</h2>
         <img src="{{ asset('img/ptpria.png') }}" alt="Logo PRIA" class="logo">
 
-        @if($errors->has('login'))
+        @if ($errors->has('login'))
             <div class="error">{{ $errors->first('login') }}</div>
         @endif
 
@@ -92,7 +95,7 @@
             @csrf
             <input type="email" name="email" value="{{ old('email') }}" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
-            
+
             <label class="remember">
                 <input type="checkbox" name="remember"> Remember Me
             </label>
@@ -101,4 +104,5 @@
         </form>
     </div>
 </body>
+
 </html>

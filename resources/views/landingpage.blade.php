@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WasteLog - Sistem Limbah B3</title>
-
+    <link rel="icon" href="{{ asset('logo2.png') }}" type="image/png" /> 
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -173,16 +173,18 @@
             <img src="img/ptpria.png" alt="Logo PRIA" style="height: 80px;" onerror="this.style.border='2px solid red'">
             <div style="text-align:left" style="color: #333;">
                 <p style="font-weight: bold; margin: 0px; color: #7e7b7b;">PT PUTRA RESTU IBU ABADI</p>
-                <p style="margin: 0px; font-size: 13px; color: #a5a5a5;">Jl. Raya Lakardowo Kecamatan Jetis Kabupaten Mojokerto</p>
+                <p style="margin: 0px; font-size: 13px; color: #a5a5a5;">Jl. Raya Lakardowo Kecamatan Jetis Kabupaten
+                    Mojokerto</p>
                 <p style="margin: 0px; font-size: 13px; color: #a5a5a5;">Telepon : (0321) 3612123671212</p>
                 <p style="margin: 0px; font-size: 13px; color: #a5a5a5;">Fax : (0321) 365322</p>
-                <p style="margin: 0px; font-size: 13px; margin-bottom: 15px; color: #a5a5a5;">Email : marketing@ptpria.com</p>
+                <p style="margin: 0px; font-size: 13px; margin-bottom: 15px; color: #a5a5a5;">Email :
+                    marketing@ptpria.com</p>
             </div>
         </div>
-            <div
-                style="background-color: #1f4e3d; color: #fff; padding: 5px 5px; font-size: 12px; display: flex; justify-content: space-between;">
-                <div>Copyright © 2025 WasteLog. All rights reserved.</div>
-            </div>
+        <div
+            style="background-color: #1f4e3d; color: #fff; padding: 5px 5px; font-size: 12px; display: flex; justify-content: space-between;">
+            <div>Copyright © 2025 WasteLog. All rights reserved.</div>
+        </div>
     </footer>
 
     <!-- Bootstrap JS -->

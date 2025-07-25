@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\LimbahMasukController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -20,7 +21,13 @@ Route::get('/', function () {
 
 Route::get('/login', [LoginController::class, 'login'])->name('login');
 Route::post('/login', [LoginController::class, 'postlogin'])->name('login.authenticate');
-Route::get('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::get('/dashboard', function () {
     return 'Berhasil login! Selamat datang di dashboard.';
 })->middleware('auth');
+
+//LimbahMasuk
+Route::middleware('auth')->group(function () {
+    Route::get('/inputlimbahmasuk', [LimbahMasukController::class, 'index'])->name('limbahmasuk.index');
+    Route::post('/inputlimbahmasuk', [LimbahMasukController::class, 'store'])->name('limbahmasuk.store');
+});
