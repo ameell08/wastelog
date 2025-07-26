@@ -22,6 +22,11 @@
             <div class="card card-primary card-outline">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Input Limbah Masuk</h5>
+                    <div class="card-tools">
+                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#importModal">
+                            <i class="fas fa-file-excel"></i> Import Excel
+                        </button>
+                    </div>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('limbahmasuk.store') }}" method="POST">
@@ -75,11 +80,44 @@
                             <i class= "fas fa-plus me-1"> </i>Tambah Baris
                         </button>
 
-                        <button type="submit" class="btn btn-success mb-3">
+                        <button type="submit" class="btn btn-warning mb-3">
                             <i class="fas fa-save me-1"></i> Submit
                         </button>
                     </form>
                 </div>
+            </div>
+        </div>
+        <!-- Modal Import -->
+        <div class="modal fade" id="importModal" tabindex="-1" aria-labelledby="importModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <form action="{{ url('/limbahmasuk/import_ajax') }}" method="POST" id="form-import"
+                    enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Import Data Limbah Masuk</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group mb-3">
+                                <label>Download Template</label>
+                                <a href="{{ asset('template_limbah_masuk.xlsx') }}" class="btn btn-info btn-sm" download><i
+                                        class="fa fa-file-excel"></i> Download</a>
+                                <small id="error-file_limbah_masuk" class="error-text form-text text-danger"></small>
+                            </div>
+                            <div class="form-group mb-3">
+                                <label>Pilih File</label>
+                                <input type="file" name="file_limbah_masuk" id="file_limbah_masuk" class="form-control"
+                                    required>
+                                <small id="error-file_limbah_masuk" class="error-text form-text text-danger"></small>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" data-bs-dismiss="modal" class="btn btn-secondary">Batal</button>
+                            <button type="submit" class="btn btn-primary">Upload</button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -121,9 +159,63 @@
         });
 
         document.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('remove-row')) {
-                e.target.closest('tr').remove();
-            }
-        });
+                    if (e.target && e.target.classList.contains('remove-row')) {
+                        e.target.closest('tr').remove();
+                    }
+                    $(document).ready(function() {
+                        $("#form-import").validate({
+                            rules: {
+                                file_limbah_masuk: {
+                                    required: true,
+                                    extension: "xlsx"
+                                },
+                            },
+                            submitHandler: function(form) {
+                                var formData = new FormData(form);
+                                $.ajax({
+                                    url: form.action,
+                                    type: form.method,
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    success: function(response) {
+                                        if (response.status) {
+                                            $('#importModal').modal('hide');
+                                            Swal.fire({
+                                                icon: 'success',
+                                                title: 'Berhasil',
+                                                text: response.message
+                                            });
+                                            // reload datatable jika ada
+                                            // tableBarang.ajax.reload();
+                                        } else {
+                                            $('.error-text').text('');
+                                            $.each(response.msgField, function(prefix,
+                                            val) {
+                                                $('#error-' + prefix).text(val[0]);
+                                            });
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Terjadi Kesalahan',
+                                                text: response.message
+                                            });
+                                        }
+                                    }
+                                });
+                                return false;
+                            },
+                            errorElement: 'span',
+                            errorPlacement: function(error, element) {
+                                error.addClass('invalid-feedback');
+                                element.closest('.form-group').append(error);
+                            },
+                            highlight: function(element) {
+                                $(element).addClass('is-invalid');
+                            },
+                            unhighlight: function(element) {
+                                $(element).removeClass('is-invalid');
+                            }
+                        });
+                    });
     </script>
 @endsection
