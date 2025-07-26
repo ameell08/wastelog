@@ -21,6 +21,10 @@
             <div class="card card-primary card-outline">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Data Limbah Masuk</h5>
+                    <div class="card-tools">
+                        <a href="{{ route('datalimbahmasuk.export_excel') }}" class="btn btn-success btn-sm"><i
+                                class="fas fa-file-excel"></i> Export Excel</a>
+                    </div>
                 </div>
 
                 <div class="card-body">
@@ -33,9 +37,6 @@
                                 <button type="submit" class="btn btn-primary btn-sm">Filter</button>
                             </form>
                         </div>
-                        {{-- <div class="col-md-5 text-right">
-                <a href="#" class="btn btn-success float-end"><i class="fa fa-file-excel-o"></i> Import Excel</a>
-            </div> --}}
                     </div>
 
                     <table class="table table-bordered table-striped ">
