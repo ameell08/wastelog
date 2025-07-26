@@ -42,5 +42,6 @@ Route::get('/detaillimbahmasuk/{id}', [DataLimbahMasukController::class, 'show']
 Route::middleware('auth')->group(function () {
     Route::get('/inputlimbaholah', [LimbahDiolahController::class, 'index'])->name('limbahdiolah.index');
     Route::post('/inputlimbaholah', [LimbahDiolahController::class, 'store'])->name('limbahdiolah.store');
+    Route::get('/datalimbaholah', [LimbahDiolahController::class, 'show'])->name('limbahdiolah.data');
 });
 
