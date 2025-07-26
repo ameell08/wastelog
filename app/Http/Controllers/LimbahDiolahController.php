@@ -46,7 +46,7 @@ class LimbahDiolahController extends Controller
                 ];
             });
 
-           $breadcrumb = (object)[
+        $breadcrumb = (object)[
             'title' => 'Input Limbah Diolah',
             'list' => ['Login', 'Input Limbah Olah']
         ];
@@ -104,5 +104,21 @@ class LimbahDiolahController extends Controller
             DB::rollBack();
             return redirect()->back()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
         }
+    }
+    public function show()
+    {
+        // Ambil data limbah yang sudah diolah
+        $data = LimbahDiolah::with('mesin')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Breadcrumb untuk tampilan
+        $breadcrumb = (object)[
+            'title' => 'Data Limbah Diolah',
+            'list' => ['Dashboard', 'Data Limbah Diolah']
+        ];
+
+        return view('admin2.DataLimbahOlah', compact('data', 'breadcrumb'))
+            ->with('activeMenu', 'datalimbaholah');
     }
 }
