@@ -8,7 +8,7 @@
                 <div class="card-header">
                     <h5 class="card-title mb-0">Data Limbah Diolah</h5>
                     <div class="card-tools">
-                        <a href="{{ url('#') }}" class="btn btn-success btn-sm"><i
+                        <a href="{{ route('limbahdiolah.export') }}" class="btn btn-success btn-sm"><i
                                 class="fas fa-file-excel"></i> Export Excel</a>
                     </div>
                 </div>
