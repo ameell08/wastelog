@@ -8,6 +8,9 @@ use App\Models\DetailLimbahDiolah;
 use App\Models\Mesin;
 use App\Models\KodeLimbah;
 use App\Models\SisaLimbah;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -120,5 +123,140 @@ class LimbahDiolahController extends Controller
 
         return view('admin2.DataLimbahOlah', compact('data', 'breadcrumb'))
             ->with('activeMenu', 'datalimbaholah');
+    }
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file_excel' => 'required|file|mimes:xlsx,xls',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            $spreadsheet = IOFactory::load($request->file('file_excel'));
+            $sheet = $spreadsheet->getActiveSheet();
+            $rows = $sheet->toArray();
+
+            // Lewati baris header (baris 0)
+            foreach (array_slice($rows, 1) as $row) {
+                [$noMesin, $kodeLimbah, $beratKg] = $row;
+
+                // Cari mesin dan kode limbah berdasarkan nilai dari Excel
+                $mesin = Mesin::where('no_mesin', $noMesin)->first();
+                $kode = KodeLimbah::where('kode', $kodeLimbah)->first();
+
+                if (!$mesin || !$kode) {
+                    throw new \Exception("Mesin atau Kode Limbah tidak ditemukan untuk: $noMesin / $kodeLimbah");
+                }
+
+                // Validasi berat
+                if (!is_numeric($beratKg) || $beratKg <= 0) {
+                    throw new \Exception("Berat tidak valid untuk kode limbah: $kodeLimbah");
+                }
+
+                // Cek sisa limbah
+                $sisaLimbah = SisaLimbah::where('kode_limbah_id', $kode->id)
+                    ->where('berat_kg', '>=', $beratKg)
+                    ->orderBy('tanggal', 'asc')
+                    ->first();
+
+                if (!$sisaLimbah) {
+                    throw new \Exception("Sisa limbah tidak mencukupi untuk kode: $kodeLimbah");
+                }
+
+                // Simpan limbah diolah
+                $limbahDiolah = LimbahDiolah::create([
+                    'mesin_id' => $mesin->id,
+                    'total_kg' => $beratKg,
+                ]);
+
+                DetailLimbahDiolah::create([
+                    'limbah_diolah_id' => $limbahDiolah->id,
+                    'kode_limbah_id' => $kode->id,
+                    'berat_kg' => $beratKg,
+                    'tanggal_input' => now(),
+                ]);
+
+                // Update sisa limbah
+                $sisaLimbah->berat_kg -= $beratKg;
+                $sisaLimbah->save();
+
+                if ($sisaLimbah->berat_kg <= 0) {
+                    $sisaLimbah->delete();
+                }
+            }
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Data berhasil diimpor dari Excel!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Import gagal: ' . $e->getMessage());
+        }
+    }
+    public function downloadTemplate()
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header kolom
+        $sheet->setCellValue('A1', 'no_mesin');
+        $sheet->setCellValue('B1', 'kode_limbah');
+        $sheet->setCellValue('C1', 'berat_kg');
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'template_import_limbah.xlsx';
+
+        // Download response
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment; filename=\"$filename\"");
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
+    }
+    public function export()
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Set judul kolom
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Tanggal');
+        $sheet->setCellValue('C1', 'Mesin');
+        $sheet->setCellValue('D1', 'Kode Limbah (Deskripsi)');
+        $sheet->setCellValue('E1', 'Berat (Kg)');
+
+        $row = 2;
+        $no = 1;
+
+        // Ambil semua data limbah beserta relasi
+        $limbahDiolahList = LimbahDiolah::with(['detailLimbahDiolah.kodeLimbah', 'mesin'])->get();
+
+        foreach ($limbahDiolahList as $limbah) {
+            foreach ($limbah->detailLimbahDiolah as $detail) {
+                $sheet->setCellValue('A' . $row, $no++);
+                $sheet->setCellValue('B' . $row, $detail->tanggal_input);
+                $sheet->setCellValue('C' . $row, $limbah->mesin->nama ?? '-');
+
+                // Gabungkan kode dan deskripsi kode limbah
+                $kodeLimbah = $detail->kodeLimbah;
+                $kodeDeskripsi = $kodeLimbah ? $kodeLimbah->kode . ' (' . $kodeLimbah->deskripsi . ')' : '-';
+                $sheet->setCellValue('D' . $row, $kodeDeskripsi);
+
+                $sheet->setCellValue('E' . $row, $detail->berat_kg);
+                $row++;
+            }
+        }
+
+        // Simpan dan download file
+        $fileName = 'data_limbah_diolah.xlsx';
+        $writer = new Xlsx($spreadsheet);
+
+        // Atur header supaya langsung terdownload
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment;filename=\"$fileName\"");
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
 }

@@ -47,4 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/inputlimbaholah', [LimbahDiolahController::class, 'index'])->name('limbahdiolah.index');
     Route::post('/inputlimbaholah', [LimbahDiolahController::class, 'store'])->name('limbahdiolah.store');
     Route::get('/datalimbaholah', [LimbahDiolahController::class, 'show'])->name('limbahdiolah.data');
+    Route::post('/inputlimbaholah/import', [LimbahDiolahController::class, 'import'])->name('limbahdiolah.import');
+    Route::get('/inputlimbaholah/template', [LimbahDiolahController::class, 'downloadTemplate'])->name('limbahdiolah.template');
+    Route::get('/datalimbaholah/export', [LimbahDiolahController::class, 'export'])->name('limbahdiolah.export');
+
 });
