@@ -158,64 +158,67 @@
             rowIndex++;
         });
 
+        // menghapus baris tabel
         document.addEventListener('click', function(e) {
-                    if (e.target && e.target.classList.contains('remove-row')) {
-                        e.target.closest('tr').remove();
+            if (e.target && e.target.classList.contains('remove-row')) {
+                e.target.closest('tr').remove();
+            }
+        });
+
+        // Inisialisasi saat dokumen siap
+        $(document).ready(function() {
+            $("#form-import").validate({
+                rules: {
+                    file_limbah_masuk: {
+                        required: true,
+                        extension: "xlsx"
                     }
-                    $(document).ready(function() {
-                        $("#form-import").validate({
-                            rules: {
-                                file_limbah_masuk: {
-                                    required: true,
-                                    extension: "xlsx"
-                                },
-                            },
-                            submitHandler: function(form) {
-                                var formData = new FormData(form);
-                                $.ajax({
-                                    url: form.action,
-                                    type: form.method,
-                                    data: formData,
-                                    processData: false,
-                                    contentType: false,
-                                    success: function(response) {
-                                        if (response.status) {
-                                            $('#importModal').modal('hide');
-                                            Swal.fire({
-                                                icon: 'success',
-                                                title: 'Berhasil',
-                                                text: response.message
-                                            });
-                                            // reload datatable jika ada
-                                            // tableBarang.ajax.reload();
-                                        } else {
-                                            $('.error-text').text('');
-                                            $.each(response.msgField, function(prefix,
-                                            val) {
-                                                $('#error-' + prefix).text(val[0]);
-                                            });
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Terjadi Kesalahan',
-                                                text: response.message
-                                            });
-                                        }
-                                    }
+                },
+                submitHandler: function(form) {
+                    var formData = new FormData(form);
+                    $.ajax({
+                        url: form.action,
+                        type: form.method,
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function(response) {
+                            if (response.status) {
+                                $('#importModal').modal('hide');
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Berhasil',
+                                    text: response.message
                                 });
-                                return false;
-                            },
-                            errorElement: 'span',
-                            errorPlacement: function(error, element) {
-                                error.addClass('invalid-feedback');
-                                element.closest('.form-group').append(error);
-                            },
-                            highlight: function(element) {
-                                $(element).addClass('is-invalid');
-                            },
-                            unhighlight: function(element) {
-                                $(element).removeClass('is-invalid');
+                                // reload datatable jika ada
+                                // tableBarang.ajax.reload();
+                            } else {
+                                $('.error-text').text('');
+                                $.each(response.msgField, function(prefix, val) {
+                                    $('#error-' + prefix).text(val[0]);
+                                });
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Terjadi Kesalahan',
+                                    text: response.message
+                                });
                             }
-                        });
+                        }
                     });
+                    return false; // mencegah submit default
+                },
+                errorElement: 'span',
+                errorPlacement: function(error, element) {
+                    error.addClass('invalid-feedback');
+                    element.closest('.form-group').append(error);
+                },
+                highlight: function(element) {
+                    $(element).addClass('is-invalid');
+                },
+                unhighlight: function(element) {
+                    $(element).removeClass('is-invalid');
+                }
+            });
+        });
     </script>
 @endsection
