@@ -1,8 +1,8 @@
-@extends('layouts.template', ['activeMenu' => 'kodelimbah'])
+@extends('layouts.template', ['activeMenu' => 'datatruk'])
 
 @section('content')
     <div class="container">
-        <div class="container-fluid px-0 ">
+        <div class="container-fluid px-0">
 
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -20,37 +20,39 @@
 
             <div class="card card-primary card-outline">
                 <div class="card-header">
-                    <h5 class="card-title mb-0">Data Kode Limbah</h5>
-                <div class="card-tools">
-                    <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal" data-bs-target="#tambahModal">
-                        Tambah Data <i class= " fas fa-plus me-1"></i>
-                    </button>
+                    <h5 class="card-title mb-0">Data Truk</h5>
+                    <div class="card-tools">
+                        <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
+                            data-bs-target="#tambahModal">
+                            Tambah Data <i class="fas fa-plus ms-1"></i>
+                        </button>
+                    </div>
                 </div>
-            </div>
                 <div id="success-alert" class="alert alert-success d-none"></div>
 
                 <div class="card-body">
                     <div class="mb-3">
                         <input type="text" id="searchInput" class="form-control"
                             placeholder="Cari plat nomor atau nama sopir...">
-                    <table class="table table-bordered" id="kodeTable">
+                    </div>
+                    <table class="table table-bordered" id="trukTable">
                         <thead class="table-light">
                             <tr>
                                 <th>No</th>
-                                <th>Kode</th>
-                                <th>Deskripsi</th>
+                                <th>Plat Nomor</th>
+                                <th>Nama Sopir</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($kodeLimbah as $index => $item)
+                            @foreach ($dataTruk as $index => $item)
                                 <tr id="row-{{ $item->id }}">
                                     <td>{{ $index + 1 }}</td>
-                                    <td class="kode">{{ $item->kode }}</td>
-                                    <td class="deskripsi">{{ $item->deskripsi }}</td>
+                                    <td class="plat">{{ $item->plat_nomor }}</td>
+                                    <td class="sopir">{{ $item->nama_sopir }}</td>
                                     <td>
                                         <button class="btn btn-warning btn-sm btn-edit" data-id="{{ $item->id }}"
-                                            data-kode="{{ $item->kode }}" data-deskripsi="{{ $item->deskripsi }}">
+                                            data-plat="{{ $item->plat_nomor }}" data-sopir="{{ $item->nama_sopir }}">
                                             Edit
                                         </button>
                                         <button class="btn btn-danger btn-sm btn-delete" data-id="{{ $item->id }}">
@@ -61,49 +63,54 @@
                             @endforeach
                         </tbody>
                     </table>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-
-    @include('superadmin.kodelimbah.create')
-    @include('superadmin.kodelimbah.update')
-    @include('superadmin.kodelimbah.delete')
+    @include('superadmin.datatruk.create')
+    @include('superadmin.datatruk.update')
+    @include('superadmin.datatruk.delete')
 @endsection
 
 @section('scripts')
     <script>
         // Fitur Pencarian Baris Tabel
-        // 🔍 Fitur Pencarian Baris Tabel
         $('#searchInput').on('keyup', function() {
             let keyword = $(this).val().toLowerCase();
-            $('#kodeTable tbody tr').filter(function() {
-                let kode = $(this).find('.kode').text().toLowerCase();
-                let deskripsi = $(this).find('.deskripsi').text().toLowerCase();
-                $(this).toggle(kode.includes(keyword) || deskripsi.includes(keyword));
+            $('#trukTable tbody tr').filter(function() {
+                let plat = $(this).find('.plat').text().toLowerCase();
+                let sopir = $(this).find('.sopir').text().toLowerCase();
+                $(this).toggle(plat.includes(keyword) || sopir.includes(keyword));
             });
         });
+
         // Tambah Data
         $('#formTambahData').submit(function(e) {
             e.preventDefault();
             let form = $(this);
             let formData = form.serialize();
             $.ajax({
-                url: "{{ route('kode-limbah.store') }}",
+                url: "{{ route('truk.store') }}",
                 method: "POST",
                 data: formData,
                 success: function(data) {
-                    let index = $('#kodeTable tbody tr').length + 1;
-                    $('#kodeTable tbody').append(`
+                    let index = $('#trukTable tbody tr').length + 1;
+                    $('#trukTable tbody').append(`
                     <tr id="row-${data.id}">
                         <td>${index}</td>
-                        <td class="kode">${data.kode}</td>
-                        <td class="deskripsi">${data.deskripsi}</td>
+                        <td class="plat">${data.plat_nomor}</td>
+                        <td class="sopir">${data.nama_sopir}</td>
                         <td>
-                            <button class="btn btn-warning btn-sm btn-edit" data-id="${data.id}" data-kode="${data.kode}" data-deskripsi="${data.deskripsi}">Edit</button>
-                            <button class="btn btn-danger btn-sm btn-delete" data-id="${data.id}">Hapus</button>
+                            <button class="btn btn-warning btn-sm btn-edit"
+                                data-id="${data.id}"
+                                data-plat="${data.plat_nomor}"
+                                data-sopir="${data.nama_sopir}">
+                                Edit
+                            </button>
+                            <button class="btn btn-danger btn-sm btn-delete" data-id="${data.id}">
+                                Hapus
+                            </button>
                         </td>
                     </tr>
                 `);
@@ -121,8 +128,8 @@
         // Tampilkan Modal Edit
         $(document).on('click', '.btn-edit', function() {
             $('#edit-id').val($(this).data('id'));
-            $('#edit-kode').val($(this).data('kode'));
-            $('#edit-deskripsi').val($(this).data('deskripsi'));
+            $('#edit-plat').val($(this).data('plat'));
+            $('#edit-sopir').val($(this).data('sopir'));
             $('#editModal').modal('show');
         });
 
@@ -132,19 +139,23 @@
             let id = $('#edit-id').val();
             let formData = $(this).serialize();
             $.ajax({
-                url: `/kodelimbah/${id}`,
+                url: `/datatruk/${id}`,
                 method: "POST",
                 data: formData,
                 success: function(data) {
                     let row = $(`#row-${id}`);
-                    row.find('.kode').text(data.kode);
-                    row.find('.deskripsi').text(data.deskripsi);
-                    row.find('.btn-edit').data('kode', data.kode).data('deskripsi', data.deskripsi);
+
+                    // Update isi kolom
+                    row.find('.plat').text(data.plat_nomor);
+                    row.find('.sopir').text(data.nama_sopir);
+
+                    // Update data-* attribute tombol Edit
+                    row.find('.btn-edit')
+                        .attr('data-plat', data.plat_nomor)
+                        .attr('data-sopir', data.nama_sopir);
+
                     $('#editModal').modal('hide');
                     $('#success-alert').text("Data berhasil diperbarui.").removeClass('d-none');
-                },
-                error: function(xhr) {
-                    alert('Gagal menyimpan data edit.');
                 }
             });
         });
@@ -161,7 +172,7 @@
             e.preventDefault();
             let id = $('#delete-id').val();
             $.ajax({
-                url: `/kodelimbah/${id}`,
+                url: `/datatruk/${id}`,
                 method: 'POST',
                 data: {
                     _method: 'DELETE',

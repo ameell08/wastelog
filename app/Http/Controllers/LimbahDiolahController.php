@@ -108,8 +108,19 @@ class LimbahDiolahController extends Controller
             return redirect()->back()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
         }
     }
-    public function show()
+    public function show(Request $request)
     {
+        $mesinList = Mesin::all(); // Untuk dropdown filter
+
+    // Query awal dengan relasi mesin
+    $query = LimbahDiolah::with('mesin');
+
+    // Filter berdasarkan no_mesin (relasi)
+    if ($request->filled('no_mesin')) {
+        $query->whereHas('mesin', function ($q) use ($request) {
+            $q->where('no_mesin', $request->no_mesin);
+        });
+    }
         // Ambil data limbah yang sudah diolah
         $data = LimbahDiolah::with('mesin')
             ->orderBy('created_at', 'desc')
@@ -121,7 +132,7 @@ class LimbahDiolahController extends Controller
             'list' => ['Dashboard', 'Data Limbah Diolah']
         ];
 
-        return view('admin2.DataLimbahOlah', compact('data', 'breadcrumb'))
+        return view('admin2.DataLimbahOlah', compact('data', 'breadcrumb', 'mesinList'))
             ->with('activeMenu', 'datalimbaholah');
     }
     public function import(Request $request)
