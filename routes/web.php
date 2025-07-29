@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LimbahDiolahController;
 use App\Http\Controllers\DataLimbahMasukController;
+use App\Http\Controllers\KodeLimbahController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\LimbahMasukController;
 /*
@@ -28,6 +30,9 @@ Route::get('/dashboard', function () {
     return 'Berhasil login! Selamat datang di dashboard.';
 })->middleware('auth');
 
+//dashboard
+Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
 //LimbahMasuk
 Route::middleware('auth')->group(function () {
     Route::get('/inputlimbahmasuk', [LimbahMasukController::class, 'index'])->name('limbahmasuk.index');
@@ -51,4 +56,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/inputlimbaholah/template', [LimbahDiolahController::class, 'downloadTemplate'])->name('limbahdiolah.template');
     Route::get('/datalimbaholah/export', [LimbahDiolahController::class, 'export'])->name('limbahdiolah.export');
 
+});
+
+//kode limbah
+Route::middleware('auth')->group(function () {
+Route::get('/kodelimbah', [KodeLimbahController::class, 'index'])->name('kode-limbah.index');
+Route::get('/kodelimbah/create', [KodeLimbahController::class, 'create'])->name('kode-limbah.create');
+Route::post('/kodelimbah', [KodeLimbahController::class, 'store'])->name('kode-limbah.store');
+Route::get('/kodelimbah/{id}/edit', [KodeLimbahController::class, 'edit'])->name('kode-limbah.edit');
+Route::put('/kodelimbah/{id}', [KodeLimbahController::class, 'update'])->name('kode-limbah.update');
+Route::delete('/kodelimbah/{id}', [KodeLimbahController::class, 'delete'])->name('kode-limbah.delete');
 });

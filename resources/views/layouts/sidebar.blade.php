@@ -31,7 +31,7 @@
                 <li class="nav-item">
                     <a href="{{ url('/kodelimbah') }}"
                         class="nav-link {{ $activeMenu == 'kodelimbah' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-code"></i>
+                        <i class="nav-icon fas fa-tag"></i>
                         <p>Kode Limbah</p>
                     </a>
                 </li>
