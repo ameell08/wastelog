@@ -5,6 +5,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\LimbahDiolahController;
 use App\Http\Controllers\DataLimbahMasukController;
 use App\Http\Controllers\KodeLimbahController;
+use App\Http\Controllers\TrukController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\LimbahMasukController;
@@ -51,7 +52,7 @@ Route::get('/detaillimbahmasuk/{id}', [DataLimbahMasukController::class, 'show']
 Route::middleware('auth')->group(function () {
     Route::get('/inputlimbaholah', [LimbahDiolahController::class, 'index'])->name('limbahdiolah.index');
     Route::post('/inputlimbaholah', [LimbahDiolahController::class, 'store'])->name('limbahdiolah.store');
-    Route::get('/datalimbaholah', [LimbahDiolahController::class, 'show'])->name('limbahdiolah.data');
+    Route::get('/datalimbaholah', [LimbahDiolahController::class, 'show'])->name('limbahdiolah.show');
     Route::post('/inputlimbaholah/import', [LimbahDiolahController::class, 'import'])->name('limbahdiolah.import');
     Route::get('/inputlimbaholah/template', [LimbahDiolahController::class, 'downloadTemplate'])->name('limbahdiolah.template');
     Route::get('/datalimbaholah/export', [LimbahDiolahController::class, 'export'])->name('limbahdiolah.export');
@@ -67,3 +68,12 @@ Route::get('/kodelimbah/{id}/edit', [KodeLimbahController::class, 'edit'])->name
 Route::put('/kodelimbah/{id}', [KodeLimbahController::class, 'update'])->name('kode-limbah.update');
 Route::delete('/kodelimbah/{id}', [KodeLimbahController::class, 'delete'])->name('kode-limbah.delete');
 });
+Route::middleware('auth')->group(function () {
+    Route::get('/datatruk', [TrukController::class, 'index'])->name('truk.index');
+    Route::get('/datatruk/create', [TrukController::class, 'create'])->name('truk.create');
+    Route::post('/datatruk', [TrukController::class, 'store'])->name('truk.store');
+    Route::get('/datatruk/{id}/edit', [TrukController::class, 'edit'])->name('truk.edit');
+    Route::put('/datatruk/{id}', [TrukController::class, 'update'])->name('truk.update');
+    Route::delete('/datatruk/{id}', [TrukController::class, 'destroy'])->name('truk.destroy');
+});
+
