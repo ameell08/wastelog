@@ -30,6 +30,9 @@
                 <div id="success-alert" class="alert alert-success d-none"></div>
 
                 <div class="card-body">
+                    <div class="mb-3">
+                        <input type="text" id="searchInput" class="form-control"
+                            placeholder="Cari plat nomor atau nama sopir...">
                     <table class="table table-bordered" id="kodeTable">
                         <thead class="table-light">
                             <tr>
@@ -58,6 +61,7 @@
                             @endforeach
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -71,6 +75,16 @@
 
 @section('scripts')
     <script>
+        // Fitur Pencarian Baris Tabel
+        // 🔍 Fitur Pencarian Baris Tabel
+        $('#searchInput').on('keyup', function() {
+            let keyword = $(this).val().toLowerCase();
+            $('#kodeTable tbody tr').filter(function() {
+                let kode = $(this).find('.kode').text().toLowerCase();
+                let deskripsi = $(this).find('.deskripsi').text().toLowerCase();
+                $(this).toggle(kode.includes(keyword) || deskripsi.includes(keyword));
+            });
+        });
         // Tambah Data
         $('#formTambahData').submit(function(e) {
             e.preventDefault();
