@@ -6,6 +6,7 @@ use App\Http\Controllers\LimbahDiolahController;
 use App\Http\Controllers\DataLimbahMasukController;
 use App\Http\Controllers\KodeLimbahController;
 use App\Http\Controllers\TrukController;
+use App\Http\Controllers\MesinController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\LimbahMasukController;
@@ -68,6 +69,7 @@ Route::get('/kodelimbah/{id}/edit', [KodeLimbahController::class, 'edit'])->name
 Route::put('/kodelimbah/{id}', [KodeLimbahController::class, 'update'])->name('kode-limbah.update');
 Route::delete('/kodelimbah/{id}', [KodeLimbahController::class, 'delete'])->name('kode-limbah.delete');
 });
+//Data Truk
 Route::middleware('auth')->group(function () {
     Route::get('/datatruk', [TrukController::class, 'index'])->name('truk.index');
     Route::get('/datatruk/create', [TrukController::class, 'create'])->name('truk.create');
@@ -75,5 +77,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/datatruk/{id}/edit', [TrukController::class, 'edit'])->name('truk.edit');
     Route::put('/datatruk/{id}', [TrukController::class, 'update'])->name('truk.update');
     Route::delete('/datatruk/{id}', [TrukController::class, 'destroy'])->name('truk.destroy');
+});
+// Data Mesin
+Route::middleware('auth')->group(function () {
+    Route::get('/datamesin', [MesinController::class, 'index'])->name('mesin.index');
+    Route::get('/datamesin/create', [MesinController::class, 'create'])->name('mesin.create');
+    Route::post('/datamesin', [MesinController::class, 'store'])->name('mesin.store');
+    Route::get('/datamesin/{id}/edit', [MesinController::class, 'edit'])->name('mesin.edit');
+    Route::put('/datamesin/{id}', [MesinController::class, 'update'])->name('mesin.update');
+    Route::delete('/datamesin/{id}', [MesinController::class, 'destroy'])->name('mesin.destroy');
 });
 
