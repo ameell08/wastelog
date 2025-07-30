@@ -102,6 +102,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
     @yield('scripts')
+    @stack('scripts') <!-- digunakan untuk memanggil custom js dari perintah push('scripts') pada masing - masing view -->
 </body>
 
 </html>
