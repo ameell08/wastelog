@@ -32,7 +32,7 @@ class DataLimbahMasukController extends Controller
     public function show($id)
     {
         $limbahMasuk = LimbahMasuk::findOrFail($id);
-        $detail = $limbahMasuk->DetailLimbahMasuk()->with(['truk', 'kodeLimbah'])->get();
+        $detail = $limbahMasuk->detailLimbahMasuk()->with(['truk', 'kodeLimbah'])->get(); // FIXED
 
         return response()->json([
             'tanggal' => $limbahMasuk->tanggal,
@@ -77,7 +77,7 @@ class DataLimbahMasukController extends Controller
             header('Cache-Control: max-age=1');
 
             $writer->save('php://output');
-             // Simpan ke output untuk download
+            // Simpan ke output untuk download
             // \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx')->save('php://output');
             exit;
         } catch (\Exception $e) {
