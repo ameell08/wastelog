@@ -34,8 +34,8 @@
         }
 
         .logo {
-            width: 100px;
-            margin-bottom: 20px;
+            width: 110px;
+            margin-bottom: 5px;
         }
 
         input[type="email"],
@@ -47,28 +47,18 @@
             border-radius: 4px;
         }
 
-        .remember {
-            display: flex;
-            align-items: center;
-            color: #ccc;
-            font-size: 14px;
-            margin-top: 10px;
-            justify-content: flex-start;
-        }
-
-        .remember input {
-            margin-right: 8px;
-        }
-
         button {
-            width: 100%;
+            width: 50%;
+            min-width: 150px;
+            max-width: 250px;
             background-color: #4CAF50;
             color: white;
             padding: 12px;
             border: none;
             border-radius: 4px;
-            margin-top: 15px;
+            margin: 15px auto 0 auto;
             cursor: pointer;
+            display: block;
         }
 
         button:hover {
@@ -86,6 +76,7 @@
     <div class="login-container">
         <h2>Selamat Datang</h2>
         <img src="{{ asset('img/ptpria.png') }}" alt="Logo PRIA" class="logo">
+        <h5>Masukkan akun Anda untuk memulai sesi</h5>
 
         @if ($errors->has('login'))
             <div class="error">{{ $errors->first('login') }}</div>
@@ -95,10 +86,6 @@
             @csrf
             <input type="email" name="email" value="{{ old('email') }}" placeholder="Email" required>
             <input type="password" name="password" placeholder="Password" required>
-
-            <label class="remember">
-                <input type="checkbox" name="remember"> Remember Me
-            </label>
 
             <button type="submit">Sign In</button>
         </form>

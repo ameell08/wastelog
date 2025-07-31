@@ -57,7 +57,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <select name="detail[0][kode_limbah_id]" class="form-control" required>
+                                        <select name="detail[0][kode_limbah_id]" class="form-control select2" required>
                                             <option value="">Pilih Kode Limbah</option>
                                             @foreach ($kodeLimbahs as $kode)
                                                 <option value="{{ $kode->id }}">{{ $kode->kode }} -
@@ -121,104 +121,76 @@
             </div>
         </div>
     </div>
+@endsection
 
+
+@push('scripts')
     <script>
-        let rowIndex = 1;
-
-        document.getElementById('addRow').addEventListener('click', () => {
-            const tbody = document.querySelector('#limbahTable tbody');
-            const newRow = document.createElement('tr');
-
-            newRow.innerHTML = `
-            <td>
-                <select name="detail[${rowIndex}][truk_id]" class="form-control" required>
-                    <option value="">Pilih Plat Nomor</option>
-                    @foreach ($truks as $truk)
-                        <option value="{{ $truk->id }}">{{ $truk->plat_nomor }}</option>
-                    @endforeach
-                </select>
-            </td>
-            <td>
-                <select name="detail[${rowIndex}][kode_limbah_id]" class="form-control" required>
-                    <option value="">Pilih Kode Limbah</option>
-                    @foreach ($kodeLimbahs as $kode)
-                        <option value="{{ $kode->id }}">{{ $kode->kode }} - {{ $kode->deskripsi }}</option>
-                    @endforeach
-                </select>
-            </td>
-            <td>
-                <input type="number" name="detail[${rowIndex}][berat_kg]" class="form-control" required min="1">
-            </td>
-            <td>
-                <button type="button" class="btn btn-danger remove-row">Hapus</button>
-            </td>
-        `;
-
-            tbody.appendChild(newRow);
-            rowIndex++;
-        });
-
-        // menghapus baris tabel
-        document.addEventListener('click', function(e) {
-            if (e.target && e.target.classList.contains('remove-row')) {
-                e.target.closest('tr').remove();
-            }
-        });
-
-        // Inisialisasi saat dokumen siap
         $(document).ready(function() {
-            $("#form-import").validate({
-                rules: {
-                    file_limbah_masuk: {
-                        required: true,
-                        extension: "xlsx"
-                    }
-                },
-                submitHandler: function(form) {
-                    var formData = new FormData(form);
-                    $.ajax({
-                        url: form.action,
-                        type: form.method,
-                        data: formData,
-                        processData: false,
-                        contentType: false,
-                        success: function(response) {
-                            if (response.status) {
-                                $('#importModal').modal('hide');
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Berhasil',
-                                    text: response.message
-                                });
-                                // reload datatable jika ada
-                                // tableBarang.ajax.reload();
-                            } else {
-                                $('.error-text').text('');
-                                $.each(response.msgField, function(prefix, val) {
-                                    $('#error-' + prefix).text(val[0]);
-                                });
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Terjadi Kesalahan',
-                                    text: response.message
-                                });
-                            }
-                        }
-                    });
-                    return false; // mencegah submit default
-                },
-                errorElement: 'span',
-                errorPlacement: function(error, element) {
-                    error.addClass('invalid-feedback');
-                    element.closest('.form-group').append(error);
-                },
-                highlight: function(element) {
-                    $(element).addClass('is-invalid');
-                },
-                unhighlight: function(element) {
-                    $(element).removeClass('is-invalid');
-                }
+            $('.select2').select2({
+                placeholder: "Pilih kode limbah",
+                width: '100%',
+            });
+
+            let rowIndex = 1;
+
+            $('#addRow').on('click', function() {
+                const tbody = $('#limbahTable tbody');
+                const newRow = $(`
+                <tr>
+                    <td>
+                        <select name="detail[${rowIndex}][truk_id]" class="form-control" required>
+                            <option value="">Pilih Plat Nomor</option>
+                            @foreach ($truks as $truk)
+                                <option value="{{ $truk->id }}">{{ $truk->plat_nomor }}</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td>
+                        <select name="detail[${rowIndex}][kode_limbah_id]" class="form-control" required>
+                            <option value="">Pilih Kode Limbah</option>
+                            @foreach ($kodeLimbahs as $kode)
+                                <option value="{{ $kode->id }}">{{ $kode->kode }} - {{ $kode->deskripsi }}</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td>
+                        <input type="number" name="detail[${rowIndex}][berat_kg]" class="form-control" required min="1">
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger remove-row">Hapus</button>
+                    </td>
+                </tr>
+            `);
+
+                tbody.append(newRow);
+                newRow.find('.select2').select2({
+                    placeholder: "Pilih Kode limbah",
+                    width: '100%'
+                });
+
+                rowIndex++;
+            });
+
+            $(document).on('click', '.remove-row', function() {
+                $(this).closest('tr').remove();
             });
         });
     </script>
-@endsection
+
+    <style>
+        /* Samakan tinggi Select2 dan input */
+        .select2-container--default .select2-selection--single {
+            height: 38px !important;
+            padding: 6px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+        }
+
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #696666 !important;
+            color: #ffffff !important;
+        }
+
+    </style>
+@endpush

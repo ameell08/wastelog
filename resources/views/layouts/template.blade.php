@@ -25,6 +25,9 @@
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/select2/css/select2.min.css') }}">
     <link rel="stylesheet" href="{{ asset('adminlte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}">
 
+    <!-- Stylesheet global -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     @stack('css') <!-- digunakan untuk memanggil custom css dari perintah push('css') pada masing - masing view -->
 </head>
 
@@ -101,8 +104,16 @@
     <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script global -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+    @stack('scripts') {{-- tempat untuk push script dari blade lain --}}
+
     @yield('scripts')
-    @stack('scripts') <!-- digunakan untuk memanggil custom js dari perintah push('scripts') pada masing - masing view -->
+    @stack('scripts')
+    <!-- digunakan untuk memanggil custom js dari perintah push('scripts') pada masing - masing view -->
 </body>
 
 </html>

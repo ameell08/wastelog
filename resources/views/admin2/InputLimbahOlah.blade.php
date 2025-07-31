@@ -22,11 +22,11 @@
             <div class="card card-primary card-outline">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Form Input Limbah Diolah</h5>
-                </div>
-                <div class="d-flex justify-content-end mb-2">
-                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#importModal">
+                <div class="card-tools">
+                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#importModal">
                         <i class="fas fa-file-excel me-1"></i> Import Excel
                     </button>
+                </div>
                 </div>
 
                 <div class="card-body">
