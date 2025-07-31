@@ -34,20 +34,31 @@ class LimbahDiolahController extends Controller
                 ];
             });
 
-        // Antrean Limbah - Ambil data sisa limbah yang belum diolah
-        $antreanLimbah = SisaLimbah::with('kodeLimbah')
+        // Antrean Limbah - Ambil data sisa limbah yang belum diolah dengan urutan FIFO
+        $antreanLimbahRaw = SisaLimbah::with('kodeLimbah')
             ->where('berat_kg', '>', 0)
-            ->orderBy('tanggal', 'asc')
-            ->get()
-            ->map(function ($item) {
-                return [
-                    'kode' => $item->kodeLimbah->kode,
-                    'deskripsi' => $item->kodeLimbah->deskripsi,
-                    'sisa_berat' => $item->berat_kg,
-                    'tanggal_masuk' => Carbon::parse($item->tanggal)->format('d/m/Y'),
-                    'status' => $item->berat_kg > 0 ? 'Segera Diproses' : 'Menunggu Diproses',
-                ];
-            });
+            ->orderBy('tanggal', 'asc') // FIFO: tampilkan berdasarkan tanggal masuk paling awal
+            ->orderBy('id', 'asc')
+            ->get();
+
+        // Gabungkan item dengan kode limbah dan tanggal yang sama
+        $antreanLimbahGrouped = $antreanLimbahRaw->groupBy(function ($item) {
+            return $item->kodeLimbah->kode . '|' . \Carbon\Carbon::parse($item->tanggal)->format('Y-m-d');
+        });
+
+        $antreanLimbah = $antreanLimbahGrouped->map(function ($group) {
+            $firstItem = $group->first();
+            $totalBerat = $group->sum('berat_kg');
+            
+            return [
+                'kode' => $firstItem->kodeLimbah->kode,
+                'deskripsi' => $firstItem->kodeLimbah->deskripsi,
+                'sisa_berat' => $totalBerat,
+                'tanggal_masuk' => \Carbon\Carbon::parse($firstItem->tanggal)->format('d/m/Y'),
+                'hari_menunggu' => $firstItem->hari_menunggu,
+                'status' => $firstItem->status,
+            ];
+        })->values(); // values() untuk reset index array
 
         $breadcrumb = (object)[
             'title' => 'Input Limbah Diolah',
@@ -67,38 +78,33 @@ class LimbahDiolahController extends Controller
         DB::beginTransaction();
         try {
             foreach ($request->detail as $detail) {
-                // Cek apakah ada sisa limbah yang cukup
-                $sisaLimbah = SisaLimbah::where('kode_limbah_id', $detail['kode_limbah_id'])
-                    ->where('berat_kg', '>=', $detail['berat_kg'])
-                    ->orderBy('tanggal', 'asc')
-                    ->first();
-
-                if (!$sisaLimbah) {
-                    throw new \Exception('Sisa limbah tidak mencukupi untuk kode limbah yang dipilih');
+                $kodeLimbahId = $detail['kode_limbah_id'];
+                $beratDibutuhkan = $detail['berat_kg'];
+                
+                // Cek apakah stok mencukupi
+                if (!SisaLimbah::checkAvailableStock($kodeLimbahId, $beratDibutuhkan)) {
+                    $availableStock = SisaLimbah::where('kode_limbah_id', $kodeLimbahId)
+                        ->where('berat_kg', '>', 0)
+                        ->sum('berat_kg');
+                    throw new \Exception('Sisa limbah tidak mencukupi untuk kode limbah yang dipilih. Tersedia: ' . $availableStock . ' Kg, Diminta: ' . $beratDibutuhkan . ' Kg');
                 }
 
                 // Simpan ke limbah_diolah
                 $limbahDiolah = LimbahDiolah::create([
                     'mesin_id' => $detail['mesin_id'],
-                    'total_kg' => $detail['berat_kg'],
+                    'total_kg' => $beratDibutuhkan,
                 ]);
 
                 // Simpan ke detail_limbah_diolah
                 DetailLimbahDiolah::create([
                     'limbah_diolah_id' => $limbahDiolah->id,
-                    'kode_limbah_id' => $detail['kode_limbah_id'],
-                    'berat_kg' => $detail['berat_kg'],
+                    'kode_limbah_id' => $kodeLimbahId,
+                    'berat_kg' => $beratDibutuhkan,
                     'tanggal_input' => now(),
                 ]);
 
-                // Update sisa_limbah
-                $sisaLimbah->berat_kg -= $detail['berat_kg'];
-                $sisaLimbah->save();
-
-                // Hapus record sisa_limbah jika berat sudah 0
-                if ($sisaLimbah->berat_kg <= 0) {
-                    $sisaLimbah->delete();
-                }
+                // Proses pengurangan sisa limbah dengan sistem FIFO
+                SisaLimbah::processFifoConsumption($kodeLimbahId, $beratDibutuhkan);
             }
 
             DB::commit();
@@ -112,19 +118,18 @@ class LimbahDiolahController extends Controller
     {
         $mesinList = Mesin::all(); // Untuk dropdown filter
 
-    // Query awal dengan relasi mesin
-    $query = LimbahDiolah::with('mesin');
+        // Query awal dengan relasi mesin
+        $query = LimbahDiolah::with('mesin');
 
-    // Filter berdasarkan no_mesin (relasi)
-    if ($request->filled('no_mesin')) {
-        $query->whereHas('mesin', function ($q) use ($request) {
-            $q->where('no_mesin', $request->no_mesin);
-        });
-    }
-        // Ambil data limbah yang sudah diolah
-        $data = LimbahDiolah::with('mesin')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        // Filter berdasarkan no_mesin (relasi)
+        if ($request->filled('no_mesin')) {
+            $query->whereHas('mesin', function ($q) use ($request) {
+                $q->where('no_mesin', $request->no_mesin);
+            });
+        }
+
+        // Ambil data limbah yang sudah diolah menggunakan query yang sudah difilter
+        $data = $query->orderBy('created_at', 'desc')->get();
 
         // Breadcrumb untuk tampilan
         $breadcrumb = (object)[
@@ -164,14 +169,12 @@ class LimbahDiolahController extends Controller
                     throw new \Exception("Berat tidak valid untuk kode limbah: $kodeLimbah");
                 }
 
-                // Cek sisa limbah
-                $sisaLimbah = SisaLimbah::where('kode_limbah_id', $kode->id)
-                    ->where('berat_kg', '>=', $beratKg)
-                    ->orderBy('tanggal', 'asc')
-                    ->first();
-
-                if (!$sisaLimbah) {
-                    throw new \Exception("Sisa limbah tidak mencukupi untuk kode: $kodeLimbah");
+                // Cek sisa limbah dengan sistem FIFO
+                if (!SisaLimbah::checkAvailableStock($kode->id, $beratKg)) {
+                    $availableStock = SisaLimbah::where('kode_limbah_id', $kode->id)
+                        ->where('berat_kg', '>', 0)
+                        ->sum('berat_kg');
+                    throw new \Exception("Sisa limbah tidak mencukupi untuk kode: $kodeLimbah. Tersedia: $availableStock Kg, Diminta: $beratKg Kg");
                 }
 
                 // Simpan limbah diolah
@@ -187,13 +190,8 @@ class LimbahDiolahController extends Controller
                     'tanggal_input' => now(),
                 ]);
 
-                // Update sisa limbah
-                $sisaLimbah->berat_kg -= $beratKg;
-                $sisaLimbah->save();
-
-                if ($sisaLimbah->berat_kg <= 0) {
-                    $sisaLimbah->delete();
-                }
+                // Proses pengurangan sisa limbah dengan sistem FIFO
+                SisaLimbah::processFifoConsumption($kode->id, $beratKg);
             }
 
             DB::commit();
@@ -246,7 +244,7 @@ class LimbahDiolahController extends Controller
             foreach ($limbah->detailLimbahDiolah as $detail) {
                 $sheet->setCellValue('A' . $row, $no++);
                 $sheet->setCellValue('B' . $row, $detail->tanggal_input);
-                $sheet->setCellValue('C' . $row, $limbah->mesin->nama ?? '-');
+                $sheet->setCellValue('C' . $row, $limbah->mesin->no_mesin ?? '-');
 
                 // Gabungkan kode dan deskripsi kode limbah
                 $kodeLimbah = $detail->kodeLimbah;
