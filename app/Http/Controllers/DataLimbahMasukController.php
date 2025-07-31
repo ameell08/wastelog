@@ -50,6 +50,12 @@ class DataLimbahMasukController extends Controller
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
 
+            $sheet->setCellValue('A1', 'No');
+            $sheet->setCellValue('B1', 'Tanggal');
+            $sheet->setCellValue('C1', 'Plat Nomor Truk');
+            $sheet->setCellValue('D1', 'Kode Limbah');
+            $sheet->setCellValue('E1', 'Berat (Kg)');
+
             $no = 1;
             $row = 2; // Mulai dari baris kedua
             foreach ($limbahMasuk as $item) {
@@ -69,7 +75,7 @@ class DataLimbahMasukController extends Controller
 
             $sheet->setTitle('Data Limbah Masuk');
             $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
-            $filename = 'Data Limbah Masuk ' . date('Y-m-d H:i:s') . '.xlsx';
+            $filename = 'Data Limbah Masuk ' . date('d-m-y H:i:s') . '.xlsx';
             // Set header untuk download
             header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
             header('Content-Disposition: attachment;filename="' . $filename . '"');
