@@ -100,6 +100,7 @@
                                     <th>Kode Limbah (deskripsi)</th>
                                     <th>Sisa Berat (Kg)</th>
                                     <th>Tanggal Masuk</th>
+                                    <th>Hari Menunggu</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -110,8 +111,19 @@
                                         <td>{{ number_format($antrean['sisa_berat'], 2) }}</td>
                                         <td>{{ $antrean['tanggal_masuk'] }}</td>
                                         <td>
-                                            @if ($antrean['status'] == 'Segera Diproses')
+                                            @if ($antrean['hari_menunggu'] >= 2)
+                                                <span class="badge bg-danger">{{ $antrean['hari_menunggu'] }} hari</span>
+                                            @elseif ($antrean['hari_menunggu'] >= 1)
+                                                <span class="badge bg-warning">{{ $antrean['hari_menunggu'] }} hari</span>
+                                            @else
+                                                <span class="badge bg-info">{{ $antrean['hari_menunggu'] }} hari</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            @if ($antrean['status'] == 'Prioritas')
                                                 <span class="badge bg-danger">{{ $antrean['status'] }}</span>
+                                            @elseif ($antrean['status'] == 'Segera Diproses')
+                                                <span class="badge bg-warning">{{ $antrean['status'] }}</span>
                                             @else
                                                 <span class="badge bg-primary">{{ $antrean['status'] }}</span>
                                             @endif
@@ -119,7 +131,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="text-center text-muted">Tidak ada limbah dalam antrean
+                                        <td colspan="5" class="text-center text-muted">Tidak ada limbah dalam antrean
                                         </td>
                                     </tr>
                                 @endforelse

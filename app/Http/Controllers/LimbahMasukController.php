@@ -7,6 +7,7 @@ use App\Models\LimbahMasuk;
 use App\Models\DetailLimbahMasuk;
 use App\Models\Truk;
 use App\Models\KodeLimbah;
+use App\Models\SisaLimbah;
 use Illuminate\Support\Facades\DB;
 use App\Imports\LimbahMasukImport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -46,6 +47,13 @@ class LimbahMasukController extends Controller
             foreach ($request->detail as $item) {
                 $limbahMasuk->detailLimbahMasuk()->create([
                     'truk_id' => $item['truk_id'],
+                    'kode_limbah_id' => $item['kode_limbah_id'],
+                    'berat_kg' => $item['berat_kg'],
+                ]);
+
+                // Tambahkan ke sisa limbah untuk sistem FIFO
+                SisaLimbah::create([
+                    'tanggal' => $request->tanggal,
                     'kode_limbah_id' => $item['kode_limbah_id'],
                     'berat_kg' => $item['berat_kg'],
                 ]);
@@ -98,6 +106,13 @@ class LimbahMasukController extends Controller
                 // Tambah detail
                 $limbahMasuk->detailLimbahMasuk()->create([
                     'truk_id' => $truk->id,
+                    'kode_limbah_id' => $kode->id,
+                    'berat_kg' => $beratKg,
+                ]);
+
+                // Tambahkan ke sisa limbah untuk sistem FIFO
+                SisaLimbah::create([
+                    'tanggal' => $tanggal,
                     'kode_limbah_id' => $kode->id,
                     'berat_kg' => $beratKg,
                 ]);
