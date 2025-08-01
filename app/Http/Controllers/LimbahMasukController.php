@@ -11,7 +11,9 @@ use App\Models\SisaLimbah;
 use Illuminate\Support\Facades\DB;
 use App\Imports\LimbahMasukImport;
 use PhpOffice\PhpSpreadsheet\IOFactory;
-use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\Shared\Date as ExcelDate;
+use DateTime;
 
 class LimbahMasukController extends Controller
 {
@@ -76,7 +78,7 @@ class LimbahMasukController extends Controller
         try {
             $spreadsheet = IOFactory::load($request->file('file_limbah_masuk'));
             $sheet = $spreadsheet->getActiveSheet();
-            $rows = $sheet->toArray(null, true, true, true);
+            $rows = $sheet->toArray(true, true, true, true);
 
             // Asumsi baris 1 adalah header
             unset($rows[1]);
@@ -84,7 +86,20 @@ class LimbahMasukController extends Controller
             DB::beginTransaction();
 
             foreach ($rows as $row) {
-                $tanggal = \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($row['A'])->format('Y-m-d');
+                $tanggalRaw = trim($row['A']);
+
+                if (is_numeric($tanggalRaw)) {
+                    $tanggal = ExcelDate::excelToDateTimeObject($tanggalRaw)->format('Y-m-d');
+                } elseif (DateTime::createFromFormat('d-m-Y', $tanggalRaw)) {
+                    $tanggal = Carbon::createFromFormat('d-m-Y', $tanggalRaw)->format('Y-m-d');
+                } elseif (DateTime::createFromFormat('d/m/Y', $tanggalRaw)) {
+                    $tanggal = Carbon::createFromFormat('d/m/Y', $tanggalRaw)->format('Y-m-d');
+                } elseif (DateTime::createFromFormat('Y-m-d', $tanggalRaw)) {
+                    $tanggal = Carbon::createFromFormat('Y-m-d', $tanggalRaw)->format('Y-m-d');
+                } else {
+                    throw new \Exception("Format tanggal tidak dikenali: {$tanggalRaw}");
+                }
+
                 $platNomor = $row['B'];
                 $kodeLimbah = $row['C'];
                 $beratKg = (float) $row['D'];
@@ -124,17 +139,10 @@ class LimbahMasukController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'status' => true,
-                'message' => 'Data berhasil diimpor.'
-            ]);
+            return redirect()->back()->with('success', 'Data berhasil diimpor dari Excel!');
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'status' => false,
-                'message' => 'Gagal import: ' . $e->getMessage(),
-                'msgField' => []
-            ]);
+            return redirect()->back()->with('error', 'Import gagal: ' . $e->getMessage());
         }
     }
 }

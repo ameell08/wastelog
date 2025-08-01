@@ -31,11 +31,9 @@
                         </div>
                     </div>
                     @if (request('no_mesin'))
-                        <div class="col-md-auto">
                             <a href="{{ route('limbahdiolah.show') }}" class="btn btn-outline-secondary btn-sm ms-2">
-                                <i class="fas fa-times"></i> Reset
+                                <i class="fas fa-times"></i>
                             </a>
-                        </div>
                     @endif
                 </form>
                     <div class="table-responsive">

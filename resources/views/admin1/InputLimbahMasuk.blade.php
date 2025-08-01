@@ -7,14 +7,15 @@
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert" aria-label="Close">&times;</button>
                 </div>
             @endif
 
             @if (session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert"
+                        aria-label="Close">&times;</button>
                 </div>
             @endif
 
@@ -96,7 +97,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Import Data Limbah Masuk</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">&times;</button>
                         </div>
                         <div class="modal-body">
                             <div class="form-group mb-3">
@@ -134,7 +135,7 @@
 
             let rowIndex = 1;
 
-            $('#addRow').on('click', function() {
+            $('#addRow').off('click').on('click', function() {
                 const tbody = $('#limbahTable tbody');
                 const newRow = $(`
                 <tr>
@@ -147,7 +148,7 @@
                         </select>
                     </td>
                     <td>
-                        <select name="detail[${rowIndex}][kode_limbah_id]" class="form-control" required>
+                        <select name="detail[${rowIndex}][kode_limbah_id]" class="form-control select2" required>
                             <option value="">Pilih Kode Limbah</option>
                             @foreach ($kodeLimbahs as $kode)
                                 <option value="{{ $kode->id }}">{{ $kode->kode }} - {{ $kode->deskripsi }}</option>
@@ -192,5 +193,20 @@
             color: #ffffff !important;
         }
 
+        .btn-close-custom {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            line-height: center;
+            color: #060606;
+            opacity: 0.8;
+        }
+
+        .btn-close-custom:hover {
+            opacity: 1;
+        }
     </style>
 @endpush

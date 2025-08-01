@@ -15,7 +15,6 @@
                 <div class="icon">
                     <i class="fas fa-biohazard"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
 
@@ -29,7 +28,6 @@
                 <div class="icon">
                     <i class="fas fa-recycle"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
 
@@ -38,12 +36,11 @@
             <div class="small-box bg-success">
                 <div class="inner">
                     <h3>{{ $sisalimbah }}</h3>
-                    <p>Limbah Sisa (Hari Ini)</p>
+                    <p>Limbah Sisa</p>
                 </div>
                 <div class="icon">
                     <i class="fas fa-exclamation-circle"></i>
                 </div>
-                <a href="#" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
             </div>
         </div>
     </div>

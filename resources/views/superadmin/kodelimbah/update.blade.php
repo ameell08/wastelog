@@ -7,7 +7,7 @@
         <input type="hidden" id="edit-id" name="id">
         <div class="modal-header bg-warning text-white">
           <h5 class="modal-title">Edit Data</h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">&times;</button>
         </div>
         <div class="modal-body">
           <div class="form-group">

@@ -7,7 +7,7 @@
                 <input type="hidden" id="delete-id" name="id">
                 <div class="modal-header bg-danger text-white">
                     <h5 class="modal-title">Hapus Data</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">&times;</button>
                 </div>
                 <div class="modal-body">
                     Apakah Anda yakin ingin menghapus data ini?

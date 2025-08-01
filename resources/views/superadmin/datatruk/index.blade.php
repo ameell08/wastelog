@@ -1,22 +1,30 @@
 @extends('layouts.template', ['activeMenu' => 'datatruk'])
 
 @section('content')
-    <div class="container">
+    <div class="content">
         <div class="container-fluid px-0">
 
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert" aria-label="Close">&times;</button>
                 </div>
             @endif
 
             @if (session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert"
+                        aria-label="Close">&times;</button>
                 </div>
             @endif
+
+            @if (session('success') || session('error'))
+                <script>
+                    autoHideAlert();
+                </script>
+            @endif
+
 
             <div class="card card-primary card-outline">
                 <div class="card-header">
@@ -116,7 +124,7 @@
                 `);
                     $('#tambahModal').modal('hide');
                     form[0].reset();
-                    $('#success-alert').text("Data berhasil ditambahkan.").removeClass('d-none');
+                    showAlert("Data berhasil ditambahkan.");
                 },
                 error: function(xhr) {
                     let messages = Object.values(xhr.responseJSON.errors).flat().join("<br>");
@@ -144,18 +152,13 @@
                 data: formData,
                 success: function(data) {
                     let row = $(`#row-${id}`);
-
-                    // Update isi kolom
                     row.find('.plat').text(data.plat_nomor);
                     row.find('.sopir').text(data.nama_sopir);
-
-                    // Update data-* attribute tombol Edit
                     row.find('.btn-edit')
                         .attr('data-plat', data.plat_nomor)
                         .attr('data-sopir', data.nama_sopir);
-
                     $('#editModal').modal('hide');
-                    $('#success-alert').text("Data berhasil diperbarui.").removeClass('d-none');
+                    showAlert("Data berhasil diperbarui.");
                 }
             });
         });
@@ -181,12 +184,35 @@
                 success: function() {
                     $(`#row-${id}`).remove();
                     $('#deleteModal').modal('hide');
-                    $('#success-alert').text("Data berhasil dihapus.").removeClass('d-none');
+                    showAlert("Data berhasil dihapus.");
                 },
                 error: function() {
                     alert('Gagal menghapus data.');
                 }
             });
+        });
+
+        // Fungsi untuk menampilkan dan menghilangkan alert
+        function showAlert(message) {
+            $('#success-alert')
+                .text(message)
+                .removeClass('d-none')
+                .fadeIn()
+                .delay(2000)
+                .fadeOut('slow', function() {
+                    $(this).addClass('d-none');
+                });
+        }
+
+        // Auto-hide untuk alert dari session (server-side)
+        $(document).ready(function() {
+            if ($('.alert').length) {
+                setTimeout(function() {
+                    $('.alert').fadeOut('slow', function() {
+                        $(this).addClass('d-none');
+                    });
+                }, 2000);
+            }
         });
     </script>
 @endsection

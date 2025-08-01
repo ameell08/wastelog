@@ -7,14 +7,14 @@
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert" aria-label="Close">&times;</button>
                 </div>
             @endif
 
             @if (session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert" aria-label="Close">&times;</button>
                 </div>
             @endif
 
@@ -22,11 +22,11 @@
             <div class="card card-primary card-outline">
                 <div class="card-header">
                     <h5 class="card-title mb-0">Form Input Limbah Diolah</h5>
-                <div class="card-tools">
-                    <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#importModal">
-                        <i class="fas fa-file-excel me-1"></i> Import Excel
-                    </button>
-                </div>
+                    <div class="card-tools">
+                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#importModal">
+                            <i class="fas fa-file-excel me-1"></i> Import Excel
+                        </button>
+                    </div>
                 </div>
 
                 <div class="card-body">
@@ -57,7 +57,7 @@
                                         </select>
                                     </td>
                                     <td>
-                                        <select name="detail[0][kode_limbah_id]" class="form-control" required>
+                                        <select name="detail[0][kode_limbah_id]" class="form-control select2" required>
                                             <option value="">Pilih Kode Limbah</option>
                                             @foreach ($kodeLimbah as $kode)
                                                 <option value="{{ $kode->id }}">{{ $kode->kode }} -
@@ -100,7 +100,7 @@
                                     <th>Kode Limbah (deskripsi)</th>
                                     <th>Sisa Berat (Kg)</th>
                                     <th>Tanggal Masuk</th>
-                                    <th>Hari Menunggu</th>
+                                    <th>Lama Di Gudang</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -149,26 +149,31 @@
 
 @push('js')
     <script>
-        let rowIndex = 1;
+        $(document).ready(function() {
+            $('.select2').select2({
+                placeholder: "Pilih kode limbah",
+                width: '100%',
+            });
 
-        document.getElementById('addRow').addEventListener('click', function() {
-            const tbody = document.querySelector('#limbahTable tbody');
-            const newRow = document.createElement('tr');
+            let rowIndex = 1;
 
-            newRow.innerHTML = `
-            <td>
-                <select name="detail[${rowIndex}][mesin_id]" class="form-control" required>
-                    <option value="">Pilih Mesin</option>
-                    @foreach ($mesin as $m)
-                        <option value="{{ $m->id }}">{{ $m->no_mesin }}</option>
-                    @endforeach
-                </select>
-            </td>
-            <td>
-                <select name="detail[${rowIndex}][kode_limbah_id]" class="form-control" required>
-                    <option value="">Pilih Kode Limbah</option>
-                    @foreach ($kodeLimbah as $kode)
-                        <option value="{{ $kode->id }}">{{ $kode->kode }} - {{ $kode->deskripsi }}</option>
+            $('#addRow').on('click', function() {
+                const tbody = $('#limbahTable tbody');
+                const newRow = $(`
+                <tr>
+                    <td>
+                        <select name="detail[${rowIndex}][mesin_id]" class="form-control" required>
+                            <option value="">Pilih Mesin</option>
+                            @foreach ($mesin as $m)
+                                <option value="{{ $m->id }}">{{ $m->no_mesin }}</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td>
+                        <select name="detail[${rowIndex}][kode_limbah_id]" class="form-control select2" required>
+                            <option value="">Pilih Kode Limbah</option>
+                        @foreach ($kodeLimbah as $kode)
+                            <option value="{{ $kode->id }}">{{ $kode->kode }} - {{ $kode->deskripsi }}</option>
                     @endforeach
                 </select>
             </td>
@@ -178,16 +183,52 @@
             <td>
                 <button type="button" class="btn btn-sm btn-danger remove-row">Hapus</button>
             </td>
-        `;
+            </tr>
+            `);
 
-            tbody.appendChild(newRow);
-            rowIndex++;
-        });
+                tbody.append(newRow);
+                newRow.find('.select2').select2({
+                    placeholder: "Pilih Kode limbah",
+                    width: '100%'
+                });
 
-        document.addEventListener('click', function(e) {
-            if (e.target && (e.target.classList.contains('remove-row') || e.target.closest('.remove-row'))) {
-                e.target.closest('tr').remove();
-            }
+                rowIndex++;
+            });
+
+            $(document).on('click', '.remove-row', function() {
+                $(this).closest('tr').remove();
+            });
         });
     </script>
+
+    <style>
+        /* Samakan tinggi Select2 dan input */
+        .select2-container--default .select2-selection--single {
+            height: 38px !important;
+            padding: 6px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+        }
+
+        .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            background-color: #696666 !important;
+            color: #ffffff !important;
+        }
+
+        .btn-close-custom {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            line-height: center;
+            color: #fff;
+            opacity: 0.8;
+        }
+
+        .btn-close-custom:hover {
+            opacity: 1;
+        }
+    </style>
 @endpush

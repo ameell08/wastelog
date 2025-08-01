@@ -28,7 +28,7 @@ class DashboardController extends Controller
 
         $limbahmasuk = LimbahMasuk::whereDate('tanggal', $today)->sum('total_kg');
         $limbahdiolah = LimbahDiolah::whereDate('created_at', $today)->sum('total_kg');
-        $sisalimbah = SisaLimbah::whereDate('tanggal', $today)->sum('berat_kg');
+        $sisalimbah = SisaLimbah::whereDate('tanggal','<=', $today)->sum('berat_kg');
 
         // Data per bulan (chart)
         $bulan = [
