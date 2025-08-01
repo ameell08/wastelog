@@ -143,12 +143,12 @@ class LimbahDiolahController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'file_excel' => 'required|file|mimes:xlsx,xls',
+            'file_limbah_olah' => 'required|file|mimes:xlsx,xls',
         ]);
 
         DB::beginTransaction();
         try {
-            $spreadsheet = IOFactory::load($request->file('file_excel'));
+            $spreadsheet = IOFactory::load($request->file('file_limbah_olah'));
             $sheet = $spreadsheet->getActiveSheet();
             $rows = $sheet->toArray();
 
