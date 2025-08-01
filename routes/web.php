@@ -46,7 +46,9 @@ Route::middleware('auth')->group(function () {
 // DataLimbahMasuk
 Route::get('/datalimbahmasuk', [DataLimbahMasukController::class, 'index'])->name('datalimbahmasuk.index');
 Route::get('/detaillimbahmasuk/export_excel', [DataLimbahMasukController::class, 'export_excel'])->name('datalimbahmasuk.export_excel');
-Route::get('/detaillimbahmasuk/{id}', [DataLimbahMasukController::class, 'show'])->name('datalimbahmasuk.show');
+// Route::get('/detaillimbahmasuk/{id}', [DataLimbahMasukController::class, 'show'])->name('datalimbahmasuk.show');
+Route::get('/detaillimbahmasuk-by-tanggal/{tanggal}', [DataLimbahMasukController::class, 'showByTanggal'])->name('datalimbahmasuk.showbytanggal');
+
 
 
 //LimbahDiolah

@@ -5,7 +5,7 @@
                 @csrf
                 <div class="modal-header bg-info text-white">
                     <h5 class="modal-title">Tambah Data</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">&times;</button>
                 </div>
                 <div class="modal-body">
                     <div id="form-errors" class="alert alert-danger d-none"></div>

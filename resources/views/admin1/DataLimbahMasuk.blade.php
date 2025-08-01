@@ -7,14 +7,15 @@
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert" aria-label="Close">&times;</button>
                 </div>
             @endif
 
             @if (session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert"
+                        aria-label="Close">&times;</button>
                 </div>
             @endif
 
@@ -35,8 +36,15 @@
                                 <input type="date" name="tanggal" value="{{ request('tanggal') }}"
                                     class="form-control mb-2">
                                 <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                                @if (request('tanggal'))
+                                    <a href="{{ route('datalimbahmasuk.index') }}"
+                                        class="btn  btn-outline-secondary btn-sm ms-2">
+                                        <i class="fas fa-times"></i>
+                                    </a>
+                                @endif
                             </form>
                         </div>
+
                     </div>
 
                     <table class="table table-bordered table-striped ">
@@ -56,7 +64,7 @@
                                     <td>{{ $item->total_kg }}</td>
                                     <td>
                                         <button class="btn btn-warning btn-sm"
-                                            onclick="showDetail({{ $item->id }})">Detail</button>
+                                            onclick="showDetailByTanggal('{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}')">Detail</button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -69,18 +77,18 @@
         </div>
     </div>
     </div>
-@include('admin1.detail')
-
-
+    @include('admin1.detail')
 @endsection
 
 @push('scripts')
     <script>
-        function showDetail(id) {
-            fetch(`/detaillimbahmasuk/${id}`)
+        function showDetailByTanggal(tanggal) {
+            fetch(`/detaillimbahmasuk-by-tanggal/${tanggal}`)
                 .then(res => res.json())
                 .then(data => {
-                    document.getElementById('tanggalDetail').textContent = 'Tanggal: ' + data.tanggal;
+                    const parts = data.tanggal.split('-');
+                    const formatted = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                    document.getElementById('tanggalDetail').textContent = 'Tanggal: ' + formatted;
 
                     let tbody = document.getElementById('detailTableBody');
                     tbody.innerHTML = '';
@@ -88,7 +96,7 @@
                     data.data.forEach(item => {
                         let row = `
                         <tr>
-                            <td>${item.truk.plat_nomor}</td>
+                            <td>${item.plat_nomor}</td>
                             <td>${item.kode_limbah.kode} (${item.kode_limbah.deskripsi})</td>
                             <td>${item.berat_kg}</td>
                         </tr>
@@ -97,7 +105,29 @@
                     });
 
                     new bootstrap.Modal(document.getElementById('detailModal')).show();
+                })
+                .catch(error => {
+                    alert('Gagal mengambil detail. Pastikan server berjalan dan data tersedia.');
+                    console.error(error);
                 });
         }
     </script>
+
+    <style>
+        .btn-close-custom {
+            position: absolute;
+            top: 0.25rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            line-height: center;
+            color: #fff;
+            opacity: 0.8;
+        }
+
+        .btn-close-custom:hover {
+            opacity: 1;
+        }
+    </style>
 @endpush

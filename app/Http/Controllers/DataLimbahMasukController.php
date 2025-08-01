@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\LimbahMasuk;
-use App\Models\DetailLimbahMasuk;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -19,7 +19,11 @@ class DataLimbahMasukController extends Controller
             $query->whereDate('tanggal', $tanggal);
         }
 
-        $limbahMasuk = $query->paginate(10);
+        $limbahMasuk = $query->selectRaw('DATE(tanggal) as tanggal, SUM(total_kg) as total_kg')
+            ->groupBy('tanggal')
+            ->orderBy('tanggal', 'desc')
+            ->paginate(10);
+
         $breadcrumb = (object)[
             'title' => 'Data Limbah Masuk',
             'list' => ['Input Limbah Masuk', 'Data Limbah Masuk']
@@ -89,5 +93,33 @@ class DataLimbahMasukController extends Controller
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal export: ' . $e->getMessage());
         }
+    }
+    public function showByTanggal($tanggal)
+    {
+        $parsedTanggal = Carbon::parse($tanggal)->toDateString();
+
+        $limbahMasuk = LimbahMasuk::whereDate('tanggal', $parsedTanggal)
+            ->with(['detailLimbahMasuk.truk', 'detailLimbahMasuk.kodeLimbah'])
+            ->get();
+
+        $detail = [];
+
+        foreach ($limbahMasuk as $item) {
+            foreach ($item->detailLimbahMasuk as $d) {
+                $detail[] = [
+                    'plat_nomor' => $d->truk->plat_nomor,
+                    'kode_limbah' => [
+                        'kode' => $d->kodeLimbah->kode,
+                        'deskripsi' => $d->kodeLimbah->deskripsi ?? '-',
+                    ],
+                    'berat_kg' => $d->berat_kg,
+                ];
+            }
+        }
+
+        return response()->json([
+            'tanggal' => $parsedTanggal,
+            'data' => $detail,
+        ]);
     }
 }
