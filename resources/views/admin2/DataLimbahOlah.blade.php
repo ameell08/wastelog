@@ -14,33 +14,34 @@
                 </div>
                 <div class="card-body">
                     {{-- Filter dengan Icon --}}
-                <form method="GET" action="{{ route('limbahdiolah.show') }}" class="row align-items-center mb-3">
-                    <div class="col-md-4">
-                        <div class="input-group">
-                            <span class="input-group-text">
-                                <i class="fa fa-filter"></i>
-                            </span>
-                            <select name="no_mesin" class="form-select" onchange="this.form.submit()">
-                                <option value="">No Mesin</option>
-                                @foreach ($mesinList as $mesin)
-                                    <option value="{{ $mesin->no_mesin }}" {{ request('no_mesin') == $mesin->no_mesin ? 'selected' : '' }}>
-                                        {{ $mesin->no_mesin }}
-                                    </option>
-                                @endforeach
-                            </select>
+                    <form method="GET" action="{{ route('limbahdiolah.show') }}" class="row align-items-center mb-3">
+                        <div class="col-md-4">
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fa fa-filter"></i>
+                                </span>
+                                <select name="no_mesin" class="form-select" onchange="this.form.submit()">
+                                    <option value="">No Mesin</option>
+                                    @foreach ($mesinList as $mesin)
+                                        <option value="{{ $mesin->no_mesin }}"
+                                            {{ request('no_mesin') == $mesin->no_mesin ? 'selected' : '' }}>
+                                            {{ $mesin->no_mesin }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    @if (request('no_mesin'))
+                        @if (request('no_mesin'))
                             <a href="{{ route('limbahdiolah.show') }}" class="btn btn-outline-secondary btn-sm ms-2">
                                 <i class="fas fa-times"></i>
                             </a>
-                    @endif
-                </form>
+                        @endif
+                    </form>
                     <div class="table-responsive">
                         <table class="table table-bordered">
                             <thead class="table-light">
                                 <tr>
-                                    <th>No</th>
+                                    <th>Id</th>
                                     <th>Mesin</th>
                                     <th>Berat Total (Kg)</th>
                                     <th>Aksi</th>
@@ -53,7 +54,8 @@
                                         <td>{{ $item->mesin->no_mesin }}</td>
                                         <td>{{ $item->total_kg }}</td>
                                         <td>
-                                            <a href="#" class="btn btn-warning btn-sm">Detail</a>
+                                            <a href="javascript:void(0);" class="btn btn-warning btn-sm"
+                                                onclick="showDetailLimbahDiolah({{ $item->mesin->id }}, '{{ $item->mesin->no_mesin }}')">Detail</a>
                                         </td>
                                     </tr>
                                 @empty
@@ -71,4 +73,5 @@
             </div>
         </div>
     </div>
+    @include('admin2.Detail')
 @endsection
