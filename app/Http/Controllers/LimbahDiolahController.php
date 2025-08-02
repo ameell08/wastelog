@@ -49,7 +49,7 @@ class LimbahDiolahController extends Controller
         $antreanLimbah = $antreanLimbahGrouped->map(function ($group) {
             $firstItem = $group->first();
             $totalBerat = $group->sum('berat_kg');
-            
+
             return [
                 'kode' => $firstItem->kodeLimbah->kode,
                 'deskripsi' => $firstItem->kodeLimbah->deskripsi,
@@ -80,7 +80,7 @@ class LimbahDiolahController extends Controller
             foreach ($request->detail as $detail) {
                 $kodeLimbahId = $detail['kode_limbah_id'];
                 $beratDibutuhkan = $detail['berat_kg'];
-                
+
                 // Cek apakah stok mencukupi
                 if (!SisaLimbah::checkAvailableStock($kodeLimbahId, $beratDibutuhkan)) {
                     $availableStock = SisaLimbah::where('kode_limbah_id', $kodeLimbahId)
@@ -268,4 +268,50 @@ class LimbahDiolahController extends Controller
         $writer->save('php://output');
         exit;
     }
+    public function getDetailByMesin($mesin_id)
+{
+    $details = DetailLimbahDiolah::with(['kodeLimbah', 'limbahDiolah'])
+        ->whereHas('limbahDiolah', function ($q) use ($mesin_id) {
+            $q->where('mesin_id', $mesin_id);
+        })
+        ->get()
+        ->map(function ($item) {
+            $bottomAsh = 0;
+            $flyAsh = 0;
+            $flueGas = 0;
+
+            $kode = optional($item->kodeLimbah)->kode;
+            $deskripsi = optional($item->kodeLimbah)->deskripsi;
+            $berat = $item->berat_kg;
+            
+            // Bottom Ash: 2% dari berat limbah yang dibakar
+            $bottomAsh = $berat * 0.02; // 2% dari berat input
+            
+            // Fly Ash: 0.4% dari berat Bottom Ash
+            $flyAsh = $bottomAsh * 0.004; // 0.4% dari berat Bottom Ash
+
+            // Flue Gas: 1% dari berat Fly Ash
+            $flueGas = $flyAsh * 0.01; // 1% dari berat Fly Ash
+
+            return [
+                'limbah_diolah_id' => $item->limbah_diolah_id,
+                'kode_limbah' => [
+                    'kode' => $kode ?? '-',
+                    'deskripsi' => $deskripsi ?? '-',
+                ],
+                'berat_kg' => number_format($berat, 2),
+                'tanggal_input' => Carbon::parse($item->tanggal_input)->format('d/m/Y'),
+                'bottom_ash' => $bottomAsh == (int)$bottomAsh ? number_format($bottomAsh, 0) : rtrim(rtrim(number_format($bottomAsh, 4), '0'), '.'),
+                'fly_ash' => $flyAsh == (int)$flyAsh ? number_format($flyAsh, 0) : rtrim(rtrim(number_format($flyAsh, 4), '0'), '.'),
+                'flue_gas' => $flueGas == (int)$flueGas ? number_format($flueGas, 0) : rtrim(rtrim(number_format($flueGas, 4), '0'), '.'),
+                // Semua limbah menghasilkan residu dengan persentase yang sama
+                'persen_bottom_ash' => '2%', // Total berat input limbah menghasilkan 2% bottom ash
+                'persen_fly_ash' => '0.4%', // Menghasilkan 0.4% fly ash dari bottom ash
+                'persen_flue_gas' => '1%', // Menghasilkan 1% flue gas dari fly ash
+            ];
+        });
+
+    return response()->json($details);
+}
+
 }
