@@ -39,6 +39,7 @@
                     <div class="mb-3">
                         <input type="text" id="searchInput" class="form-control"
                             placeholder="Cari plat nomor atau nama sopir...">
+                    </div>
                     <table class="table table-bordered" id="kodeTable">
                         <thead class="table-light">
                             <tr>
