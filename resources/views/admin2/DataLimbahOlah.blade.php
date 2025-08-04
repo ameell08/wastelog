@@ -13,32 +13,8 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    {{-- Filter dengan Icon --}}
-                    <form method="GET" action="{{ route('limbahdiolah.show') }}" class="row align-items-center mb-3">
-                        <div class="col-md-4">
-                            <div class="input-group">
-                                <span class="input-group-text">
-                                    <i class="fa fa-filter"></i>
-                                </span>
-                                <select name="no_mesin" class="form-select" onchange="this.form.submit()">
-                                    <option value="">No Mesin</option>
-                                    @foreach ($mesinList as $mesin)
-                                        <option value="{{ $mesin->no_mesin }}"
-                                            {{ request('no_mesin') == $mesin->no_mesin ? 'selected' : '' }}>
-                                            {{ $mesin->no_mesin }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        @if (request('no_mesin'))
-                            <a href="{{ route('limbahdiolah.show') }}" class="btn btn-outline-secondary btn-sm ms-2">
-                                <i class="fas fa-times"></i>
-                            </a>
-                        @endif
-                    </form>
                     <div class="table-responsive">
-                        <table class="table table-bordered">
+                        <table class="table table-bordered table-striped">
                             <thead class="table-light">
                                 <tr>
                                     <th>Id</th>
