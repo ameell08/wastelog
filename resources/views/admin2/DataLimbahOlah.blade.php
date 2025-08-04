@@ -52,7 +52,7 @@
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $item->mesin->no_mesin }}</td>
-                                        <td>{{ $item->total_kg }}</td>
+                                        <td>{{ number_format($item->total_kg, 2) }}</td>
                                         <td>
                                             <a href="javascript:void(0);" class="btn btn-warning btn-sm"
                                                 onclick="showDetailLimbahDiolah({{ $item->mesin->id }}, '{{ $item->mesin->no_mesin }}')">Detail</a>
