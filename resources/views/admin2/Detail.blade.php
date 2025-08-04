@@ -35,8 +35,8 @@
                             <thead class="table-secondary">
                                 <tr>
                                     <th>Jenis Residu</th>
-                                    <th>Total (Kg)</th>
                                     <th>Persentase</th>
+                                    <th>Total (Kg)</th>
                                 </tr>
                             </thead>
                             <tbody id="resumeTableBody">
@@ -44,16 +44,6 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-                
-                <div class="mt-3">
-                    <small class="text-muted">
-                        <strong>Keterangan Perhitungan Residu:</strong><br>
-                        • <strong>Bottom Ash:</strong> 2% dari berat total limbah yang diolah<br>
-                        • <strong>Fly Ash:</strong> 0.4% dari berat Bottom Ash<br>
-                        • <strong>Flue Gas:</strong> 1% dari berat Fly Ash<br>
-                        <em>Catatan: Semua persentase dihitung sesuai dengan presentase yang ditentukan.</em>
-                    </small>
                 </div>
             </div>
         </div>
@@ -116,18 +106,18 @@
                     resumeBody.innerHTML += `
                         <tr>
                             <td><i class="fas fa-circle text-danger"></i> Bottom Ash</td>
-                            <td>${formatNumber(totalBottomAsh)} Kg</td>
                             <td>2% dari total limbah diolah</td>
+                            <td>${formatNumber(totalBottomAsh)} Kg</td>
                         </tr>
                         <tr>
                             <td><i class="fas fa-circle text-warning"></i> Fly Ash</td>
-                            <td>${formatNumber(totalFlyAsh)} Kg</td>
                             <td>0.4% dari total Bottom Ash</td>
+                            <td>${formatNumber(totalFlyAsh)} Kg</td>
                         </tr>
                         <tr>
                             <td><i class="fas fa-circle text-info"></i> Flue Gas</td>
-                            <td>${formatNumber(totalFlueGas)} Kg</td>
                             <td>1% dari total Fly Ash</td>
+                            <td>${formatNumber(totalFlueGas)} Kg</td>
                         </tr>
                     `;
                 }
