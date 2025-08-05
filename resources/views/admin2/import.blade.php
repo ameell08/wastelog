@@ -9,23 +9,32 @@
                 <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
+                @if(isset($mesin) && $mesin->count() == 0)
+                    <div class="alert alert-warning" role="alert">
+                        <i class="fas fa-exclamation-triangle me-1"></i>
+                        <strong>Peringatan!</strong> Tidak ada mesin yang aktif saat ini. Import tidak dapat dilakukan.
+                    </div>
+                @else
+                    <div class="form-group mb-3">
+                        <label>Download Template</label>
+                            <a href="{{ route('limbahdiolah.template') }}" class="btn btn-info btn-sm" download>
+                            <i class="fas fa-file-excel"></i> Download
+                            <small id="error-file_limbah_olah" class="error-text form-text text-danger"></small>
+                        </a>
+                    </div>
                 <div class="form-group mb-3">
-                    <label>Download Template</label>
-                        <a href="{{ route('limbahdiolah.template') }}" class="btn btn-info btn-sm" download>
-                        <i class="fas fa-file-excel"></i> Download
+                        <label>Pilih File Excel</label>
+                        <input type="file" name="file_limbah_olah" id="file_limbah_olah" class="form-control" accept=".xlsx,.xls" required>
                         <small id="error-file_limbah_olah" class="error-text form-text text-danger"></small>
-                    </a>
-                </div>
-            <div class="form-group mb-3">
-                    <label>Pilih File Excel</label>
-                    <input type="file" name="file_limbah_olah" id="file_limbah_olah" class="form-control" accept=".xlsx,.xls" required>
-                    <small id="error-file_limbah_olah" class="error-text form-text text-danger"></small>
-                </div>
+                    </div>
+                @endif
                 
             </div>
             <div class="modal-footer">
                 <button type="button" data-bs-dismiss="modal" class="btn btn-secondary">Batal</button>
-                <button type="submit" class="btn btn-primary">Import</button>
+                @if(isset($mesin) && $mesin->count() > 0)
+                    <button type="submit" class="btn btn-primary">Import</button>
+                @endif
             </div>
         </div>
     </form>

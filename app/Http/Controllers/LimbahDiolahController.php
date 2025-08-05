@@ -18,7 +18,8 @@ class LimbahDiolahController extends Controller
 {
     public function index()
     {
-        $mesin = Mesin::all();
+        $mesin = Mesin::where('status', 'on')->get();
+        $mesinOff = Mesin::where('status', 'off')->get();
         $kodeLimbah = KodeLimbah::all();
 
         // Data Diolah - Ambil data limbah yang sudah diolah
@@ -64,13 +65,22 @@ class LimbahDiolahController extends Controller
             'title' => 'Input Limbah Diolah',
             'list' => ['Login', 'Input Limbah Olah']
         ];
-        return view('admin2.InputLimbahOlah', compact('mesin', 'kodeLimbah', 'dataDiolah', 'antreanLimbah', 'breadcrumb'))->with('activeMenu', 'limbahdiolah');
+        return view('admin2.InputLimbahOlah', compact('mesin', 'mesinOff', 'kodeLimbah', 'dataDiolah', 'antreanLimbah', 'breadcrumb'))->with('activeMenu', 'limbahdiolah');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'detail.*.mesin_id' => 'required|exists:mesin,id',
+            'detail.*.mesin_id' => [
+                'required',
+                'exists:mesin,id',
+                function ($attribute, $value, $fail) {
+                    $mesin = Mesin::find($value);
+                    if (!$mesin || $mesin->status !== 'on') {
+                        $fail('Mesin yang dipilih sedang tidak aktif.');
+                    }
+                }
+            ],
             'detail.*.kode_limbah_id' => 'required|exists:kode_limbah,id',
             'detail.*.berat_kg' => 'required|numeric|min:1',
         ]);
@@ -80,6 +90,13 @@ class LimbahDiolahController extends Controller
             foreach ($request->detail as $detail) {
                 $kodeLimbahId = $detail['kode_limbah_id'];
                 $beratDibutuhkan = $detail['berat_kg'];
+                $mesinId = $detail['mesin_id'];
+
+                // Cek apakah mesin dalam status 'on'
+                $mesin = Mesin::find($mesinId);
+                if (!$mesin || $mesin->status !== 'on') {
+                    throw new \Exception('Mesin yang dipilih sedang tidak aktif atau tidak tersedia.');
+                }
 
                 // Cek apakah stok mencukupi
                 if (!SisaLimbah::checkAvailableStock($kodeLimbahId, $beratDibutuhkan)) {
@@ -91,7 +108,7 @@ class LimbahDiolahController extends Controller
 
                 // Simpan ke limbah_diolah
                 $limbahDiolah = LimbahDiolah::create([
-                    'mesin_id' => $detail['mesin_id'],
+                    'mesin_id' => $mesinId,
                     'total_kg' => $beratDibutuhkan,
                 ]);
 
@@ -161,11 +178,15 @@ class LimbahDiolahController extends Controller
                 [$noMesin, $kodeLimbah, $beratKg] = $row;
 
                 // Cari mesin dan kode limbah berdasarkan nilai dari Excel
-                $mesin = Mesin::where('no_mesin', $noMesin)->first();
+                $mesin = Mesin::where('no_mesin', $noMesin)->where('status', 'on')->first();
                 $kode = KodeLimbah::where('kode', $kodeLimbah)->first();
 
-                if (!$mesin || !$kode) {
-                    throw new \Exception("Mesin atau Kode Limbah tidak ditemukan untuk: $noMesin / $kodeLimbah");
+                if (!$mesin) {
+                    throw new \Exception("Mesin $noMesin tidak ditemukan atau sedang tidak aktif.");
+                }
+                
+                if (!$kode) {
+                    throw new \Exception("Kode Limbah $kodeLimbah tidak ditemukan.");
                 }
 
                 // Validasi berat
