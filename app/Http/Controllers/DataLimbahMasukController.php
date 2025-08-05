@@ -122,4 +122,61 @@ class DataLimbahMasukController extends Controller
             'data' => $detail,
         ]);
     }
+
+    public function detailexportexcel($tanggal)
+    {
+        try {
+            $parsedTanggal = Carbon::parse($tanggal)->toDateString();
+
+            $limbahMasukList = LimbahMasuk::whereDate('tanggal', $parsedTanggal)
+                ->with(['detailLimbahMasuk.truk', 'detailLimbahMasuk.kodeLimbah'])
+                ->get();
+
+            if ($limbahMasukList->isEmpty()) {
+                return redirect()->back()->with('error', 'Data tidak ditemukan untuk tanggal tersebut.');
+            }
+
+            $spreadsheet = new Spreadsheet();
+            $sheet = $spreadsheet->getActiveSheet();
+
+            $sheet->setCellValue('A1', 'Plat Nomor');
+            $sheet->setCellValue('B1', 'Kode Limbah (Deskripsi)');
+            $sheet->setCellValue('C1', 'Berat (Kg)');
+
+            $row = 2;
+            foreach ($limbahMasukList as $limbahMasuk) {
+                foreach ($limbahMasuk->detailLimbahMasuk as $detail) {
+                    $platNomor = $detail->truk->plat_nomor ?? '-';
+                    $kode = $detail->kodeLimbah->kode ?? '-';
+                    $deskripsi = $detail->kodeLimbah->deskripsi ?? '-';
+                    $berat = $detail->berat_kg ?? 0;
+
+                    $sheet->setCellValue('A' . $row, $platNomor);
+                    $sheet->setCellValue('B' . $row, $kode . ' (' . $deskripsi . ')');
+                    $sheet->setCellValue('C' . $row, $berat);
+                    $row++;
+                }
+            }
+
+            foreach (range('A', 'C') as $columID) {
+                $sheet->getColumnDimension($columID)->setAutoSize(true);
+            }
+
+            $tanggalFormatted = Carbon::parse($parsedTanggal)->format('d-m-Y');
+            $sheet->setTitle('Detail Limbah Masuk ' . $tanggalFormatted);
+
+            $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+            $filename = 'Detail Limbah Masuk ' . $tanggalFormatted . '.xlsx';
+
+            header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+            header('Content-Disposition: attachment;filename="' . $filename . '"');
+            header('Cache-Control: max-age=0');
+            header('Cache-Control: max-age=1');
+
+            $writer->save('php://output');
+            exit;
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal export: ' . $e->getMessage());
+        }
+    }
 }
