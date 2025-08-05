@@ -7,7 +7,12 @@
                     <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">&times;</button>
                 </div>
                 <div class="modal-body">
-                    <h6 id="tanggalDetail" class="mb-3 fw-bold"></h6>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h6 id="tanggalDetail" class="fw-bold mb-0"></h6>
+                        <button id="exportExcelBtn" class="btn btn-success btn-sm" onclick="exportDetailExcel()">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </button>
+                    </div>
                     <table class="table table-bordered">
                         <thead class="table-info">
                             <tr>
@@ -23,3 +28,16 @@
             </div>
         </div>
     </div>
+
+<script>
+    function exportDetailExcel() {
+       const tanggalText = document.getElementById('tanggalDetail').innerText.trim();
+       const tanggal = tanggalText.replace('Tanggal: ' , '').trim();
+        if (!tanggal) {
+            alert('Tanggal tidak ditemukan');
+            return;
+        }
+        const url = `/detaillimbahmasuk/exportexceldetail/${tanggal}`;
+        window.location.href = url;
+    }
+</script>
