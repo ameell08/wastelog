@@ -23,14 +23,33 @@
                 <div class="card-header">
                     <h5 class="card-title mb-0">Form Input Limbah Diolah</h5>
                     <div class="card-tools">
-                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#importModal">
+                        <button class="btn btn-success btn-sm @if($mesin->count() == 0) disabled @endif" 
+                                data-bs-toggle="modal" data-bs-target="#importModal" 
+                                @if($mesin->count() == 0) disabled @endif>
                             <i class="fas fa-file-excel me-1"></i> Import Excel
                         </button>
                     </div>
                 </div>
 
+                @if($mesinOff->count() > 0)
+                    <div class="alert alert-warning mx-3 mt-3" role="alert">
+                        <h6><i class="fas fa-exclamation-triangle me-1"></i> Mesin Tidak Tersedia:</h6>
+                        <ul class="mb-0">
+                            @foreach($mesinOff as $mOff)
+                                <li>{{ $mOff->no_mesin }}@if($mOff->keterangan) - {{ $mOff->keterangan }}@endif (Status: OFF)</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div class="card-body">
-                    <form action="{{ route('limbahdiolah.store') }}" method="POST" id="limbahForm">
+                    @if($mesin->count() == 0)
+                        <div class="alert alert-danger" role="alert">
+                            <h6><i class="fas fa-exclamation-circle me-1"></i> Peringatan!</h6>
+                            <p class="mb-0">Tidak ada mesin yang aktif saat ini. Silakan hubungi administrator untuk mengaktifkan mesin terlebih dahulu sebelum melakukan input limbah diolah.</p>
+                        </div>
+                    @else
+                        <form action="{{ route('limbahdiolah.store') }}" method="POST" id="limbahForm">
                         @csrf
                         <div class="mb-3">
                             <label for="tanggal">Tanggal</label>
@@ -52,7 +71,9 @@
                                         <select name="detail[0][mesin_id]" class="form-control" required>
                                             <option value="">Pilih Mesin</option>
                                             @foreach ($mesin as $m)
-                                                <option value="{{ $m->id }}">{{ $m->no_mesin }}</option>
+                                                <option value="{{ $m->id }}">{{ $m->no_mesin }} 
+                                                    @if($m->keterangan) - {{ $m->keterangan }} @endif
+                                                </option>
                                             @endforeach
                                         </select>
                                     </td>
@@ -84,6 +105,7 @@
                             <i class="fas fa-save me-1"></i> Submit
                         </button>
                     </form>
+                    @endif
                 </div>
             </div>
 
@@ -149,6 +171,9 @@
 
 @push('js')
     <script>
+        // Data mesin yang tersedia
+        const mesinData = @json($mesin);
+        
         $(document).ready(function() {
             $('.select2').select2({
                 placeholder: "Pilih kode limbah",
@@ -165,7 +190,7 @@
                         <select name="detail[${rowIndex}][mesin_id]" class="form-control" required>
                             <option value="">Pilih Mesin</option>
                             @foreach ($mesin as $m)
-                                <option value="{{ $m->id }}">{{ $m->no_mesin }}</option>
+                                <option value="{{ $m->id }}">{{ $m->no_mesin }}@if($m->keterangan) - {{ $m->keterangan }}@endif</option>
                             @endforeach
                         </select>
                     </td>
@@ -197,6 +222,31 @@
 
             $(document).on('click', '.remove-row', function() {
                 $(this).closest('tr').remove();
+            });
+
+            // Validasi form sebelum submit
+            $('#limbahForm').on('submit', function(e) {
+                let isValid = true;
+                let errorMessage = '';
+
+                // Periksa setiap dropdown mesin
+                $('select[name*="[mesin_id]"]').each(function() {
+                    const selectedMesinId = $(this).val();
+                    if (selectedMesinId) {
+                        const mesin = mesinData.find(m => m.id == selectedMesinId);
+                        if (!mesin || mesin.status !== 'on') {
+                            isValid = false;
+                            errorMessage = 'Terdapat mesin yang tidak aktif dalam pilihan Anda.';
+                            return false;
+                        }
+                    }
+                });
+
+                if (!isValid) {
+                    e.preventDefault();
+                    alert(errorMessage);
+                    return false;
+                }
             });
         });
     </script>
