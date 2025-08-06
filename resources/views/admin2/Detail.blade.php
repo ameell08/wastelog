@@ -8,23 +8,31 @@
                     aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label for="filterBulan" class="form-label">Filter Bulan:</label>
-                    <select id="filterBulan" class="form-select" onchange="filterByMonth()">
-                        <option value="">Semua Bulan</option>
-                        <option value="01">Januari</option>
-                        <option value="02">Februari</option>
-                        <option value="03">Maret</option>
-                        <option value="04">April</option>
-                        <option value="05">Mei</option>
-                        <option value="06">Juni</option>
-                        <option value="07">Juli</option>
-                        <option value="08">Agustus</option>
-                        <option value="09">September</option>
-                        <option value="10">Oktober</option>
-                        <option value="11">November</option>
-                        <option value="12">Desember</option>
-                    </select>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex align-items-center">
+                        <label for="filterBulan" class="form-label me-2 mb-0">Filter Bulan:</label>
+                        <select id="filterBulan" class="form-select form-select-sm fw-bold" onchange="filterByMonth()">
+                            <option value="">Semua Bulan</option>
+                            <option value="01">Januari</option>
+                            <option value="02">Februari</option>
+                            <option value="03">Maret</option>
+                            <option value="04">April</option>
+                            <option value="05">Mei</option>
+                            <option value="06">Juni</option>
+                            <option value="07">Juli</option>
+                            <option value="08">Agustus</option>
+                            <option value="09">September</option>
+                            <option value="10">Oktober</option>
+                            <option value="11">November</option>
+                            <option value="12">Desember</option>
+                        </select>
+                    </div>
+
+                    <!-- Export Button (Kanan) -->
+                    <button class="btn btn-success btn-sm" onclick="exportFilteredData()">
+                        <i class="fas fa-file-excel"></i> Export ke Excel
+                    </button>
                 </div>
 
                 <div class="table-responsive">
@@ -72,7 +80,27 @@
 
 @push('scripts')
     <script>
+        let currentMesinId = null; // Variable untuk menyimpan mesin_id yang sedang aktif
+
+        function exportFilteredData() {
+            const bulanInput = document.getElementById('filterBulan').value;
+            if (!bulanInput) {
+                alert('Silakan pilih bulan terlebih dahulu.');
+                return;
+            }
+
+            if (!currentMesinId) {
+                alert('Data mesin tidak ditemukan.');
+                return;
+            }
+
+            // Redirect ke route export dengan mesin_id dan bulan
+            window.location.href = `/detaillimbahdiolah/export/${currentMesinId}/${bulanInput}`;
+        }
+
         function showDetailLimbahDiolah(mesin_id, no_mesin) {
+            currentMesinId = mesin_id; // Simpan mesin_id untuk digunakan di export
+
             fetch(`/detaillimbahdiolah/${mesin_id}`)
                 .then(res => res.json())
                 .then(data => {
@@ -155,6 +183,8 @@
         let globalDetailData = [];
 
         function showDetailLimbahDiolah(mesin_id, no_mesin) {
+            currentMesinId = mesin_id; // Simpan mesin_id untuk digunakan di export
+
             fetch(`/detaillimbahdiolah/${mesin_id}`)
                 .then(res => res.json())
                 .then(data => {
