@@ -61,6 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/inputlimbaholah/template', [LimbahDiolahController::class, 'downloadTemplate'])->name('limbahdiolah.template');
     Route::get('/datalimbaholah/export', [LimbahDiolahController::class, 'export'])->name('limbahdiolah.export');
     Route::get('/detaillimbahdiolah/{mesin_id}', [LimbahDiolahController::class, 'getDetailByMesin'])->name('limbahdiolah.detail');
+    Route::get('/detaillimbahdiolah/export/{mesin_id}/{bulan}', [LimbahDiolahController::class, 'exportByMonth'])->name('limbahdiolah.exportByMonth');
 
 });
 

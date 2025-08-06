@@ -184,7 +184,7 @@ class LimbahDiolahController extends Controller
                 if (!$mesin) {
                     throw new \Exception("Mesin $noMesin tidak ditemukan atau sedang tidak aktif.");
                 }
-                
+
                 if (!$kode) {
                     throw new \Exception("Kode Limbah $kodeLimbah tidak ditemukan.");
                 }
@@ -337,5 +337,69 @@ class LimbahDiolahController extends Controller
             });
 
         return response()->json($details);
+    }
+    public function exportByMonth($mesin_id, $bulan)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        // Header kolom
+        $sheet->setCellValue('A1', 'No');
+        $sheet->setCellValue('B1', 'Tanggal');
+        $sheet->setCellValue('C1', 'Mesin');
+        $sheet->setCellValue('D1', 'Kode Limbah (Deskripsi)');
+        $sheet->setCellValue('E1', 'Berat Input (Kg)');
+        $sheet->setCellValue('F1', 'Bottom Ash (2%)');
+        $sheet->setCellValue('G1', 'Fly Ash (0.4%)');
+        $sheet->setCellValue('H1', 'Flue Gas (1%)');
+
+        $row = 2;
+        $no = 1;
+
+        // Ambil data yang sudah difilter berdasarkan mesin_id dan bulan
+        $details = DetailLimbahDiolah::with(['kodeLimbah', 'limbahDiolah.mesin'])
+            ->whereHas('limbahDiolah', function ($q) use ($mesin_id) {
+                $q->where('mesin_id', $mesin_id);
+            })
+            ->whereMonth('tanggal_input', $bulan)
+            ->get();
+
+        foreach ($details as $detail) {
+            $berat = $detail->berat_kg;
+
+            // Hitung residu sesuai dengan logic di getDetailByMesin
+            $bottomAsh = $berat * 0.02; // 2% dari berat input
+            $flyAsh = $bottomAsh * 0.004; // 0.4% dari berat Bottom Ash
+            $flueGas = $flyAsh * 0.01; // 1% dari berat Fly Ash
+
+            $sheet->setCellValue('A' . $row, $no++);
+            $sheet->setCellValue('B' . $row, Carbon::parse($detail->tanggal_input)->format('d/m/Y'));
+            $sheet->setCellValue('C' . $row, $detail->limbahDiolah->mesin->no_mesin ?? '-');
+
+            $kodeLimbah = $detail->kodeLimbah;
+            $kodeDeskripsi = $kodeLimbah ? $kodeLimbah->kode . ' (' . $kodeLimbah->deskripsi . ')' : '-';
+            $sheet->setCellValue('D' . $row, $kodeDeskripsi);
+
+            $sheet->setCellValue('E' . $row, number_format($detail->berat_kg, 2) . ' Kg');
+            $sheet->setCellValue('F' . $row, ($bottomAsh == (int)$bottomAsh ? number_format($bottomAsh, 0) : rtrim(rtrim(number_format($bottomAsh, 4), '0'), '.')) . ' Kg');
+            $sheet->setCellValue('G' . $row, ($flyAsh == (int)$flyAsh ? number_format($flyAsh, 0) : rtrim(rtrim(number_format($flyAsh, 4), '0'), '.')) . ' Kg');
+            $sheet->setCellValue('H' . $row, ($flueGas == (int)$flueGas ? number_format($flueGas, 0) : rtrim(rtrim(number_format($flueGas, 4), '0'), '.')) . ' Kg');
+
+            $row++;
+        }
+
+        // Ambil nama mesin untuk nama file
+        $mesin = Mesin::find($mesin_id);
+        $namaFile = 'detail_limbah_diolah_' . ($mesin ? $mesin->no_mesin : 'mesin') . '_bulan_' . str_pad($bulan, 2, '0', STR_PAD_LEFT) . '.xlsx';
+
+        $writer = new Xlsx($spreadsheet);
+
+        // Header response
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment;filename=\"$namaFile\"");
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
 }
