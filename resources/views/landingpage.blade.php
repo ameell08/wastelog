@@ -525,7 +525,7 @@
                         <div class="footer-info">
                             <p class="footer-text mb-2 text-selection">
                                 <i class="fas fa-map-marker-alt me-2 text-warning"></i>
-                                <span class="address-link" onclick="openGoogleMaps()" style="cursor: pointer; text-decoration: underline;">
+                                <span class="address-link" onclick="openGoogleMaps()" style="cursor: pointer; ">
                                     Jl. Raya Lakardowo Kecamatan Jetis Kabupaten Mojokerto
                                 </span>
                             </p>
