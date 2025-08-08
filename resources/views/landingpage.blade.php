@@ -253,6 +253,17 @@
         .logo-pria:hover {
             transform: scale(1.05);
         }
+        .address-link:hover,
+        .footer-text span:hover {
+            color: #fbbf24 !important;
+            text-decoration: none !important;
+            transform: translateX(5px);
+        }
+
+        .address-link,
+        .footer-text span {
+            transition: all 0.3s ease;
+        }
 
         .logo-pria img {
             filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
@@ -514,7 +525,9 @@
                         <div class="footer-info">
                             <p class="footer-text mb-2 text-selection">
                                 <i class="fas fa-map-marker-alt me-2 text-warning"></i>
-                                Jl. Raya Lakardowo Kecamatan Jetis Kabupaten Mojokerto
+                                <span class="address-link" onclick="openGoogleMaps()" style="cursor: pointer; text-decoration: underline;">
+                                    Jl. Raya Lakardowo Kecamatan Jetis Kabupaten Mojokerto
+                                </span>
                             </p>
                             <p class="footer-text mb-2 text-selection">
                                 <i class="fas fa-phone me-2 text-warning"></i>
@@ -711,6 +724,14 @@
         // Initialize page with loading state
         document.body.style.opacity = '0';
         document.body.style.transition = 'opacity 0.5s ease-in-out';
+
+        // Open Google Maps
+        function openGoogleMaps() {
+            const address = "Jl. Raya Lakardowo Kecamatan Jetis Kabupaten Mojokerto";
+            const encodedAddress = encodeURIComponent(address);
+            const googleMapsUrl = `https://www.google.com/maps/place/PT.+Putra+Restu+Ibu+Abadi/@-7.3743779,112.4609433,18.1z/data=!4m15!1m8!3m7!1s0x2e780f8fd26e5d85:0xcaed677435e3d5e7!2sJl.+Raya+Lakardowo,+Kec.+Jetis,+Kabupaten+Mojokerto,+Jawa+Timur+61352!3b1!8m2!3d-7.3722244!4d112.4604678!16s%2Fg%2F11w9yznxd3!3m5!1s0x2e780f90f0dfce41:0xa9eb8a525d70919!8m2!3d-7.3752169!4d112.4630775!16s%2Fg%2F11bv1cch0f?entry=ttu&g_ep=EgoyMDI1MDgwNC4wIKXMDSoASAFQAw%3D%3D`;
+            window.open(googleMapsUrl, '_blank');
+        }
     </script>
 
 </body>
