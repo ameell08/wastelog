@@ -2,7 +2,7 @@
     <div class="float-right d-none d-sm-block">
         <b>Version</b> 3.2.0
     </div>
-    <strong>Copyright &copy; 2025 <a href="https://ptpria.co.id/">WasteLog</a>.</strong> All rights reserved.
+    <strong>Copyright &copy; 2025 <a href="https://ptpria.co.id/" target="_blank" rel="noopener">WasteLog</a>.</strong> All rights reserved.
 </footer>
 
 <!-- Control Sidebar -->

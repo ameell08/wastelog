@@ -49,6 +49,17 @@
     <div class="card card-success">
         <div class="card-header">
             <h3 class="card-title"><i class="fas fa-chart-bar"></i> Limbah Masuk</h3>
+                <div class="d-flex justify-content-between align-items-center mb-0">
+                    <h6 id="tanggalDetail" class="fw-bold mb-0"></h6>
+                    <div calss="d-flex">
+                        <a href="{{url('/dashboard/export_limbahmasuk_pdf')}}" class=" btn btn-danger btn-sm me-2" >
+                        <i class="fas fa-file-pdf"></i> Export PDF</a>
+                    <button id="exportExcelBtn" class="btn btn-success btn-sm border border-2 border-light" style="font-weight:bold; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+                        <a href="{{ url('/dashboard/export_limbahmasuk_excel') }}" >
+                        <i class="fas fa-file-excel"></i> Export Excel</a>
+                    </button>
+                     </div>
+                </div>
         </div>
         <div class="card-body">
             <canvas id="chartMasuk" height="100"></canvas>
@@ -59,6 +70,17 @@
     <div class="card card-success">
         <div class="card-header">
             <h3 class="card-title"><i class="fas fa-chart-bar"></i> Limbah Diolah</h3>
+            <div class="d-flex justify-content-between align-items-center mb-0">
+                    <h6 id="tanggalDetail" class="fw-bold mb-0"></h6>
+                    <div class="d-flex">
+                        <a href="{{url('/dashboard/export_limbahdiolah_pdf')}}" class=" btn btn-danger btn-sm me-2" >
+                        <i class="fas fa-file-pdf"></i> Export PDF </a>
+                    <button id="exportExcelBtn" class="btn btn-success btn-sm border border-2 border-light" style="font-weight:bold; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+                        <a href="{{ url('/dashboard/export_limbahdiolah_excel') }}" >
+                        <i class="fas fa-file-excel"></i> Export Excel</a>
+                    </button>
+                     </div>
+                </div>
         </div>
         <div class="card-body">
             <canvas id="chartDiolah" height="100"></canvas>
