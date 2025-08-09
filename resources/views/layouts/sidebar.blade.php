@@ -84,6 +84,20 @@
                         <p>Data Limbah Olah</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ url('/inputpengirimanresidu') }}"
+                        class="nav-link {{ $activeMenu == 'inputpengirimanresidu' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-file-import"></i>
+                        <p>Input Pengiriman Residu </p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url('/datapengirimanresidu') }}"
+                        class="nav-link {{ $activeMenu == 'datapengirimanresidu' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-book"></i>
+                        <p>Data Pengiriman Residu</p>
+                    </a>
+                </li>
             @endif
 
             <!-- Sidebar Pimpinan -->

@@ -8,6 +8,7 @@ use App\Models\DetailLimbahDiolah;
 use App\Models\Mesin;
 use App\Models\KodeLimbah;
 use App\Models\SisaLimbah;
+use App\Models\AntreanResidu;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -122,6 +123,9 @@ class LimbahDiolahController extends Controller
 
                 // Proses pengurangan sisa limbah dengan sistem FIFO
                 SisaLimbah::processFifoConsumption($kodeLimbahId, $beratDibutuhkan);
+
+                // Tambahkan residu otomatis ke antrean_residu
+                $this->createResiduFromLimbahDiolah($beratDibutuhkan, $request->tanggal);
             }
 
             DB::commit();
@@ -401,5 +405,61 @@ class LimbahDiolahController extends Controller
 
         $writer->save('php://output');
         exit;
+    }
+
+    /**
+     * Membuat residu otomatis setiap input limbah diolah
+     * Berdasarkan perhitungan residu yang sudah ada di aplikasi
+     */
+    private function createResiduFromLimbahDiolah($beratLimbah, $tanggalMasuk)
+    {
+        // Perhitungan residu berdasarkan logika yang sudah ada
+        $bottomAsh = $beratLimbah * 0.02; // 2% dari berat limbah
+        $flyAsh = $bottomAsh * 0.004; // 0.4% dari bottom ash
+        $flueGas = $flyAsh * 0.01; // 1% dari fly ash
+
+        // Cari kode limbah untuk masing-masing residu
+        $kodeLimbahBottomAsh = KodeLimbah::where('kode', 'A347-2')->first(); // Bottom ash Insenerator
+        $kodeLimbahFlyAsh = KodeLimbah::where('kode', 'A347-1')->first(); // Fly ash Insenerator  
+        $kodeLimbahFlueGas = KodeLimbah::where('kode', 'B347-1')->first(); // Residu pengolahan Flue gas
+
+        if (!$kodeLimbahBottomAsh || !$kodeLimbahFlyAsh || !$kodeLimbahFlueGas) {
+            throw new \Exception('Kode limbah untuk residu belum tersedia. Pastikan kode A347-2, A347-1, dan B347-1 sudah dibuat.');
+        }
+
+        // Simpan ke antrean_residu
+        $residuData = [
+            [
+                'kode_limbah_id' => $kodeLimbahBottomAsh->id,
+                'tanggal_masuk' => $tanggalMasuk,
+                'berat_total' => $bottomAsh,
+            ],
+            [
+                'kode_limbah_id' => $kodeLimbahFlyAsh->id,
+                'tanggal_masuk' => $tanggalMasuk,
+                'berat_total' => $flyAsh,
+            ],
+            [
+                'kode_limbah_id' => $kodeLimbahFlueGas->id,
+                'tanggal_masuk' => $tanggalMasuk,
+                'berat_total' => $flueGas,
+            ]
+        ];
+
+        foreach ($residuData as $residu) {
+            // Cek apakah sudah ada residu dengan kode limbah dan tanggal yang sama
+            $existingResidu = AntreanResidu::where('kode_limbah_id', $residu['kode_limbah_id'])
+                                          ->where('tanggal_masuk', $residu['tanggal_masuk'])
+                                          ->first();
+
+            if ($existingResidu) {
+                // Jika sudah ada, tambahkan beratnya
+                $existingResidu->berat_total += $residu['berat_total'];
+                $existingResidu->save();
+            } else {
+                // Jika belum ada, buat baru
+                AntreanResidu::create($residu);
+            }
+        }
     }
 }
