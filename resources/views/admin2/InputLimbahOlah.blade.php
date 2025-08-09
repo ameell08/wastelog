@@ -142,9 +142,9 @@
                                             @endif
                                         </td>
                                         <td>
-                                            @if ($antrean['status'] == 'Prioritas')
+                                            @if ($antrean['status'] == 'Coolstorage (Prioritas)')
                                                 <span class="badge bg-danger">{{ $antrean['status'] }}</span>
-                                            @elseif ($antrean['status'] == 'Segera Diproses')
+                                            @elseif ($antrean['status'] == 'Coolstorage (Segera Diproses)')
                                                 <span class="badge bg-warning">{{ $antrean['status'] }}</span>
                                             @else
                                                 <span class="badge bg-primary">{{ $antrean['status'] }}</span>
