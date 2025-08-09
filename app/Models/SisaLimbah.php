@@ -108,9 +108,9 @@ class SisaLimbah extends Model
         $hariMenunggu = $this->hari_menunggu;
         
         if ($hariMenunggu >= 2) {
-            return 'Prioritas';
+            return 'Coolstorage (Prioritas)';
         } elseif ($hariMenunggu >= 1) {
-            return 'Segera Diproses';
+            return 'Coolstorage (Segera Diproses)';
         }
         
         return 'Menunggu Diproses';
