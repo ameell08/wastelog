@@ -84,18 +84,20 @@
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    function exportPDF(type) {
+    function exportPDF(type, bulanIndex) {
+    let bulan = bulanIndex +1;
     if (type === 'masuk') {
-        window.location.href = "{{ url('/dashboard/export_limbahmasuk_pdf') }}";
+        window.location.href = "{{ url('/dashboard/export_limbahmasuk_pdf') }}/" + bulan;
     } else if (type === 'diolah') {
-        window.location.href = "{{ url('/dashboard/export_limbahdiolah_pdf') }}";
+        window.location.href = "{{ url('/dashboard/export_limbahdiolah_pdf') }}/" + bulan;
     }
 }
-function exportExcel(type) {
+function exportExcel(type, bulanIndex) {
+    let bulan = bulanIndex + 1;
     if (type === 'masuk') {
-        window.location.href = "{{ url('/dashboard/export_limbahmasuk_excel') }}";
+        window.location.href = "{{ url('/dashboard/export_limbahmasuk_excel') }}/" + bulan;
     } else if (type === 'diolah') {
-        window.location.href = "{{ url('/dashboard/export_limbahdiolah_excel') }}";
+        window.location.href = "{{ url('/dashboard/export_limbahdiolah_excel') }}/" + bulan;
     }
 }
     const labels = @json($bulan);
@@ -114,6 +116,13 @@ function exportExcel(type) {
             data: @json($limbahDiolahBulanan),
             backgroundColor: 'rgba(255, 206, 86, 0.5)',
             borderColor: 'rgba(255, 206, 86, 1)',
+            borderWidth: 1
+        },
+        {
+            label: 'Sisa Limbah (kg)',
+            data: @json($sisaLimbahBulanan),
+            backgroundColor: 'rgba(220, 53, 69, 0.5)',
+            borderColor: 'rgba(220, 53, 69, 1)',
             borderWidth: 1
         }
     ]
@@ -162,31 +171,46 @@ new Chart(document.getElementById('chartGabungan'), {
                      if (tooltipModel.body) {
                         const title = tooltipModel.title[0] || '';
                         const bodyLines = tooltipModel.body.map(b => b.lines);
-                        const datasetIndex = tooltipModel.dataPoints[0].datasetIndex;
-                        const tipe = datasetIndex === 0 ? 'masuk' : 'diolah';
-                        let innerHtml = `
-                            <div style="
-                                background:#222;
-                                color:#fff;
-                                padding:8px 12px;
-                                border-radius:6px;
-                                box-shadow:0 2px 8px rgba(0,0,0,0.15);
-                                min-width:140px;
-                                font-size:13px;
-                            ">
-                                <div style="font-weight:bold; margin-bottom:4px;">${title}</div>
-                                <div>${bodyLines.join('<br>')}</div>
-                                <hr style="margin:6px 0; border-color:#444;">
-                                <button onclick="exportPDF('${tipe}')" style="background:#fff; color:#d32f2f; border:none; padding:2px 6px; border-radius:3px; font-size:12px; margin-right:4px;">
-                                    <i class="fas fa-file-pdf" style="font-size:13px;"></i> PDF
-                                </button>
-                                <button onclick="exportExcel('${tipe}')" style="background:#fff; color:#388e3c; border:none; padding:2px 6px; border-radius:3px; font-size:12px;">
-                                    <i class="fas fa-file-excel" style="font-size:13px;"></i> Excel
-                                </button>
-                            </div>
-`; 
-                        tooltipEl.querySelector('div').innerHTML = innerHtml;
-                    }
+                        const dp = tooltipModel.dataPoints[0];
+                        const datasetIndex = dp.datasetIndex;
+                        const bulanIndex = dp.dataIndex;
+                        
+                        let buttonsHtml = '';
+                        
+                        if (datasetIndex === 0) {
+                        
+                            // Limbah Masuk
+                        buttonsHtml = `
+                            <hr style="margin:6px 0; border-color:#444;">
+                            <button onclick="exportPDF('masuk', ${bulanIndex})" style="background:#fff; color:#d32f2f; border:none; padding:2px 6px; border-radius:3px; font-size:12px; margin-right:4px;">
+                                <i class="fas fa-file-pdf" style="font-size:13px;"></i> PDF
+                            </button>
+                            <button onclick="exportExcel('masuk', ${bulanIndex})" style="background:#fff; color:#388e3c; border:none; padding:2px 6px; border-radius:3px; font-size:12px;">
+                                <i class="fas fa-file-excel" style="font-size:13px;"></i> Excel
+                            </button>`;
+                        } else if (datasetIndex === 1) {
+                            // Limbah Diolah
+                        buttonsHtml = `
+                            <hr style="margin:6px 0; border-color:#444;">
+                            <button onclick="exportPDF('diolah', ${bulanIndex})" style="background:#fff; color:#d32f2f; border:none; padding:2px 6px; border-radius:3px; font-size:12px; margin-right:4px;">
+                                <i class="fas fa-file-pdf" style="font-size:13px;"></i> PDF
+                            </button>
+                            <button onclick="exportExcel('diolah', ${bulanIndex})" style="background:#fff; color:#388e3c; border:none; padding:2px 6px; border-radius:3px; font-size:12px;">
+                                <i class="fas fa-file-excel" style="font-size:13px;"></i> Excel
+                            </button>`;
+                        }
+
+                       const innerHtml = `
+                        <div style="
+                            background:#222; color:#fff; padding:8px 12px; border-radius:6px;
+                            box-shadow:0 2px 8px rgba(0,0,0,0.15); min-width:140px; font-size:13px;
+                        ">
+                            <div style="font-weight:bold; margin-bottom:4px;">${title}</div>
+                            <div>${bodyLines.join('<br>')}</div>
+                            ${buttonsHtml}
+                        </div>`;
+                    tooltipEl.querySelector('div').innerHTML = innerHtml;
+                }
 
                     const position = context.chart.canvas.getBoundingClientRect();
                     tooltipEl.style.opacity = 1;

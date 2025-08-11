@@ -7,6 +7,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class DataLimbahMasukController extends Controller
 {
@@ -54,14 +55,23 @@ class DataLimbahMasukController extends Controller
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
 
-            $sheet->setCellValue('A1', 'No');
-            $sheet->setCellValue('B1', 'Tanggal');
-            $sheet->setCellValue('C1', 'Plat Nomor Truk');
-            $sheet->setCellValue('D1', 'Kode Limbah');
-            $sheet->setCellValue('E1', 'Berat (Kg)');
+            $sheet->setCellValue('A1', 'DATA LIMBAH MASUK ');
+            $sheet->getStyle(('A1'))->getFont()->setBold(true);
+
+            $headers = [
+                'A2' => 'No',
+                'B2' => 'Tanggal',
+                'C2' => 'Plat Nomor Truk',
+                'D2' => 'Kode Limbah (Deskripsi)',
+                'E2' => 'Berat (Kg)',
+            ];
+            foreach ($headers as $cell => $text) {
+                $sheet->setCellValue($cell, $text);
+                $sheet->getStyle($cell)->getFont()->setBold(true);
+            }
 
             $no = 1;
-            $row = 2; // Mulai dari baris kedua
+            $row = 3; // Mulai dari baris kedua
             foreach ($limbahMasuk as $item) {
                 foreach ($item->detailLimbahMasuk as $detail) {
                     $sheet->setCellValue('A' . $row, $no);
@@ -73,6 +83,12 @@ class DataLimbahMasukController extends Controller
                     $no++;
                 }
             }
+            $lastRow = $row - 1;
+            $sheet->getStyle("A2:E{$lastRow}")
+                ->getBorders()
+                ->getAllBorders()
+                ->setBorderStyle(Border::BORDER_THIN);
+
             foreach (range('A', 'E') as $columID) {
                 $sheet->getColumnDimension($columID)->setAutoSize(true); //set auto size kolom
             }
@@ -139,11 +155,22 @@ class DataLimbahMasukController extends Controller
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
 
-            $sheet->setCellValue('A1', 'Plat Nomor');
-            $sheet->setCellValue('B1', 'Kode Limbah (Deskripsi)');
-            $sheet->setCellValue('C1', 'Berat (Kg)');
+            $sheet->setCellValue('B1', 'DETAIL LIMBAH MASUK ');
+            $sheet->setCellValue('B2', 'TANGGAL : ' . Carbon::createFromFormat('d-m-Y', $tanggal)->format('d/m/Y'));
+            $sheet->getStyle(('B1'))->getFont()->setBold(true);
+            $sheet->getStyle(('B2'))->getFont()->setBold(true);
 
-            $row = 2;
+            $headers = [
+                'A4' => 'Plat Nomor Truk',
+                'B4' => 'Kode Limbah',
+                'C4' => 'Berat (Kg)',
+            ];
+            foreach ($headers as $cell => $text) {
+                $sheet->setCellValue($cell, $text);
+                $sheet->getStyle($cell)->getFont()->setBold(true);
+            }
+
+            $row = 5;
             foreach ($limbahMasukList as $limbahMasuk) {
                 foreach ($limbahMasuk->detailLimbahMasuk as $detail) {
                     $platNomor = $detail->truk->plat_nomor ?? '-';
@@ -158,6 +185,11 @@ class DataLimbahMasukController extends Controller
                 }
             }
 
+            $lastRow = $row - 1;
+            $sheet->getStyle("A4:C{$lastRow}")
+                ->getBorders()
+                ->getAllBorders()
+                ->setBorderStyle(Border::BORDER_THIN);
             foreach (range('A', 'C') as $columID) {
                 $sheet->getColumnDimension($columID)->setAutoSize(true);
             }

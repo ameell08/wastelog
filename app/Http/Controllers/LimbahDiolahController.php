@@ -14,6 +14,7 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class LimbahDiolahController extends Controller
 {
@@ -256,14 +257,22 @@ class LimbahDiolahController extends Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Set judul kolom
-        $sheet->setCellValue('A1', 'No');
-        $sheet->setCellValue('B1', 'Tanggal');
-        $sheet->setCellValue('C1', 'Mesin');
-        $sheet->setCellValue('D1', 'Kode Limbah (Deskripsi)');
-        $sheet->setCellValue('E1', 'Berat (Kg)');
+        $sheet->setCellValue('C1', 'DATA LIMBAH DIOLAH');
+        $sheet->getStyle(('C1'))->getFont()->setBold(true);
 
-        $row = 2;
+        $headers = [
+            'A3' => 'No',
+            'B3' => 'Tanggal',
+            'C3' => 'Mesin',
+            'D3' => 'Kode Limbah (Deskripsi)',
+            'E3' => 'Berat (Kg)',
+        ];
+        foreach ($headers as $cell => $text) {
+            $sheet->setCellValue($cell, $text);
+            $sheet->getStyle($cell)->getFont()->setBold(true);
+        }
+
+        $row = 4;
         $no = 1;
 
         // Ambil semua data limbah beserta relasi
@@ -283,6 +292,12 @@ class LimbahDiolahController extends Controller
                 $sheet->setCellValue('E' . $row, $detail->berat_kg);
                 $row++;
             }
+
+            $lastRow = $row - 1;
+            $sheet->getStyle("A3:E{$lastRow}")
+                ->getBorders()
+                ->getAllBorders()
+                ->setBorderStyle(Border::BORDER_THIN);
         }
 
         // Simpan dan download file
@@ -347,17 +362,41 @@ class LimbahDiolahController extends Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Header kolom
-        $sheet->setCellValue('A1', 'No');
-        $sheet->setCellValue('B1', 'Tanggal');
-        $sheet->setCellValue('C1', 'Mesin');
-        $sheet->setCellValue('D1', 'Kode Limbah (Deskripsi)');
-        $sheet->setCellValue('E1', 'Berat Input (Kg)');
-        $sheet->setCellValue('F1', 'Bottom Ash (2%)');
-        $sheet->setCellValue('G1', 'Fly Ash (0.4%)');
-        $sheet->setCellValue('H1', 'Flue Gas (1%)');
+        $namaBulan = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember'
+        ];
+        $sheet->setCellValue('D1', 'DETAIL LIMBAH DIOLAH ');
+        $sheet->setCellValue('D2', 'Bulan : ' . ($namaBulan[(int)$bulan] ?? $bulan));
+        $sheet->getStyle(('D1'))->getFont()->setBold(true);
+        $sheet->getStyle(('D2'))->getFont()->setBold(true);
 
-        $row = 2;
+        $headers = [
+            'A4' => 'No',
+            'B4' => 'Tanggal',
+            'C4' => 'Mesin',
+            'D4' => 'Kode Limbah (Deskripsi)',
+            'E4' => 'Berat Input (Kg)',
+            'F4' => 'Bottom Ash (2%)',
+            'G4' => 'Fly Ash (0.4%)',
+            'H4' => 'Flue Gas (1%)'
+        ];
+        foreach ($headers as $cell => $text) {
+            $sheet->setCellValue($cell, $text);
+            $sheet->getStyle($cell)->getFont()->setBold(true);
+        }
+
+        $row = 5;
         $no = 1;
 
         // Ambil data yang sudah difilter berdasarkan mesin_id dan bulan
@@ -391,6 +430,11 @@ class LimbahDiolahController extends Controller
 
             $row++;
         }
+        $lastRow = $row - 1;
+        $sheet->getStyle("A4:H{$lastRow}")
+            ->getBorders()
+            ->getAllBorders()
+            ->setBorderStyle(Border::BORDER_THIN);
 
         // Ambil nama mesin untuk nama file
         $mesin = Mesin::find($mesin_id);
@@ -449,8 +493,8 @@ class LimbahDiolahController extends Controller
         foreach ($residuData as $residu) {
             // Cek apakah sudah ada residu dengan kode limbah dan tanggal yang sama
             $existingResidu = AntreanResidu::where('kode_limbah_id', $residu['kode_limbah_id'])
-                                          ->where('tanggal_masuk', $residu['tanggal_masuk'])
-                                          ->first();
+                ->where('tanggal_masuk', $residu['tanggal_masuk'])
+                ->first();
 
             if ($existingResidu) {
                 // Jika sudah ada, tambahkan beratnya
