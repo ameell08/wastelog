@@ -35,10 +35,10 @@ Route::get('/dashboard', function () {
 
 //dashboard
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-Route::get('/dashboard/export_limbahmasuk_pdf', [DashboardController::class, 'exportLimbahMasukPdf']);
-Route::get('/dashboard/export_limbahdiolah_pdf', [DashboardController::class, 'exportLimbahDiolahPdf']);
-Route::get('/dashboard/export_limbahmasuk_excel', [DashboardController::class, 'exportLimbahMasukExcel']);
-Route::get('/dashboard/export_limbahdiolah_excel', [DashboardController::class, 'exportLimbahDiolahExcel']);
+Route::get('/dashboard/export_limbahmasuk_pdf/{bulan}', [DashboardController::class, 'exportLimbahMasukPdf']);
+Route::get('/dashboard/export_limbahdiolah_pdf/{bulan}', [DashboardController::class, 'exportLimbahDiolahPdf']);
+Route::get('/dashboard/export_limbahmasuk_excel/{bulan}', [DashboardController::class, 'exportLimbahMasukExcel']);
+Route::get('/dashboard/export_limbahdiolah_excel/{bulan}', [DashboardController::class, 'exportLimbahDiolahExcel']);
 
 
 //LimbahMasuk

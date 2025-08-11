@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Carbon;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 class DashboardController extends Controller
 {
@@ -52,6 +52,7 @@ class DashboardController extends Controller
 
         $limbahMasukBulanan = array_fill(0, 12, 0);
         $limbahDiolahBulanan = array_fill(0, 12, 0);
+        $sisaLimbahBulanan = array_fill(0, 12, 0);
 
         $masuk = LimbahMasuk::selectRaw('MONTH(tanggal) as bulan, SUM(total_kg) as total')
             ->groupByRaw('MONTH(tanggal)')
@@ -60,6 +61,13 @@ class DashboardController extends Controller
         $diolah = LimbahDiolah::selectRaw('MONTH(created_at) as bulan, SUM(total_kg) as total')
             ->groupByRaw('MONTH(created_at)')
             ->pluck('total', 'bulan');
+        
+        $sisa = SisaLimbah::selectRaw('MONTH(tanggal) as bulan, SUM(berat_kg) as total')
+            ->groupByRaw('MONTH(tanggal)')
+            ->pluck('total', 'bulan');
+        foreach ($sisa as $bulanIndex => $total) {
+            $sisaLimbahBulanan[$bulanIndex - 1] = (float) $total;
+        }
 
         foreach ($masuk as $bulanIndex => $total) {
             $limbahMasukBulanan[$bulanIndex - 1] = (float) $total;
@@ -78,26 +86,52 @@ class DashboardController extends Controller
             'sisalimbah',
             'bulan',
             'limbahMasukBulanan',
-            'limbahDiolahBulanan'
+            'limbahDiolahBulanan',
+            'sisaLimbahBulanan'
         ))->with('activeMenu', 'dashboard');
     }
 
-    public function exportLimbahMasukPdf()
+    public function exportLimbahMasukPdf($bulan)
     {
-        $limbahMasuk = LimbahMasuk::with(['detailLimbahMasuk.truk', 'detailLimbahMasuk.kodeLimbah'])
-            ->orderBy('tanggal', 'desc')
-            ->get();
+        $limbahMasuk = LimbahMasuk::whereMonth('tanggal', $bulan)->get();
+        $namaBulan = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember'
+        ][$bulan] ?? '-';
 
-        $pdf = Pdf::loadView('dashboard.export_limbahmasuk_pdf', compact('limbahMasuk'));
+        $pdf = Pdf::loadView('dashboard.export_limbahmasuk_pdf', compact('limbahMasuk', 'namaBulan'));
 
         return $pdf->download('limbah_masuk_' . now()->format('d-m-y H:i:s') . '.pdf');
     }
 
-    public function exportLimbahDiolahPdf()
+    public function exportLimbahDiolahPdf($bulan)
 {
-    $limbahDiolah = LimbahDiolah::with(['detailLimbahDiolah.kodeLimbah', 'mesin'])
-        ->orderBy('created_at', 'desc')
-        ->get();
+     $limbahDiolah = LimbahDiolah::whereMonth('created_at', $bulan)->get();
+        $namaBulan = [
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember'
+        ][$bulan] ?? '-';
+      
 
     // Proses perhitungan residu
     foreach ($limbahDiolah as $item) {
@@ -121,26 +155,40 @@ class DashboardController extends Controller
         }
     }
 
-    $pdf = Pdf::loadView('dashboard.export_limbahdiolah_pdf', compact('limbahDiolah'));
+    $pdf = Pdf::loadView('dashboard.export_limbahdiolah_pdf', compact('limbahDiolah', 'namaBulan'));
 
     return $pdf->download('limbah_diolah_' . now()->format('d-m-y H:i:s') . '.pdf');
 }
-    public function exportLimbahMasukExcel()
+    public function exportLimbahMasukExcel($bulan)
 {
     $limbahMasuk = LimbahMasuk::with(['detailLimbahMasuk.truk', 'detailLimbahMasuk.kodeLimbah'])
+        ->whereMonth('tanggal', $bulan)
         ->orderBy('tanggal', 'desc')
         ->get();
+
+     $namaBulan = [
+        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+    ][$bulan] ?? '-';
 
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
 
-    // Header
-    $sheet->setCellValue('A1', 'Tanggal');
-    $sheet->setCellValue('B1', 'Truk');
-    $sheet->setCellValue('C1', 'Kode Limbah');
-    $sheet->setCellValue('D1', 'Jumlah (kg)');
+    $sheet->setCellValue('A1', 'Bulan: ' . $namaBulan);
+    $sheet->getStyle(('A1'))->getFont()->setBold(true);
 
-    $row = 2;
+    $headers = [
+        'A2' => 'Tanggal',
+        'B2' => 'Truk',
+        'C2' => 'Kode Limbah',
+        'D2' => 'Jumlah (kg)'
+    ];
+    foreach ($headers as $cell => $text) {
+        $sheet->setCellValue($cell, $text);
+        $sheet->getStyle($cell)->getFont()->setBold(true);
+    }
+    $row = 3;
 
     foreach ($limbahMasuk as $item) {
         foreach ($item->detailLimbahMasuk as $detail) {
@@ -152,7 +200,13 @@ class DashboardController extends Controller
         }
     }
 
-    $filename = 'limbah_masuk_' . now()->format('d-m-y H:i:s') . '.xlsx';
+    $lastRow = $row - 1;
+    $sheet->getStyle("A2:D{$lastRow}")
+        ->getBorders()
+        ->getAllBorders()
+        ->setBorderStyle(Border::BORDER_THIN);
+
+    $filename = 'limbah_masuk_' . $namaBulan . '_'  . now()->format('d-m-y H:i:s') . '.xlsx';
     $writer = new Xlsx($spreadsheet);
 
     // Output ke browser
@@ -162,25 +216,41 @@ class DashboardController extends Controller
     exit;
 }
 
-public function exportLimbahDiolahExcel()
+public function exportLimbahDiolahExcel($bulan)
 {
     $limbahDiolah = LimbahDiolah::with(['detailLimbahDiolah.kodeLimbah', 'mesin'])
+        ->whereMonth('created_at', $bulan)
         ->orderBy('created_at', 'desc')
         ->get();
+
+     $namaBulan = [
+        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+    ][$bulan] ?? '-';
 
     $spreadsheet = new Spreadsheet();
     $sheet = $spreadsheet->getActiveSheet();
 
-    // Header kolom
-    $sheet->setCellValue('A1', 'Tanggal');
-    $sheet->setCellValue('B1', 'Mesin');
-    $sheet->setCellValue('C1', 'Kode Limbah');
-    $sheet->setCellValue('D1', 'Jumlah (Kg)');
-    $sheet->setCellValue('E1', 'Bottom Ash (2%) Kg');
-    $sheet->setCellValue('F1', 'Fly Ash (0.4%) Kg');
-    $sheet->setCellValue('G1', 'Flue Gas (1%) Kg');
+    $sheet->setCellValue('A1', 'Bulan: ' . $namaBulan);
+    $sheet->getStyle('A1')->getFont()->setBold(true);
 
-    $row = 2;
+    // Header kolom
+     $headers = [
+        'A2' => 'Tanggal',
+        'B2' => 'Mesin',
+        'C2' => 'Kode Limbah',
+        'D2' => 'Jumlah (Kg)',
+        'E2' => 'Bottom Ash (2%) Kg',
+        'F2' => 'Fly Ash (0.4%) Kg',
+        'G2' => 'Flue Gas (1%) Kg'
+    ];
+    foreach ($headers as $cell => $text) {
+        $sheet->setCellValue($cell, $text);
+        $sheet->getStyle($cell)->getFont()->setBold(true);
+    }
+
+    $row = 3;
 
     foreach ($limbahDiolah as $item) {
         foreach ($item->detailLimbahDiolah as $detail) {
@@ -204,7 +274,13 @@ public function exportLimbahDiolahExcel()
         }
     }
 
-    $filename = 'limbah_diolah_' . now()->format('d-m-y H:i:s') . '.xlsx';
+    $lastRow = $row - 1;
+    $sheet->getStyle("A2:G{$lastRow}")
+        ->getBorders()
+        ->getAllBorders()
+        ->setBorderStyle(Border::BORDER_THIN);
+
+    $filename = 'limbah_diolah_' . $namaBulan . '_' . now()->format('d-m-y H:i:s') . '.xlsx';
     $writer = new Xlsx($spreadsheet);
 
     // Output ke browser

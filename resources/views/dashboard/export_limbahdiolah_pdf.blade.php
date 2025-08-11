@@ -120,6 +120,9 @@
     </table>
 
     <h3 class="text-center">DAFTAR LIMBAH DIOLAH</h3>
+    <p class="font-12" style="margin-bottom:8px;">
+        <b>Bulan: {{ $namaBulan }}</b>
+    </p>
 
     <table class="border-all">
         <thead>
@@ -145,7 +148,7 @@
                         <td>{{ $detail->kodeLimbah->kode ?? '-' }}</td>
                         <td>{{ $detail->berat_kg }}</td>
                         <td>{{ $detail->bottom_ash }}</td>
-                        <td>{{ $detail->fly_ash }}</td> 
+                        <td>{{ $detail->fly_ash }}</td>
                         <td>{{ $detail->flue_gas }}</td>
                     </tr>
                 @endforeach

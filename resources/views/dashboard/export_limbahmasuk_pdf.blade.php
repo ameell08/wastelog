@@ -115,6 +115,9 @@
         </tr>
     </table>
     <h3 class="text-center">DAFTAR LIMBAH MASUK</h4>
+        <p class="font-12" style="margin-bottom:8px;">
+            <b>Bulan: {{ $namaBulan }}</b>
+        </p>
         <table class="border-all">
             <thead>
                 <tr>
