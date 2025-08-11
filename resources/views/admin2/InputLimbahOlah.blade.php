@@ -53,7 +53,7 @@
                         @csrf
                         <div class="mb-3">
                             <label for="tanggal">Tanggal</label>
-                            <input type="date" name="tanggal" class="form-control" required>
+                            <input type="date" name="tanggal" class="form-control" value="{{ date('Y-m-d') }}" required>
                         </div>
 
                         <table class="table table-bordered" id="limbahTable">

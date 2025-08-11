@@ -344,7 +344,7 @@ class LimbahDiolahController extends Controller
                         'deskripsi' => $deskripsi ?? '-',
                     ],
                     'berat_kg' => number_format($berat, 2),
-                    'tanggal_input' => Carbon::parse($item->created_at)->format('d-m-Y H:i'),
+                    'tanggal_input' => Carbon::parse($item->tanggal_input)->format('d/m/Y'),
                     'bottom_ash' => $bottomAsh == (int)$bottomAsh ? number_format($bottomAsh, 0) : rtrim(rtrim(number_format($bottomAsh, 4), '0'), '.'),
                     'fly_ash' => $flyAsh == (int)$flyAsh ? number_format($flyAsh, 0) : rtrim(rtrim(number_format($flyAsh, 4), '0'), '.'),
                     'flue_gas' => $flueGas == (int)$flueGas ? number_format($flueGas, 0) : rtrim(rtrim(number_format($flueGas, 4), '0'), '.'),
@@ -416,7 +416,7 @@ class LimbahDiolahController extends Controller
             $flueGas = $flyAsh * 0.01; // 1% dari berat Fly Ash
 
             $sheet->setCellValue('A' . $row, $no++);
-            $sheet->setCellValue('B' . $row, Carbon::parse($detail->created_at)->format('d/m/Y H:i'));
+            $sheet->setCellValue('B' . $row, Carbon::parse($detail->tanggal_input)->format('d/m/Y'));
             $sheet->setCellValue('C' . $row, $detail->limbahDiolah->mesin->no_mesin ?? '-');
 
             $kodeLimbah = $detail->kodeLimbah;

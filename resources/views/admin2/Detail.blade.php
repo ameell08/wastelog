@@ -64,7 +64,7 @@
                                 <tr>
                                     <th>Jenis Residu</th>
                                     <th>Persentase</th>
-                                    <th>Total (Kg)</th>
+                                    <th>Total</th>
                                 </tr>
                             </thead>
                             <tbody id="resumeTableBody">
@@ -231,7 +231,7 @@
                         <td>${index + 1}</td>
                         <td>${item.limbah_diolah_id}</td>
                         <td>${item.kode_limbah.kode} (${item.kode_limbah.deskripsi})</td>
-                        <td>${item.berat_kg} Kg</td>
+                        <td>${item.berat_kg}</td>
                         <td>${item.tanggal_input}</td>
                         <td class="text-center">${item.bottom_ash} Kg</td>
                         <td class="text-center">${item.fly_ash} Kg</td>
