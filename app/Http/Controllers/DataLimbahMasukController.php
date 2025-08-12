@@ -64,6 +64,7 @@ class DataLimbahMasukController extends Controller
                 'C2' => 'Plat Nomor Truk',
                 'D2' => 'Kode Limbah (Deskripsi)',
                 'E2' => 'Berat (Kg)',
+                'F2' => 'Kode Festronik',
             ];
             foreach ($headers as $cell => $text) {
                 $sheet->setCellValue($cell, $text);
@@ -79,17 +80,18 @@ class DataLimbahMasukController extends Controller
                     $sheet->setCellValue('C' . $row, $detail->truk->plat_nomor);
                     $sheet->setCellValue('D' . $row, $detail->kodeLimbah->kode);
                     $sheet->setCellValue('E' . $row, $detail->berat_kg);
+                    $sheet->setCellValue('F' . $row, $detail->kode_festronik ?? '-');
                     $row++;
                     $no++;
                 }
             }
             $lastRow = $row - 1;
-            $sheet->getStyle("A2:E{$lastRow}")
+            $sheet->getStyle("A2:F{$lastRow}")
                 ->getBorders()
                 ->getAllBorders()
                 ->setBorderStyle(Border::BORDER_THIN);
 
-            foreach (range('A', 'E') as $columID) {
+            foreach (range('A', 'F') as $columID) {
                 $sheet->getColumnDimension($columID)->setAutoSize(true); //set auto size kolom
             }
 
@@ -112,7 +114,7 @@ class DataLimbahMasukController extends Controller
     }
     public function showByTanggal($tanggal)
     {
-        $parsedTanggal = Carbon::parse($tanggal)->toDateString();
+        $parsedTanggal = \Carbon\Carbon::createFromFormat('d-m-Y', $tanggal)->toDateString();
 
         $limbahMasuk = LimbahMasuk::whereDate('tanggal', $parsedTanggal)
             ->with(['detailLimbahMasuk.truk', 'detailLimbahMasuk.kodeLimbah'])
@@ -129,6 +131,7 @@ class DataLimbahMasukController extends Controller
                         'deskripsi' => $d->kodeLimbah->deskripsi ?? '-',
                     ],
                     'berat_kg' => $d->berat_kg,
+                    'kode_festronik' => $d->kode_festronik ?: null,
                 ];
             }
         }
@@ -164,6 +167,7 @@ class DataLimbahMasukController extends Controller
                 'A4' => 'Plat Nomor Truk',
                 'B4' => 'Kode Limbah',
                 'C4' => 'Berat (Kg)',
+                'D4' => 'Kode Festronik',
             ];
             foreach ($headers as $cell => $text) {
                 $sheet->setCellValue($cell, $text);
@@ -181,16 +185,17 @@ class DataLimbahMasukController extends Controller
                     $sheet->setCellValue('A' . $row, $platNomor);
                     $sheet->setCellValue('B' . $row, $kode . ' (' . $deskripsi . ')');
                     $sheet->setCellValue('C' . $row, $berat);
+                    $sheet->setCellValue('D' . $row, $detail->kode_festronik ?? '-');
                     $row++;
                 }
             }
 
             $lastRow = $row - 1;
-            $sheet->getStyle("A4:C{$lastRow}")
+            $sheet->getStyle("A4:D{$lastRow}")
                 ->getBorders()
                 ->getAllBorders()
                 ->setBorderStyle(Border::BORDER_THIN);
-            foreach (range('A', 'C') as $columID) {
+            foreach (range('A', 'D') as $columID) {
                 $sheet->getColumnDimension($columID)->setAutoSize(true);
             }
 

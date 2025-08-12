@@ -13,6 +13,7 @@ class DetailLimbahMasuk extends Model
         'truk_id',
         'kode_limbah_id',
         'berat_kg',
+        'kode_festronik'
     ];
 
     public function limbahMasuk()

@@ -38,7 +38,7 @@
                 <div class="card-body">
                     <div class="mb-3">
                         <input type="text" id="searchInput" class="form-control"
-                            placeholder="Cari plat nomor atau nama sopir...">
+                            placeholder="Cari kode limbah atau deskripsi limbah...">
                     </div>
                     <table class="table table-bordered" id="kodeTable">
                         <thead class="table-light">

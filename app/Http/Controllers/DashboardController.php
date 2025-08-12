@@ -189,7 +189,8 @@ class DashboardController extends Controller
         'A2' => 'Tanggal',
         'B2' => 'Truk',
         'C2' => 'Kode Limbah',
-        'D2' => 'Jumlah (kg)'
+        'D2' => 'Jumlah (kg)',
+        'E2' => 'Kode Festronik'
     ];
     foreach ($headers as $cell => $text) {
         $sheet->setCellValue($cell, $text);
@@ -203,12 +204,13 @@ class DashboardController extends Controller
             $sheet->setCellValue('B' . $row, $detail->truk->plat_nomor ?? '-');
             $sheet->setCellValue('C' . $row, $detail->kodeLimbah->kode ?? '-');
             $sheet->setCellValue('D' . $row, $detail->berat_kg);
+            $sheet->setCellValue('E' . $row, $detail->kode_festronik ?? '-');
             $row++;
         }
     }
 
     $lastRow = $row - 1;
-    $sheet->getStyle("A2:D{$lastRow}")
+    $sheet->getStyle("A2:E{$lastRow}")
         ->getBorders()
         ->getAllBorders()
         ->setBorderStyle(Border::BORDER_THIN);
