@@ -44,6 +44,7 @@
                                     <th>Plat Nomor</th>
                                     <th>Kode Limbah</th>
                                     <th>Berat (Kg)</th>
+                                    <th>Kode Festronik</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -69,6 +70,9 @@
                                     <td>
                                         <input type="number" name="detail[0][berat_kg]" class="form-control" required
                                             min="1">
+                                    </td>
+                                    <td>
+                                        <input type="text" name="detail[0][kode_festronik]" class="form-control" required>
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-danger remove-row">Hapus</button>
@@ -157,6 +161,9 @@
                     </td>
                     <td>
                         <input type="number" name="detail[${rowIndex}][berat_kg]" class="form-control" required min="1">
+                    </td>
+                    <td>
+                        <input type="text" name="detail[${rowIndex}][kode_festronik]" class="form-control" required>
                     </td>
                     <td>
                         <button type="button" class="btn btn-danger remove-row">Hapus</button>

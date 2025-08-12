@@ -19,6 +19,7 @@
                                 <th>Plat Nomor</th>
                                 <th>Kode Limbah (Deskripsi)</th>
                                 <th>Berat (Kg)</th>
+                                <th>Kode Festronik</th>
                             </tr>
                         </thead>
                         <tbody id="detailTableBody">

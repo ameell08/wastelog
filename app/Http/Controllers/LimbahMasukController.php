@@ -36,6 +36,7 @@ class LimbahMasukController extends Controller
             'detail.*.truk_id' => 'required|exists:truk,id',
             'detail.*.kode_limbah_id' => 'required|exists:kode_limbah,id',
             'detail.*.berat_kg' => 'required|numeric|min:1',
+            'detail.*.kode_festronik' => 'required|string|max:100'
         ]);
 
         DB::transaction(function () use ($request) {
@@ -51,6 +52,7 @@ class LimbahMasukController extends Controller
                     'truk_id' => $item['truk_id'],
                     'kode_limbah_id' => $item['kode_limbah_id'],
                     'berat_kg' => $item['berat_kg'],
+                    'kode_festronik'  => $item['kode_festronik'] ?? null,
                 ]);
 
                 // Tambahkan ke sisa limbah untuk sistem FIFO
@@ -78,7 +80,7 @@ class LimbahMasukController extends Controller
         try {
             $spreadsheet = IOFactory::load($request->file('file_limbah_masuk'));
             $sheet = $spreadsheet->getActiveSheet();
-            $rows = $sheet->toArray(true, true, true, true);
+            $rows = $sheet->toArray(null, true, true, true);
 
             // Asumsi baris 1 adalah header
             unset($rows[1]);
@@ -103,6 +105,7 @@ class LimbahMasukController extends Controller
                 $platNomor = $row['B'];
                 $kodeLimbah = $row['C'];
                 $beratKg = (float) $row['D'];
+                $kodeFestronik = $row['E'];
 
                 // Ambil truk_id dari plat_nomor
                 $truk = \App\Models\Truk::where('plat_nomor', $platNomor)->first();
@@ -123,6 +126,7 @@ class LimbahMasukController extends Controller
                     'truk_id' => $truk->id,
                     'kode_limbah_id' => $kode->id,
                     'berat_kg' => $beratKg,
+                    'kode_festronik' => $kodeFestronik,
                 ]);
 
                 // Tambahkan ke sisa limbah untuk sistem FIFO
