@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\LimbahDiolah;
 use App\Models\LimbahMasuk;
 use App\Models\SisaLimbah;
+use App\Models\AntreanResidu;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Carbon;
@@ -33,6 +34,10 @@ class DashboardController extends Controller
         $limbahmasuk = LimbahMasuk::whereDate('tanggal', $today)->sum('total_kg');
         $limbahdiolah = LimbahDiolah::whereDate('created_at', $today)->sum('total_kg');
         $sisalimbah = SisaLimbah::whereDate('tanggal', '<=', $today)->sum('berat_kg');
+
+        // Hitung total residu limbah dari tabel antrean_residu (data yang sebenarnya tersimpan)
+        $antreanResidu = AntreanResidu::with('kodeLimbah')->get();
+        $totalResiduLimbah = $antreanResidu->sum('sisa_berat');
 
         // Data per bulan (chart)
         $bulan = [
@@ -65,6 +70,7 @@ class DashboardController extends Controller
         $sisa = SisaLimbah::selectRaw('MONTH(tanggal) as bulan, SUM(berat_kg) as total')
             ->groupByRaw('MONTH(tanggal)')
             ->pluck('total', 'bulan');
+
         foreach ($sisa as $bulanIndex => $total) {
             $sisaLimbahBulanan[$bulanIndex - 1] = (float) $total;
         }
@@ -84,6 +90,7 @@ class DashboardController extends Controller
             'limbahmasuk',
             'limbahdiolah',
             'sisalimbah',
+            'totalResiduLimbah',
             'bulan',
             'limbahMasukBulanan',
             'limbahDiolahBulanan',

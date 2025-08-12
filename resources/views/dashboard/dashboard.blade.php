@@ -48,7 +48,7 @@
         <div class="col-lg-3 col-12">
             <div class="small-box bg-success">
                 <div class="inner">
-                    <h3>{{ $sisalimbah }}</h3>
+                    <h3>{{ number_format($totalResiduLimbah, 2) }}</h3>
                     <p>Residu Limbah</p>
                 </div>
                 <div class="icon">

@@ -51,7 +51,7 @@
                                     <th>Truk</th>
                                     <th>Kode Limbah</th>
                                     <th>Berat (Kg)</th>
-                                    <th>Stok Tersedia</th>
+                                    <th>Total Stok Tersedia</th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
@@ -284,21 +284,26 @@
             const tanggalMasukHidden = $(`.tanggal-masuk-hidden[data-row="${row}"]`);
             
             if (kodeLimbahId) {
-                // Cari residu tertua (FIFO) untuk kode limbah yang dipilih
+                // Cari semua residu untuk kode limbah yang dipilih
                 const filteredResidu = antreanResiduData.filter(residu => 
                     residu.kode_limbah_id == kodeLimbahId
                 );
                 
                 if (filteredResidu.length > 0) {
-                    // Ambil yang pertama (sudah diurutkan berdasarkan FIFO di controller)
+                    // Hitung total stok tersedia (jumlahkan semua sisa berat)
+                    const totalStok = filteredResidu.reduce((total, residu) => {
+                        return total + parseFloat(residu.sisa_berat_raw);
+                    }, 0);
+                    
+                    // Ambil yang tertua untuk tanggal masuk (FIFO)
                     const oldestResidu = filteredResidu[0];
                     
                     // Format angka tanpa trailing zero
-                    const formatted = formatNumber(oldestResidu.sisa_berat_raw);
+                    const formatted = formatNumber(totalStok);
                     stokBadge.text(`${formatted} kg`);
                     stokBadge.removeClass('bg-info bg-warning').addClass('bg-success');
                     
-                    // Set tanggal masuk secara otomatis
+                    // Set tanggal masuk secara otomatis dari yang tertua
                     tanggalMasukHidden.val(oldestResidu.tanggal_masuk_raw);
                 } else {
                     stokBadge.text('0 kg');
