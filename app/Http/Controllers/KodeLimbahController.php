@@ -53,8 +53,7 @@ class KodeLimbahController extends Controller
         $kodeLimbah = KodeLimbah::findOrFail($id);
         $kodeLimbah->update($request->only('kode', 'deskripsi'));
 
-        return redirect()->route('kode-limbah.index')
-            ->with('success', 'Data berhasil diperbarui.');
+        return response()->json($kodeLimbah);
     }
 
     public function delete($id)

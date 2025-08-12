@@ -49,7 +49,7 @@ class PengirimanResiduController extends Controller
         ];
 
         return view('admin2.InputPengirimanResidu', compact('truk', 'antreanResidu', 'breadcrumb'))
-               ->with('activeMenu', 'pengirimanresidu');
+               ->with('activeMenu', 'inputpengirimanresidu');
     }
 
     public function store(Request $request)

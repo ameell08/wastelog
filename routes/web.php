@@ -11,6 +11,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\LimbahMasukController;
 use App\Http\Controllers\PengirimanResiduController;
+use App\Http\Controllers\DataPengirimanResiduController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -106,3 +107,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/stok-tersedia/{kodeLimbahId}/{tanggalMasuk}', [PengirimanResiduController::class, 'getStokTersedia'])->name('pengiriman-residu.stok-tersedia');
 });
 
+// Data Pengiriman Residu
+Route::middleware('auth')->group(function () {
+    Route::get('/datapengirimanresidu', [DataPengirimanResiduController::class, 'index'])->name('datapengirimanresidu.index');
+    Route::get('/detailpengirimanresidu/export_excel', [DataPengirimanResiduController::class, 'export_excel'])->name('datapengirimanresidu.export_excel');
+    Route::get('/detailpengirimanresidu-by-tanggal/{tanggal}', [DataPengirimanResiduController::class, 'showByTanggal'])->name('datapengirimanresidu.showbytanggal');
+    Route::get('/detailpengirimanresidu/exportexceldetail/{tanggal}', [DataPengirimanResiduController::class, 'detailExportExcel'])->name('detailpengirimanresidu.detailexportexcel');
+});
