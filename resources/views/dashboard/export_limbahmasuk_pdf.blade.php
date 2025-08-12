@@ -126,6 +126,7 @@
                     <th>Plat Nomor Truk</th>
                     <th>Kode Limbah</th>
                     <th>Berat (Kg)</th>
+                    <th>Kode Festronik</th>
                 </tr>
             </thead>
             <tbody>
@@ -138,6 +139,7 @@
                             <td>{{ $detail->truk->plat_nomor ?? '-' }}</td>
                             <td>{{ $detail->kodeLimbah->kode ?? '-' }}</td>
                             <td>{{ $detail->berat_kg }}</td>
+                            <td>{{ $detail->kode_festronik ?? '-' }}</td>
                         </tr>
                     @endforeach
                 @endforeach
