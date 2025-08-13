@@ -88,7 +88,7 @@
                                     </td>
                                     <td>
                                         <input type="number" name="detail[0][berat_kg]" class="form-control" required
-                                            min="1">
+                                             min="0.01" step="0.01">
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-danger remove-row">Hapus</button>
@@ -203,7 +203,7 @@
                 </select>
             </td>
             <td>
-                <input type="number" name="detail[${rowIndex}][berat_kg]" class="form-control" required min="1">
+                <input type="number" name="detail[${rowIndex}][berat_kg]" class="form-control" required min="0.01" step="0.01">
             </td>
             <td>
                 <button type="button" class="btn btn-sm btn-danger remove-row">Hapus</button>
