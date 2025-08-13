@@ -36,7 +36,7 @@ class LimbahMasukController extends Controller
             'detail.*.truk_id' => 'required|exists:truk,id',
             'detail.*.kode_limbah_id' => 'required|exists:kode_limbah,id',
             'detail.*.berat_kg' => 'required|numeric|min:1',
-            'detail.*.kode_festronik' => 'required|string|max:100'
+            'detail.*.kode_festronik' => 'required|string|distinct:ignore_case'
         ]);
 
         DB::transaction(function () use ($request) {

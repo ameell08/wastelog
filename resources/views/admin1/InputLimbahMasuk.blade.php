@@ -72,7 +72,7 @@
                                             min="0.01" step="0.01">
                                     </td>
                                     <td>
-                                        <input type="text" name="detail[0][kode_festronik]" class="form-control" required>
+                                        <input type="text" name="detail[0][kode_festronik]" class="form-control kode_festronik" required>
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-danger remove-row">Hapus</button>
@@ -163,7 +163,7 @@
                         <input type="number" name="detail[${rowIndex}][berat_kg]" class="form-control" required min="0.01" step="0.01">
                     </td>
                     <td>
-                        <input type="text" name="detail[${rowIndex}][kode_festronik]" class="form-control" required>
+                        <input type="text" name="detail[${rowIndex}][kode_festronik]" class="form-control kode_festronik" required>
                     </td>
                     <td>
                         <button type="button" class="btn btn-danger remove-row">Hapus</button>
@@ -182,6 +182,46 @@
 
             $(document).on('click', '.remove-row', function() {
                 $(this).closest('tr').remove();
+                checkDuplicateFestronik();
+            });
+
+            function checkDuplicateFestronik(showMessageForCurrent = false, currentEl = null) {
+            const map = {};
+            let duplicate = false;
+
+            $('.kode_festronik').each(function () {
+                const val = ($(this).val() || '').trim().toUpperCase();
+                // reset validitas dulu
+            this.setCustomValidity('');
+            $(this).removeClass('is-invalid');
+
+            if (!val) return;
+            if (map[val]) {
+                duplicate = true;
+                // tandai keduanya
+                this.setCustomValidity('Ubah kode. Kode tidak boleh sama');
+                map[val].setCustomValidity('Ubah kode. Kode tidak boleh sama');
+                $(this).add(map[val]).addClass('is-invalid');
+            } else {
+                map[val] = this;
+            }
+        });
+
+            if (showMessageForCurrent && currentEl) {
+                currentEl.reportValidity(); // tampilkan bubble bawaan browser
+            }
+                return duplicate;
+            }
+
+             $(document).on('input', '.kode_festronik', function () {
+                checkDuplicateFestronik(true, this);
+            });
+
+            // blokir submit kalau masih ada duplikat
+            $('form[action="{{ route('limbahmasuk.store') }}"]').on('submit', function (e) {
+                if (checkDuplicateFestronik(true, $('.kode_festronik').filter(function(){return this.validationMessage;})[0])) {
+                e.preventDefault();
+            }
             });
         });
     </script>
