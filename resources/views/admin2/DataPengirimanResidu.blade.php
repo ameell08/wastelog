@@ -71,9 +71,7 @@
                                     </td>
                                     <td>
                                         <button class="btn btn-warning btn-sm"
-                                            onclick="showDetailByTanggal('{{ \Carbon\Carbon::parse($item->tanggal_pengiriman)->format('d-m-Y') }}')">
-                                            <i class="fas fa-eye"></i> Detail
-                                        </button>
+                                            onclick="showDetailByTanggal('{{ \Carbon\Carbon::parse($item->tanggal_pengiriman)->format('d-m-Y') }}')">Detail</button>
                                     </td>
                                 </tr>
                             @empty
