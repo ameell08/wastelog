@@ -69,7 +69,7 @@
                                     </td>
                                     <td>
                                         <input type="number" name="detail[0][berat_kg]" class="form-control" required
-                                            min="1">
+                                            min="0.01" step="0.01">
                                     </td>
                                     <td>
                                         <input type="text" name="detail[0][kode_festronik]" class="form-control" required>
@@ -160,7 +160,7 @@
                         </select>
                     </td>
                     <td>
-                        <input type="number" name="detail[${rowIndex}][berat_kg]" class="form-control" required min="1">
+                        <input type="number" name="detail[${rowIndex}][berat_kg]" class="form-control" required min="0.01" step="0.01">
                     </td>
                     <td>
                         <input type="text" name="detail[${rowIndex}][kode_festronik]" class="form-control" required>
