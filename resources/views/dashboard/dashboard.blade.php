@@ -65,11 +65,32 @@
             <div class="d-flex justify-content-between align-items-center mb-0">
                     <h6 id="tanggalDetail" class="fw-bold mb-0"></h6>
                     <div class="d-flex">
+                        <!-- Filter Neraca -->
+                        <div class="d-flex align-items-center me-3">
+                            <select id="filterBulan" class="form-select form-select-sm me-2" style="width: 120px;">
+                                <option value="1" {{ date('n') == 1 ? 'selected' : '' }}>Januari</option>
+                                <option value="2" {{ date('n') == 2 ? 'selected' : '' }}>Februari</option>
+                                <option value="3" {{ date('n') == 3 ? 'selected' : '' }}>Maret</option>
+                                <option value="4" {{ date('n') == 4 ? 'selected' : '' }}>April</option>
+                                <option value="5" {{ date('n') == 5 ? 'selected' : '' }}>Mei</option>
+                                <option value="6" {{ date('n') == 6 ? 'selected' : '' }}>Juni</option>
+                                <option value="7" {{ date('n') == 7 ? 'selected' : '' }}>Juli</option>
+                                <option value="8" {{ date('n') == 8 ? 'selected' : '' }}>Agustus</option>
+                                <option value="9" {{ date('n') == 9 ? 'selected' : '' }}>September</option>
+                                <option value="10" {{ date('n') == 10 ? 'selected' : '' }}>Oktober</option>
+                                <option value="11" {{ date('n') == 11 ? 'selected' : '' }}>November</option>
+                                <option value="12" {{ date('n') == 12 ? 'selected' : '' }}>Desember</option>
+                            </select>
+                            <select id="filterTahun" class="form-select form-select-sm me-2" style="width: 100px;">
+                                @for($year = date('Y') - 2; $year <= date('Y') + 2; $year++)
+                                    <option value="{{ $year }}" {{ date('Y') == $year ? 'selected' : '' }}>{{ $year }}</option>
+                                @endfor
+                            </select>
+                        </div>
                         <a href="{{url('/')}}" class=" btn btn-danger btn-sm me-2" >
                         <i class="fas fa-file-pdf"></i> Export Neraca PDF </a>
-                    <button id="exportExcelBtn" class="btn btn-success btn-sm border border-2 border-light" style="font-weight:bold; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
-                        <a href="{{ url('/dashboard/export_limbahdiolah_excel') }}" >
-                        <i class="fas fa-file-excel"></i> Export Excel</a>
+                    <button id="exportNeracaBtn" class="btn btn-success btn-sm border border-2 border-light" style="font-weight:bold; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+                        <i class="fas fa-file-excel"></i> Export Neraca Excel
                     </button>
                      </div>
                 </div>
@@ -84,6 +105,16 @@
 @section('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
+    // Function untuk export neraca excel
+    function exportNeracaExcel() {
+        const bulan = document.getElementById('filterBulan').value;
+        const tahun = document.getElementById('filterTahun').value;
+        window.location.href = "{{ url('/dashboard/export_neraca_excel') }}/" + bulan + "/" + tahun;
+    }
+
+    // Event listener untuk tombol export neraca
+    document.getElementById('exportNeracaBtn').addEventListener('click', exportNeracaExcel);
+    
     function exportPDF(type, bulanIndex) {
     let bulan = bulanIndex +1;
     if (type === 'masuk') {

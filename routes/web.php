@@ -40,7 +40,7 @@ Route::get('/dashboard/export_limbahmasuk_pdf/{bulan}', [DashboardController::cl
 Route::get('/dashboard/export_limbahdiolah_pdf/{bulan}', [DashboardController::class, 'exportLimbahDiolahPdf']);
 Route::get('/dashboard/export_limbahmasuk_excel/{bulan}', [DashboardController::class, 'exportLimbahMasukExcel']);
 Route::get('/dashboard/export_limbahdiolah_excel/{bulan}', [DashboardController::class, 'exportLimbahDiolahExcel']);
-
+Route::get('/dashboard/export_neraca_excel/{bulan}/{tahun}', [DashboardController::class, 'exportNeracaExcel'])->name('dashboard.export_neraca_excel');
 
 //LimbahMasuk
 Route::middleware('auth')->group(function () {
