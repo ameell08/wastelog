@@ -298,6 +298,165 @@ public function exportLimbahDiolahExcel($bulan)
     $writer->save('php://output');
     exit;
 }
+public function exportNeracaExcel($bulan, $tahun)
+{
+    // Data Limbah Masuk
+    $limbahMasuk = LimbahMasuk::with(['detailLimbahMasuk.kodeLimbah'])
+        ->whereMonth('tanggal', $bulan)
+        ->whereYear('tanggal', $tahun)
+        ->get();
+
+    // Data Limbah Diolah
+    $limbahDiolah = LimbahDiolah::with(['detailLimbahDiolah.kodeLimbah'])
+        ->whereMonth('created_at', $bulan)
+        ->whereYear('created_at', $tahun)
+        ->get();
+
+    // Data Sisa Limbah
+    $sisaLimbah = SisaLimbah::with(['kodeLimbah'])
+        ->whereMonth('tanggal', $bulan)
+        ->whereYear('tanggal', $tahun)
+        ->get();
+
+    // Data Pengiriman Residu
+    $pengirimanResidu = \App\Models\PengirimanResidu::with(['detailPengirimanResidu.kodeLimbah'])
+        ->whereMonth('tanggal_pengiriman', $bulan)
+        ->whereYear('tanggal_pengiriman', $tahun)
+        ->get();
+
+    $namaBulan = [
+        1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+        5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+        9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+    ][$bulan] ?? '-';
+
+    $spreadsheet = new Spreadsheet();
+    $sheet = $spreadsheet->getActiveSheet();
+
+    // Header utama
+    $sheet->setCellValue('A1', 'PENGELOLAAN LIMBAH BAHAN BERBAHAYA DAN BERACUN');
+    $sheet->setCellValue('A2', 'PT PUTRA RESTU IBU ABADI');
+    $sheet->setCellValue('A4', 'Bulan : ' . $namaBulan);
+    $sheet->setCellValue('A5', 'Tahun : ' . $tahun);
+
+    // Merge cells untuk header
+    $sheet->mergeCells('A1:G1');
+    $sheet->mergeCells('A2:G2');
+
+    // Style header
+    $sheet->getStyle('A1:A2')->getFont()->setBold(true)->setSize(14);
+    $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+    $sheet->getStyle('A4:A5')->getFont()->setBold(true);
+
+    // Header tabel
+    $headers = [
+        'A7' => 'Tanggal',
+        'B7' => 'Total Limbah Masuk (Kg)',
+        'C7' => 'Total Limbah diolah (Kg)',
+        'D7' => 'Sisa Limbah',
+        'E7' => 'Total Residu',
+        'F7' => 'Total pengiriman residu'
+    ];
+
+    foreach ($headers as $cell => $text) {
+        $sheet->setCellValue($cell, $text);
+        $sheet->getStyle($cell)->getFont()->setBold(true);
+        $sheet->getStyle($cell)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('E8E8E8');
+    }
+
+    // Ambil semua tanggal dalam bulan
+    $startDate = \Carbon\Carbon::createFromDate($tahun, $bulan, 1);
+    $endDate = $startDate->copy()->endOfMonth();
+    $row = 8;
+
+    // Variabel untuk menyimpan total kumulatif
+    $totalKumulatifMasuk = 0;
+    $totalKumulatifDiolah = 0;
+    $totalKumulatifResidu = 0;
+    $totalKumulatifPengiriman = 0;
+
+    // Loop untuk setiap hari dalam bulan
+    for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
+        $tanggal = $date->format('Y-m-d');
+        
+        // Total limbah masuk per hari
+        $totalMasukHari = $limbahMasuk->where('tanggal', $tanggal)
+            ->sum(function($item) {
+                return $item->detailLimbahMasuk->sum('berat_kg');
+            });
+
+        // Total limbah diolah per hari
+        $totalDiolahHari = $limbahDiolah->filter(function($item) use ($tanggal) {
+            return $item->created_at->format('Y-m-d') === $tanggal;
+        })->sum(function($item) {
+            return $item->detailLimbahDiolah->sum('berat_kg');
+        });
+
+        // Hitung total residu dari limbah diolah per hari
+        $totalResiduHari = $limbahDiolah->filter(function($item) use ($tanggal) {
+            return $item->created_at->format('Y-m-d') === $tanggal;
+        })->sum(function($item) {
+            return $item->detailLimbahDiolah->sum(function($detail) {
+                $berat = $detail->berat_kg;
+                $bottomAsh = $berat * 0.02;
+                $flyAsh = $bottomAsh * 0.004;
+                $flueGas = $flyAsh * 0.01;
+                return $bottomAsh + $flyAsh + $flueGas;
+            });
+        });
+
+        // Total pengiriman residu per hari
+        $totalPengirimanHari = $pengirimanResidu->filter(function($item) use ($tanggal) {
+            return $item->tanggal_pengiriman->format('Y-m-d') === $tanggal;
+        })->sum(function($item) {
+            return $item->detailPengirimanResidu->sum('berat');
+        });
+
+        // Update total kumulatif
+        $totalKumulatifMasuk += $totalMasukHari;
+        $totalKumulatifDiolah += $totalDiolahHari;
+        $totalKumulatifResidu += $totalResiduHari;
+        $totalKumulatifPengiriman += $totalPengirimanHari;
+
+        // Hitung sisa limbah = Total Masuk Kumulatif - Total Diolah Kumulatif
+        $sisaLimbah = $totalKumulatifMasuk - $totalKumulatifDiolah;
+
+        // Hanya tampilkan baris jika ada data
+        if ($totalMasukHari > 0 || $totalDiolahHari > 0 || $sisaLimbah > 0 || $totalResiduHari > 0 || $totalPengirimanHari > 0) {
+            $sheet->setCellValue('A' . $row, $date->format('d'));
+            $sheet->setCellValue('B' . $row, number_format($totalMasukHari, 2));
+            $sheet->setCellValue('C' . $row, number_format($totalDiolahHari, 2));
+            $sheet->setCellValue('D' . $row, number_format($sisaLimbah, 2));
+            $sheet->setCellValue('E' . $row, number_format($totalKumulatifResidu, 2));
+            $sheet->setCellValue('F' . $row, number_format($totalPengirimanHari, 2));
+            $row++;
+        }
+    }
+
+    // Auto-resize kolom
+    foreach (range('A', 'F') as $col) {
+        $sheet->getColumnDimension($col)->setAutoSize(true);
+    }
+
+    // Border untuk tabel
+    $lastRow = $row - 1;
+    if ($lastRow >= 8) {
+        $sheet->getStyle("A7:F{$lastRow}")
+            ->getBorders()
+            ->getAllBorders()
+            ->setBorderStyle(Border::BORDER_THIN);
+    }
+
+    $filename = 'neraca_' . $namaBulan . '_' . $tahun . '_' . now()->format('d-m-y_H-i-s') . '.xlsx';
+    $writer = new Xlsx($spreadsheet);
+
+    // Output ke browser
+    header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    header("Content-Disposition: attachment; filename=\"{$filename}\"");
+    $writer->save('php://output');
+    exit;
+}
 
 
 }
