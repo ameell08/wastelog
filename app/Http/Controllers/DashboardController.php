@@ -382,7 +382,8 @@ class DashboardController extends Controller
             'C7' => 'Total Limbah diolah (Kg)',
             'D7' => 'Sisa Limbah',
             'E7' => 'Total Residu',
-            'F7' => 'Total pengiriman residu'
+            'F7' => 'Total pengiriman residu',
+            'G7' => 'Sisa Residu'
         ];
 
         foreach ($headers as $cell => $text) {
@@ -448,28 +449,30 @@ class DashboardController extends Controller
 
             // Hitung sisa limbah = Total Masuk Kumulatif - Total Diolah Kumulatif
             $sisaLimbah = $totalKumulatifMasuk - $totalKumulatifDiolah;
-
+            $sisaResidu = $totalKumulatifResidu - $totalKumulatifPengiriman;
             // Hanya tampilkan baris jika ada data
-            if ($totalMasukHari > 0 || $totalDiolahHari > 0 || $sisaLimbah > 0 || $totalResiduHari > 0 || $totalPengirimanHari > 0) {
+            if ($totalMasukHari > 0 || $totalDiolahHari > 0 || $sisaLimbah > 0 || $totalResiduHari > 0 || $totalPengirimanHari > 0 || $sisaResidu > 0) {
                 $sheet->setCellValue('A' . $row, $date->format('d'));
                 $sheet->setCellValue('B' . $row, number_format($totalMasukHari, 2));
                 $sheet->setCellValue('C' . $row, number_format($totalDiolahHari, 2));
                 $sheet->setCellValue('D' . $row, number_format($sisaLimbah, 2));
                 $sheet->setCellValue('E' . $row, number_format($totalKumulatifResidu, 2));
                 $sheet->setCellValue('F' . $row, number_format($totalPengirimanHari, 2));
+                $sheet->setCellValue('G' . $row, number_format($sisaResidu, 2));
+                $sheet->getStyle('A' . $row . ':G' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
                 $row++;
             }
         }
 
         // Auto-resize kolom
-        foreach (range('A', 'F') as $col) {
+        foreach (range('A', 'G') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
         // Border untuk tabel
         $lastRow = $row - 1;
         if ($lastRow >= 8) {
-            $sheet->getStyle("A7:F{$lastRow}")
+            $sheet->getStyle("A7:G{$lastRow}")
                 ->getBorders()
                 ->getAllBorders()
                 ->setBorderStyle(Border::BORDER_THIN);
