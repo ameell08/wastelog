@@ -41,6 +41,7 @@ Route::get('/dashboard/export_limbahdiolah_pdf/{bulan}', [DashboardController::c
 Route::get('/dashboard/export_limbahmasuk_excel/{bulan}', [DashboardController::class, 'exportLimbahMasukExcel']);
 Route::get('/dashboard/export_limbahdiolah_excel/{bulan}', [DashboardController::class, 'exportLimbahDiolahExcel']);
 Route::get('/dashboard/export_neraca_excel/{bulan}/{tahun}', [DashboardController::class, 'exportNeracaExcel'])->name('dashboard.export_neraca_excel');
+Route::get('/dashboard/export_neraca_pdf/{bulan}/{tahun}', [DashboardController::class, 'exportNeracaPdf'])->name('dashboard.export_neraca_pdf');
 
 //LimbahMasuk
 Route::middleware('auth')->group(function () {
@@ -55,9 +56,6 @@ Route::get('/datalimbahmasuk', [DataLimbahMasukController::class, 'index'])->nam
 Route::get('/detaillimbahmasuk/export_excel', [DataLimbahMasukController::class, 'export_excel'])->name('datalimbahmasuk.export_excel');
 Route::get('/detaillimbahmasuk-by-tanggal/{tanggal}', [DataLimbahMasukController::class, 'showByTanggal'])->name('datalimbahmasuk.showbytanggal');
 Route::get('/detaillimbahmasuk/exportexceldetail/{tanggal}', [DataLimbahMasukController::class, 'detailexportexcel'])->name('detaillimbahmasuk.detailexcportexcel');
-
-
-
 
 //LimbahDiolah
 Route::middleware('auth')->group(function () {
@@ -81,6 +79,7 @@ Route::get('/kodelimbah/{id}/edit', [KodeLimbahController::class, 'edit'])->name
 Route::put('/kodelimbah/{id}', [KodeLimbahController::class, 'update'])->name('kode-limbah.update');
 Route::delete('/kodelimbah/{id}', [KodeLimbahController::class, 'delete'])->name('kode-limbah.delete');
 });
+
 //Data Truk
 Route::middleware('auth')->group(function () {
     Route::get('/datatruk', [TrukController::class, 'index'])->name('truk.index');
@@ -90,6 +89,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/datatruk/{id}', [TrukController::class, 'update'])->name('truk.update');
     Route::delete('/datatruk/{id}', [TrukController::class, 'destroy'])->name('truk.destroy');
 });
+
 // Data Mesin
 Route::middleware('auth')->group(function () {
     Route::get('/datamesin', [MesinController::class, 'index'])->name('mesin.index');

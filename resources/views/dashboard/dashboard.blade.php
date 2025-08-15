@@ -62,12 +62,12 @@
     <div class="card card-success">
         <div class="card-header">
             <h3 class="card-title"><i class="fas fa-chart-bar"></i> Grafik Limbah Masuk & Limbah Diolah</h3>
-            <div class="d-flex justify-content-between align-items-center mb-0">
+            <div class="d-flex justify-content-between align-items-center mb-0 flex-wrap gap-2 gap-sm-3">
                     <h6 id="tanggalDetail" class="fw-bold mb-0"></h6>
-                    <div class="d-flex">
+                    <div class="d-flex align-items-center flex-wrap gap-2">
                         <!-- Filter Neraca -->
                         <div class="d-flex align-items-center me-3">
-                            <select id="filterBulan" class="form-select form-select-sm me-2" style="width: 120px;">
+                            <select id="filterBulan" class="form-select form-select-sm me-2" style="width: 140px;">
                                 <option value="1" {{ date('n') == 1 ? 'selected' : '' }}>Januari</option>
                                 <option value="2" {{ date('n') == 2 ? 'selected' : '' }}>Februari</option>
                                 <option value="3" {{ date('n') == 3 ? 'selected' : '' }}>Maret</option>
@@ -81,22 +81,29 @@
                                 <option value="11" {{ date('n') == 11 ? 'selected' : '' }}>November</option>
                                 <option value="12" {{ date('n') == 12 ? 'selected' : '' }}>Desember</option>
                             </select>
-                            <select id="filterTahun" class="form-select form-select-sm me-2" style="width: 100px;">
+                            <select id="filterTahun" class="form-select form-select-sm " style="width: 110px;">
                                 @for($year = date('Y') - 2; $year <= date('Y') + 2; $year++)
                                     <option value="{{ $year }}" {{ date('Y') == $year ? 'selected' : '' }}>{{ $year }}</option>
                                 @endfor
                             </select>
                         </div>
-                        <a href="{{url('/')}}" class=" btn btn-danger btn-sm me-2" >
-                        <i class="fas fa-file-pdf"></i> Export Neraca PDF </a>
-                    <button id="exportNeracaBtn" class="btn btn-success btn-sm border border-2 border-light" style="font-weight:bold; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
-                        <i class="fas fa-file-excel"></i> Export Neraca Excel
-                    </button>
-                     </div>
-                </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <button id="exportNeracaPdfBtn" class="btn btn-danger btn-sm border border-2 border-light"
+                                    style="font-weight:bold; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+                                <i class="fas fa-file-pdf"></i> Export Neraca PDF
+                            </button>
+                            <button id="exportNeracaBtn" class="btn btn-success btn-sm border border-2 border-light"
+                                    style="font-weight:bold; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+                                <i class="fas fa-file-excel"></i> Export Neraca Excel
+                            </button>
+                        </div>
+                    </div>
+            </div>
         </div>
         <div class="card-body">
-            <canvas id="chartGabungan" height="100"></canvas>
+            <div class="chart-wrapper">
+                <canvas id="chartGabungan"></canvas>
+            </div>
         </div>
     </div>
 </div>
@@ -112,8 +119,16 @@
         window.location.href = "{{ url('/dashboard/export_neraca_excel') }}/" + bulan + "/" + tahun;
     }
 
+     // export neraca pdf
+    function exportNeracaPdf() {
+        const bulan = document.getElementById('filterBulan').value;
+        const tahun = document.getElementById('filterTahun').value;
+        window.location.href = "{{ url('/dashboard/export_neraca_pdf') }}/" + bulan + "/" + tahun;
+    }
+
     // Event listener untuk tombol export neraca
     document.getElementById('exportNeracaBtn').addEventListener('click', exportNeracaExcel);
+    document.getElementById('exportNeracaPdfBtn').addEventListener('click', exportNeracaPdf);
     
     function exportPDF(type, bulanIndex) {
     let bulan = bulanIndex +1;
@@ -169,10 +184,14 @@ function hideTooltip() {
     if (tooltipEl) tooltipEl.style.opacity = 0;
 }
 
-new Chart(document.getElementById('chartGabungan'), {
+const ctx = document.getElementById('chartGabungan').getContext('2d');
+const chartGabungan = new Chart(ctx, {
     type: 'bar',
     data: dataGabungan,
     options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        rezizeDelay: 100,
         plugins: {
             tooltip: {
                 enabled: false,
@@ -256,5 +275,22 @@ new Chart(document.getElementById('chartGabungan'), {
     }
 });
 
+window.addEventListener('resize', () => chartGabungan.resize());
+if (window.$) {
+    $(document).on('collapsed.lte.pushmenu expanded.lte.pushmenu', () => {
+      setTimeout(() => chartGabungan.resize(), 150);
+    });
+  }
+
 </script>
+<style>
+  .chart-wrapper{
+    position: relative;
+    width: 100%;
+    height: 320px;            /* tinggi default */
+  }
+  @media (min-width: 768px){  .chart-wrapper{ height: 360px; } }
+  @media (min-width: 1200px){ .chart-wrapper{ height: 420px; } }
+</style>
+
 @endsection
