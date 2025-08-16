@@ -267,4 +267,24 @@ $(document).ready(function() {
     });
 });
 </script>
+
+<style>
+  /* hover  */
+  .dropdown-menu .dropdown-item:hover {
+    background-color: #f1f1f1 !important;
+    olor: #212529 !important;
+  }
+
+  /* Active / Focus semua item */
+  .dropdown-menu .dropdown-item:active,
+  .dropdown-menu .dropdown-item:focus {
+    background-color: #d6d6d6 !important;
+    color: #212529 !important;
+  }
+
+  .dropdown-menu .dropdown-item.text-danger:hover {
+    color: #dc3545 !important;   
+  }
+  
+</style>
 @endpush

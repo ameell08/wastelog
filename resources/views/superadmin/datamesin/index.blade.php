@@ -7,14 +7,14 @@
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
-                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert" aria-label="Close">&times;</button>
+                    {{-- <button type="button" class="btn-close-custom" data-dismiss="alert" aria-label="Close">&times;</button> --}}
                 </div>
             @endif
 
             @if (session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}
-                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert" aria-label="Close">&times;</button>
+                    {{-- <button type="button" class="btn-close-custom" data-dismiss="alert" aria-label="Close">&times;</button> --}}
                 </div>
             @endif
 
@@ -28,8 +28,8 @@
                 <div class="card-header">
                     <h5 class="card-title mb-0">Data Mesin</h5>
                     <div class="card-tools">
-                        <button type="button" class="btn btn-info btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#tambahModal">
+                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
+                            data-target="#tambahModal">
                             Tambah Data <i class="fas fa-plus ms-1"></i>
                         </button>
                     </div>
