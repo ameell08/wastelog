@@ -4,7 +4,7 @@
             <div class="modal-content">
                 <div class="modal-header bg-warning">
                     <h5 class="modal-title" id="detailModalLabel">Detail Pengiriman Residu</h5>
-                    <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                    <button type="button" class="btn-close-custom" data-dismiss="modal" aria-label="Close">&times;</button>
                 </div>
                 <div class="modal-body">
                     <div class="d-flex justify-content-between align-items-center mb-3">

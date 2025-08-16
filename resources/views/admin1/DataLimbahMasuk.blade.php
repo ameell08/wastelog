@@ -105,7 +105,7 @@
                         tbody.innerHTML += row;
                     });
 
-                    new bootstrap.Modal(document.getElementById('detailModal')).show();
+                    $('#detailModal').modal('show');
                 })
                 .catch(error => {
                     alert('Gagal mengambil detail. Pastikan server berjalan dan data tersedia.');

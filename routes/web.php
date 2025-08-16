@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Controllers\LimbahMasukController;
 use App\Http\Controllers\PengirimanResiduController;
 use App\Http\Controllers\DataPengirimanResiduController;
+use App\Http\Controllers\ProfileController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -113,4 +114,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/detailpengirimanresidu/export_excel', [DataPengirimanResiduController::class, 'export_excel'])->name('datapengirimanresidu.export_excel');
     Route::get('/detailpengirimanresidu-by-tanggal/{tanggal}', [DataPengirimanResiduController::class, 'showByTanggal'])->name('datapengirimanresidu.showbytanggal');
     Route::get('/detailpengirimanresidu/exportexceldetail/{tanggal}', [DataPengirimanResiduController::class, 'detailExportExcel'])->name('detailpengirimanresidu.detailexportexcel');
+});
+
+// Profile Management
+Route::middleware('auth')->group(function () {
+    Route::put('/profile/update', [ProfileController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/profile/change-password', [ProfileController::class, 'changePassword'])->name('profile.changePassword');
 });

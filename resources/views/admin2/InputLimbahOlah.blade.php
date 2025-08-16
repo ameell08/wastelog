@@ -7,14 +7,14 @@
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
-                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert" aria-label="Close">&times;</button>
+                    <button type="button" class="btn-close-custom" data-dismiss="alert" aria-label="Close">&times;</button>
                 </div>
             @endif
 
             @if (session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}
-                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert" aria-label="Close">&times;</button>
+                    <button type="button" class="btn-close-custom" data-dismiss="alert" aria-label="Close">&times;</button>
                 </div>
             @endif
 
@@ -24,7 +24,7 @@
                     <h5 class="card-title mb-0">Form Input Limbah Diolah</h5>
                     <div class="card-tools">
                         <button class="btn btn-success btn-sm @if($mesin->count() == 0) disabled @endif" 
-                                data-bs-toggle="modal" data-bs-target="#importModal" 
+                                data-toggle="modal" data-target="#importModal" 
                                 @if($mesin->count() == 0) disabled @endif>
                             <i class="fas fa-file-excel me-1"></i> Import Excel
                         </button>

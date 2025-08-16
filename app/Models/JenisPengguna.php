@@ -9,7 +9,7 @@ class JenisPengguna extends Model
     protected $table = 'jenis_pengguna';
     protected $primaryKey = 'id_jenis_pengguna';
 
-    protected $fillable = ['nama_jenis'];
+    protected $fillable = ['nama_jenis_pengguna', 'kode_jenis_pengguna'];
 
     public function pengguna()
     {
