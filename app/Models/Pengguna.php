@@ -12,6 +12,7 @@ class Pengguna extends Authenticatable
 
     protected $table = 'pengguna';
     protected $primaryKey = 'id';
+    public $timestamps = true;
 
     protected $fillable = [
         'nama', 'email', 'password', 'id_jenis_pengguna'
@@ -19,6 +20,10 @@ class Pengguna extends Authenticatable
 
     protected $hidden = [
         'password', 'remember_token',
+    ];
+
+    protected $casts = [
+        'email_verified_at' => 'datetime',
     ];
 
     public function jenisPengguna()
