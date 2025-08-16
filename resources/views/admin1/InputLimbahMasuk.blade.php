@@ -7,14 +7,14 @@
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
-                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert" aria-label="Close">&times;</button>
+                    <button type="button" class="btn-close-custom" data-dismiss="alert" aria-label="Close">&times;</button>
                 </div>
             @endif
 
             @if (session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}
-                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert"
+                    <button type="button" class="btn-close-custom" data-dismiss="alert"
                         aria-label="Close">&times;</button>
                 </div>
             @endif
@@ -24,7 +24,7 @@
                 <div class="card-header">
                     <h5 class="card-title mb-0">Input Limbah Masuk</h5>
                     <div class="card-tools">
-                        <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#importModal">
+                        <button class="btn btn-success btn-sm" data-toggle="modal" data-target="#importModal">
                             <i class="fas fa-file-excel"></i> Import Excel
                         </button>
                     </div>
@@ -101,7 +101,7 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">Import Data Limbah Masuk</h5>
-                            <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                            <button type="button" class="btn-close-custom" data-dismiss="modal" aria-label="Close">&times;</button>
                         </div>
                         <div class="modal-body">
                             <div class="form-group mb-3">
@@ -118,7 +118,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" data-bs-dismiss="modal" class="btn btn-secondary">Batal</button>
+                            <button type="button" data-dismiss="modal" class="btn btn-secondary">Batal</button>
                             <button type="submit" class="btn btn-primary">Upload</button>
                         </div>
                     </div>

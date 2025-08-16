@@ -7,14 +7,14 @@
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
                     {{ session('success') }}
-                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert" aria-label="Close">&times;</button>
+                    <button type="button" class="btn-close-custom" data-dismiss="alert" aria-label="Close">&times;</button>
                 </div>
             @endif
 
             @if (session('error'))
                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
                     {{ session('error') }}
-                    <button type="button" class="btn-close-custom" data-bs-dismiss="alert"
+                    <button type="button" class="btn-close-custom" data-dismiss="alert"
                         aria-label="Close">&times;</button>
                 </div>
             @endif
@@ -120,7 +120,7 @@
                         tbody.innerHTML += row;
                     });
 
-                    new bootstrap.Modal(document.getElementById('detailModal')).show();
+                    $('#detailModal').modal('show');
                 })
                 .catch(error => {
                     alert('Gagal mengambil detail. Pastikan server berjalan dan data tersedia.');

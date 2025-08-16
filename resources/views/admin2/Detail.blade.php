@@ -4,7 +4,7 @@
             <div class="modal-header bg-warning">
                 <h5 class="modal-title" id="detailDiolahLabel">DETAIL LIMBAH DIOLAH</h5>
                 <h5 class="ms-auto">Mesin <span id="mesinTitle">-</span></h5>
-                <button type="button" class="btn-close-custom" data-bs-dismiss="modal"
+                <button type="button" class="btn-close-custom" data-dismiss="modal"
                     aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
@@ -172,7 +172,7 @@
                     `;
                     }
 
-                    new bootstrap.Modal(document.getElementById('detailDiolahModal')).show();
+                    $('#detailDiolahModal').modal('show');
                 })
                 .catch(error => {
                     alert('Gagal mengambil data detail!');
@@ -191,7 +191,7 @@
                     globalDetailData = data; // simpan data global untuk filter
                     document.getElementById('mesinTitle').textContent = no_mesin;
                     renderDetailTable(data);
-                    new bootstrap.Modal(document.getElementById('detailDiolahModal')).show();
+                    $('#detailDiolahModal').modal('show');
                 })
                 .catch(error => {
                     alert('Gagal mengambil data detail!');

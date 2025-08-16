@@ -6,7 +6,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Import Data Limbah Diolah</h5>
-                <button type="button" class="btn-close-custom" data-bs-dismiss="modal" aria-label="Close">&times;</button>
+                <button type="button" class="btn-close-custom" data-dismiss="modal" aria-label="Close">&times;</button>
             </div>
             <div class="modal-body">
                 @if(isset($mesin) && $mesin->count() == 0)
@@ -31,7 +31,7 @@
                 
             </div>
             <div class="modal-footer">
-                <button type="button" data-bs-dismiss="modal" class="btn btn-secondary">Batal</button>
+                <button type="button" data-dismiss="modal" class="btn btn-secondary">Batal</button>
                 @if(isset($mesin) && $mesin->count() > 0)
                     <button type="submit" class="btn btn-primary">Import</button>
                 @endif

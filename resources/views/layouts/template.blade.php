@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>WasteLog - Sistem Pendataan Limbah Medis Masuk dan Diolah </title>
     <link rel="icon" href="{{ asset('logo2.png') }}" type="image/png" />
 
@@ -89,8 +90,6 @@
     {{-- <script src="{{ asset('adminlte/plugins/jquery-validation/jquery.validate.min.js') }}"></script>
     <script src="{{ asset('adminlte/plugins/jquery-validation/additional-methods.min.js') }}"></script> --}}
 
-    <script src="{{ asset('adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-
     <script>
         //untuk mengirimkan token laravel CSRF pada setiap request ajax
         $.ajaxSetup({
@@ -100,19 +99,13 @@
         });
     </script>
     @stack('js') <!-- digunakan untuk memanggil custom cs dari perintah push('js') pada masing -masing view -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Script global -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- Select2 -->
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     @stack('scripts') {{-- tempat untuk push script dari blade lain --}}
 
     @yield('scripts')
-    @stack('scripts')
     <!-- digunakan untuk memanggil custom js dari perintah push('scripts') pada masing - masing view -->
 </body>
 
