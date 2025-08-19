@@ -40,22 +40,25 @@
             border: none !important;
         }
 
-        .title-1 {
-            font-size: 13pt;
-            font-weight: bold;
-            text-align: center;
-        }
-
         .title-2 {
             font-size: 12pt;
             font-weight: bold;
             text-align: center;
-            margin-bottom: 8px;
+            margin-top: 5px;
         }
 
-        .meta {
+        .title-3 {
+            font-size: 12pt;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 5px;
+            margin-bottom: 12px;
+        }
+
+        .meta-small {
             font-size: 11pt;
-            margin: 6px 0 10px 0;
+            margin: 3px 0 10px 0;
+            margin-bottom: 5px;
         }
 
         .border-bottom-header {
@@ -97,11 +100,12 @@
         </tr>
     </table>
 
-    <div class="title-1">NERACA PENGELOLAAN LIMBAH</div>
-    <div class="title-2">BAHAN BERBAHAYA DAN BERACUN</div>
-
-    <div class="meta"><b>Bulan: {{ $namaBulan }}</b></div>
-    <div class="meta"><b>Tahun: {{ $tahun }}</b></div>
+    <div class="title-2">NERACA PENGOLAHAN LIMBAH</div>
+    <div class="title-3">BAHAN BERBAHAYA DAN BERACUN</div>
+    
+    <div class="meta-small"><b>Kegiatan : Pengolahan dengan Insinerator</b></div>
+    <div class="meta-small"><b>Bulan: {{ $namaBulan }}</b></div>
+    <div class="meta-small"><b>Tahun: {{ $tahun }}</b></div>
 
     <table>
         <colgroup>
