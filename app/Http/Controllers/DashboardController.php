@@ -361,8 +361,9 @@ class DashboardController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
 
         // Header utama
-        $sheet->setCellValue('A1', 'PENGELOLAAN LIMBAH BAHAN BERBAHAYA DAN BERACUN');
+        $sheet->setCellValue('A1', 'PENGOLAHAN LIMBAH BAHAN BERBAHAYA DAN BERACUN');
         $sheet->setCellValue('A2', 'PT PUTRA RESTU IBU ABADI');
+        $sheet->setCellValue('A3', 'Kegiatan : Pengolahan dengan Insinerator');
         $sheet->setCellValue('A4', 'Bulan : ' . $namaBulan);
         $sheet->setCellValue('A5', 'Tahun : ' . $tahun);
 
@@ -373,7 +374,7 @@ class DashboardController extends Controller
         // Style header
         $sheet->getStyle('A1:A2')->getFont()->setBold(true)->setSize(14);
         $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-        $sheet->getStyle('A4:A5')->getFont()->setBold(true);
+        $sheet->getStyle('A3:A5')->getFont()->setBold(true);
 
         // Header tabel
         $headers = [
@@ -477,6 +478,10 @@ class DashboardController extends Controller
                 ->getAllBorders()
                 ->setBorderStyle(Border::BORDER_THIN);
         }
+
+        $sheet->setCellValue('G' . ($lastRow + 2), 'Dicetak pada: ' . now()->format('d/m/Y H:i'));
+        $sheet->getStyle('G' . ($lastRow + 2))->getFont()->setSize(10)->setItalic(true);
+        $sheet->getStyle('G' . ($lastRow + 2))->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 
         $filename = 'neraca_' . $namaBulan . '_' . $tahun . '_' . now()->format('d-m-y_H-i-s') . '.xlsx';
         $writer = new Xlsx($spreadsheet);
