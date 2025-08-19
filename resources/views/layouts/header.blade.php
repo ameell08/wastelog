@@ -16,7 +16,7 @@
       <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         <div class="user-panel d-flex align-items-center">
           <div class="image">
-            <img src="{{ asset('adminlte/dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image" style="width: 25px; height: 25px;">
+            <img src="{{ asset('img/user.png') }}" class="img-circle elevation-2" alt="User Image" style="width: 25px; height: 25px;">
           </div>
           <div class="info ml-2">
             <span class="text-dark">{{ Auth::user()->nama ?? 'User' }}</span>
@@ -132,7 +132,7 @@
         <div class="modal-body">
           @csrf
           <div class="text-center mb-3">
-            <img src="{{ asset('adminlte/dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image" style="width: 80px; height: 80px;">
+            <img src="{{ asset('img/user.png') }}" class="img-circle elevation-2" alt="User Image" style="width: 80px; height: 80px;">
           </div>
           <div class="form-group">
             <label for="editUserName">Name</label>

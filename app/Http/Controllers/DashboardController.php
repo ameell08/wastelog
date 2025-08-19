@@ -478,10 +478,11 @@ class DashboardController extends Controller
                 ->getAllBorders()
                 ->setBorderStyle(Border::BORDER_THIN);
         }
-
+        
         $sheet->setCellValue('G' . ($lastRow + 2), 'Dicetak pada: ' . now()->format('d/m/Y H:i'));
-        $sheet->getStyle('G' . ($lastRow + 2))->getFont()->setSize(10)->setItalic(true);
-        $sheet->getStyle('G' . ($lastRow + 2))->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+        $sheet->setCellValue('G' . ($lastRow + 3), 'Dicetak oleh: ' . auth()->user()->nama);
+        $sheet->getStyle('G' . ($lastRow + 2) . ':G' . ($lastRow + 3))->getFont()->setSize(10)->setItalic(true);
+        $sheet->getStyle('G' . ($lastRow + 2) . ':G' . ($lastRow + 3))->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 
         $filename = 'neraca_' . $namaBulan . '_' . $tahun . '_' . now()->format('d-m-y_H-i-s') . '.xlsx';
         $writer = new Xlsx($spreadsheet);
