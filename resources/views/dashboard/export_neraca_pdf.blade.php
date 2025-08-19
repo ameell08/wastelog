@@ -143,6 +143,8 @@
     <p style="font-size:10pt; text-align:right; margin-top:10px;">
         Dicetak pada: {{ \Carbon\Carbon::now()->format('d/m/Y H:i') }}
     </p>
+    <p style="font-size:10pt; text-align:right;">
+        Dicetak oleh: {{ Auth::user()->nama }}
 
     <table class="no-border" style="margin-top:30px; width:100%;">
         <tr class="no-border">
