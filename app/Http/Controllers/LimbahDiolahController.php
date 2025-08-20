@@ -73,6 +73,7 @@ class LimbahDiolahController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'tanggal' => 'required|date',
             'detail.*.mesin_id' => [
                 'required',
                 'exists:mesin,id',
@@ -119,7 +120,7 @@ class LimbahDiolahController extends Controller
                     'limbah_diolah_id' => $limbahDiolah->id,
                     'kode_limbah_id' => $kodeLimbahId,
                     'berat_kg' => $beratDibutuhkan,
-                    'tanggal_input' => now(),
+                    'tanggal_input' => $request->tanggal,
                 ]);
 
                 // Proses pengurangan sisa limbah dengan sistem FIFO
