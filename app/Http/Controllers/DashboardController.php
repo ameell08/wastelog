@@ -32,7 +32,12 @@ class DashboardController extends Controller
         $today = now()->toDateString();
 
         $limbahmasuk = LimbahMasuk::whereDate('tanggal', $today)->sum('total_kg');
-        $limbahdiolah = LimbahDiolah::whereDate('created_at', $today)->sum('total_kg');
+        
+        // Menggunakan tanggal_input dari detail_limbah_diolah
+        $limbahdiolah = DB::table('detail_limbah_diolah')
+            ->whereDate('tanggal_input', $today)
+            ->sum('berat_kg');
+            
         $sisalimbah = SisaLimbah::whereDate('tanggal', '<=', $today)->sum('berat_kg');
 
         // Hitung total residu limbah dari tabel antrean_residu (data yang sebenarnya tersimpan)
@@ -63,8 +68,10 @@ class DashboardController extends Controller
             ->groupByRaw('MONTH(tanggal)')
             ->pluck('total', 'bulan');
 
-        $diolah = LimbahDiolah::selectRaw('MONTH(created_at) as bulan, SUM(total_kg) as total')
-            ->groupByRaw('MONTH(created_at)')
+        // Menggunakan tanggal_input dari detail_limbah_diolah
+        $diolah = DB::table('detail_limbah_diolah')
+            ->selectRaw('MONTH(tanggal_input) as bulan, SUM(berat_kg) as total')
+            ->groupByRaw('MONTH(tanggal_input)')
             ->pluck('total', 'bulan');
 
         $sisa = SisaLimbah::selectRaw('MONTH(tanggal) as bulan, SUM(berat_kg) as total')
@@ -123,7 +130,13 @@ class DashboardController extends Controller
 
     public function exportLimbahDiolahPdf($bulan)
     {
-        $limbahDiolah = LimbahDiolah::whereMonth('created_at', $bulan)->get();
+        // Menggunakan tanggal_input dari detail_limbah_diolah
+        $limbahDiolah = LimbahDiolah::with(['detailLimbahDiolah.kodeLimbah', 'mesin'])
+            ->whereHas('detailLimbahDiolah', function($query) use ($bulan) {
+                $query->whereMonth('tanggal_input', $bulan);
+            })
+            ->get();
+            
         $namaBulan = [
             1 => 'Januari',
             2 => 'Februari',
@@ -236,9 +249,11 @@ class DashboardController extends Controller
 
     public function exportLimbahDiolahExcel($bulan)
     {
+        // Menggunakan tanggal_input dari detail_limbah_diolah
         $limbahDiolah = LimbahDiolah::with(['detailLimbahDiolah.kodeLimbah', 'mesin'])
-            ->whereMonth('created_at', $bulan)
-            ->orderBy('created_at', 'desc')
+            ->whereHas('detailLimbahDiolah', function($query) use ($bulan) {
+                $query->whereMonth('tanggal_input', $bulan);
+            })
             ->get();
 
         $namaBulan = [
@@ -289,7 +304,7 @@ class DashboardController extends Controller
                 $flueGas = $flyAsh * 0.01;
 
                 // Set nilai ke sheet
-                $sheet->setCellValue('A' . $row, $item->created_at->format('Y-m-d'));
+                $sheet->setCellValue('A' . $row, \Carbon\Carbon::parse($detail->tanggal_input)->format('Y-m-d'));
                 $sheet->setCellValue('B' . $row, $item->mesin->no_mesin ?? '-');
                 $sheet->setCellValue('C' . $row, $detail->kodeLimbah->kode ?? '-');
                 $sheet->setCellValue('D' . $row, number_format($berat, 2));
@@ -324,10 +339,12 @@ class DashboardController extends Controller
             ->whereYear('tanggal', $tahun)
             ->get();
 
-        // Data Limbah Diolah
+        // Data Limbah Diolah - menggunakan tanggal_input dari detail_limbah_diolah
         $limbahDiolah = LimbahDiolah::with(['detailLimbahDiolah.kodeLimbah'])
-            ->whereMonth('created_at', $bulan)
-            ->whereYear('created_at', $tahun)
+            ->whereHas('detailLimbahDiolah', function($query) use ($bulan, $tahun) {
+                $query->whereMonth('tanggal_input', $bulan)
+                      ->whereYear('tanggal_input', $tahun);
+            })
             ->get();
 
         // Data Sisa Limbah
@@ -415,18 +432,18 @@ class DashboardController extends Controller
                     return $item->detailLimbahMasuk->sum('berat_kg');
                 });
 
-            // Total limbah diolah per hari
-            $totalDiolahHari = $limbahDiolah->filter(function ($item) use ($tanggal) {
-                return $item->created_at->format('Y-m-d') === $tanggal;
-            })->sum(function ($item) {
-                return $item->detailLimbahDiolah->sum('berat_kg');
+            // Total limbah diolah per hari - menggunakan tanggal_input
+            $totalDiolahHari = $limbahDiolah->sum(function ($item) use ($tanggal) {
+                return $item->detailLimbahDiolah->filter(function ($detail) use ($tanggal) {
+                    return \Carbon\Carbon::parse($detail->tanggal_input)->format('Y-m-d') === $tanggal;
+                })->sum('berat_kg');
             });
 
-            // Hitung total residu dari limbah diolah per hari
-            $totalResiduHari = $limbahDiolah->filter(function ($item) use ($tanggal) {
-                return $item->created_at->format('Y-m-d') === $tanggal;
-            })->sum(function ($item) {
-                return $item->detailLimbahDiolah->sum(function ($detail) {
+            // Hitung total residu dari limbah diolah per hari - menggunakan tanggal_input
+            $totalResiduHari = $limbahDiolah->sum(function ($item) use ($tanggal) {
+                return $item->detailLimbahDiolah->filter(function ($detail) use ($tanggal) {
+                    return \Carbon\Carbon::parse($detail->tanggal_input)->format('Y-m-d') === $tanggal;
+                })->sum(function ($detail) {
                     $berat = $detail->berat_kg;
                     $bottomAsh = $berat * 0.02;
                     $flyAsh = $bottomAsh * 0.004;
@@ -501,9 +518,12 @@ class DashboardController extends Controller
             ->whereYear('tanggal', $tahun)
             ->get();
 
+        // Menggunakan tanggal_input dari detail_limbah_diolah
         $limbahDiolah = LimbahDiolah::with(['detailLimbahDiolah'])
-            ->whereMonth('created_at', $bulan)
-            ->whereYear('created_at', $tahun)
+            ->whereHas('detailLimbahDiolah', function($query) use ($bulan, $tahun) {
+                $query->whereMonth('tanggal_input', $bulan)
+                      ->whereYear('tanggal_input', $tahun);
+            })
             ->get();
 
         $pengirimanResidu = \App\Models\PengirimanResidu::with(['detailPengirimanResidu'])
@@ -543,21 +563,23 @@ class DashboardController extends Controller
                 return $lm->detailLimbahMasuk->sum('berat_kg');
             });
 
-            $diolahHarian = $limbahDiolah
-                ->filter(fn($ld) => $ld->created_at->format('Y-m-d') === $tglStr)
-                ->sum(fn($ld) => $ld->detailLimbahDiolah->sum('berat_kg'));
+            $diolahHarian = $limbahDiolah->sum(function ($ld) use ($tglStr) {
+                return $ld->detailLimbahDiolah->filter(function ($det) use ($tglStr) {
+                    return \Carbon\Carbon::parse($det->tanggal_input)->format('Y-m-d') === $tglStr;
+                })->sum('berat_kg');
+            });
 
-            $residuHarian = $limbahDiolah
-                ->filter(fn($ld) => $ld->created_at->format('Y-m-d') === $tglStr)
-                ->sum(function ($ld) {
-                    return $ld->detailLimbahDiolah->sum(function ($det) {
-                        $berat = (float) $det->berat_kg;
-                        $bottom = $berat * 0.02;
-                        $fly    = $bottom * 0.004;
-                        $flue   = $fly * 0.01;
-                        return $bottom + $fly + $flue;
-                    });
+            $residuHarian = $limbahDiolah->sum(function ($ld) use ($tglStr) {
+                return $ld->detailLimbahDiolah->filter(function ($det) use ($tglStr) {
+                    return \Carbon\Carbon::parse($det->tanggal_input)->format('Y-m-d') === $tglStr;
+                })->sum(function ($det) {
+                    $berat = (float) $det->berat_kg;
+                    $bottom = $berat * 0.02;
+                    $fly    = $bottom * 0.004;
+                    $flue   = $fly * 0.01;
+                    return $bottom + $fly + $flue;
                 });
+            });
 
             $kirimHarian = $pengirimanResidu
                 ->filter(fn($pr) => $pr->tanggal_pengiriman->format('Y-m-d') === $tglStr)
