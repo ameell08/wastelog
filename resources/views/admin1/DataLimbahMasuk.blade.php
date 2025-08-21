@@ -71,7 +71,7 @@
                         </tbody>
                     </table>
 
-                    {{ $limbahMasuk->links() }}
+                    {{ $limbahMasuk->links('pagination::bootstrap-5') }}
                 </div>
             </div>
         </div>

@@ -126,7 +126,6 @@
         window.location.href = "{{ url('/dashboard/export_neraca_pdf') }}/" + bulan + "/" + tahun;
     }
 
-    // Event listener untuk tombol export neraca
     document.getElementById('exportNeracaBtn').addEventListener('click', exportNeracaExcel);
     document.getElementById('exportNeracaPdfBtn').addEventListener('click', exportNeracaPdf);
     
@@ -214,8 +213,7 @@ const chartGabungan = new Chart(ctx, {
                         }, 1200); 
                         return;
                     }
-
-                    // Jika tooltip muncul, batalkan timeout hide
+        
                     if (hideTooltipTimeout) clearTimeout(hideTooltipTimeout);
 
                      if (tooltipModel.body) {
@@ -287,7 +285,7 @@ if (window.$) {
   .chart-wrapper{
     position: relative;
     width: 100%;
-    height: 320px;            /* tinggi default */
+    height: 320px;          
   }
   @media (min-width: 768px){  .chart-wrapper{ height: 360px; } }
   @media (min-width: 1200px){ .chart-wrapper{ height: 420px; } }

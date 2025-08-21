@@ -81,8 +81,8 @@
                             @endforelse
                         </tbody>
                     </table>
-
-                    {{ $pengirimanResidu->links() }}
+                    
+                    {{ $pengirimanResidu->links('pagination::bootstrap-5') }}
                 </div>
             </div>
         </div>
