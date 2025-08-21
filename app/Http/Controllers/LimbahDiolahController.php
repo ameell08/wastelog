@@ -171,6 +171,7 @@ class LimbahDiolahController extends Controller
     {
         $request->validate([
             'file_limbah_olah' => 'required|file|mimes:xlsx,xls',
+            'tanggal' => 'required|date',
         ]);
 
         DB::beginTransaction();
@@ -181,6 +182,11 @@ class LimbahDiolahController extends Controller
 
             // Lewati baris header (baris 0)
             foreach (array_slice($rows, 1) as $row) {
+                // Skip baris kosong
+                if (empty(array_filter($row))) {
+                    continue;
+                }
+
                 [$noMesin, $kodeLimbah, $beratKg] = $row;
 
                 // Cari mesin dan kode limbah berdasarkan nilai dari Excel
@@ -218,11 +224,14 @@ class LimbahDiolahController extends Controller
                     'limbah_diolah_id' => $limbahDiolah->id,
                     'kode_limbah_id' => $kode->id,
                     'berat_kg' => $beratKg,
-                    'tanggal_input' => now(),
+                    'tanggal_input' => $request->tanggal,
                 ]);
 
                 // Proses pengurangan sisa limbah dengan sistem FIFO
                 SisaLimbah::processFifoConsumption($kode->id, $beratKg);
+
+                // Tambahkan residu otomatis ke antrean_residu
+                $this->createResiduFromLimbahDiolah($beratKg, $request->tanggal);
             }
 
             DB::commit();
@@ -242,8 +251,30 @@ class LimbahDiolahController extends Controller
         $sheet->setCellValue('B1', 'kode_limbah');
         $sheet->setCellValue('C1', 'berat_kg');
 
+        // Set style untuk header
+        $sheet->getStyle('A1:C1')->getFont()->setBold(true);
+        $sheet->getStyle('A1:C1')->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FFE0E0E0');
+
+        // Tambahkan contoh data
+        $sheet->setCellValue('A2', 'INS001');
+        $sheet->setCellValue('B2', 'A101');
+        $sheet->setCellValue('C2', '100');
+
+        // Auto-size kolom
+        foreach (['A', 'B', 'C'] as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+
+        // Tambahkan border untuk tabel
+        $sheet->getStyle('A1:C3')
+            ->getBorders()
+            ->getAllBorders()
+            ->setBorderStyle(Border::BORDER_THIN);
+
         $writer = new Xlsx($spreadsheet);
-        $filename = 'template_import_limbah.xlsx';
+        $filename = 'template_import_limbah_diolah.xlsx';
 
         // Download response
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
