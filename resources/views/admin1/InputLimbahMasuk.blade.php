@@ -51,7 +51,7 @@
                             <tbody>
                                 <tr>
                                     <td>
-                                        <select name="detail[0][truk_id]" class="form-control" required>
+                                        <select name="detail[0][truk_id]" class="form-control select2" required>
                                             <option value="">Pilih Plat Nomor</option>
                                             @foreach ($truks as $truk)
                                                 <option value="{{ $truk->id }}">{{ $truk->plat_nomor }}</option>
@@ -144,7 +144,7 @@
                 const newRow = $(`
                 <tr>
                     <td>
-                        <select name="detail[${rowIndex}][truk_id]" class="form-control" required>
+                        <select name="detail[${rowIndex}][truk_id]" class="form-control select2" required>
                             <option value="">Pilih Plat Nomor</option>
                             @foreach ($truks as $truk)
                                 <option value="{{ $truk->id }}">{{ $truk->plat_nomor }}</option>
@@ -198,7 +198,7 @@
             if (!val) return;
             if (map[val]) {
                 duplicate = true;
-                // tandai keduanya
+                
                 this.setCustomValidity('Ubah kode. Kode tidak boleh sama');
                 map[val].setCustomValidity('Ubah kode. Kode tidak boleh sama');
                 $(this).add(map[val]).addClass('is-invalid');
@@ -208,7 +208,7 @@
         });
 
             if (showMessageForCurrent && currentEl) {
-                currentEl.reportValidity(); // tampilkan bubble bawaan browser
+                currentEl.reportValidity(); 
             }
                 return duplicate;
             }
@@ -217,7 +217,7 @@
                 checkDuplicateFestronik(true, this);
             });
 
-            // blokir submit kalau masih ada duplikat
+            // blokir submit 
             $('form[action="{{ route('limbahmasuk.store') }}"]').on('submit', function (e) {
                 if (checkDuplicateFestronik(true, $('.kode_festronik').filter(function(){return this.validationMessage;})[0])) {
                 e.preventDefault();
@@ -227,7 +227,6 @@
     </script>
 
     <style>
-        /* Samakan tinggi Select2 dan input */
         .select2-container--default .select2-selection--single {
             height: 38px !important;
             padding: 6px 12px;

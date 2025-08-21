@@ -205,7 +205,7 @@
                     width: '100%'
                 });
 
-                // Update kode limbah options for new row
+                // Update kode limbah 
                 updateKodeLimbahOptions(rowIndex);
 
                 rowIndex++;
@@ -215,20 +215,20 @@
                 $(this).closest('tr').remove();
             });
 
-            // Handler untuk perubahan kode limbah
+            // perubahan kode limbah
             $(document).on('change', '.kode-limbah-select', function() {
                 const row = $(this).data('row');
                 const kodeLimbahId = $(this).val();
                 updateStokTersediaFifo(row, kodeLimbahId);
             });
 
-            // Handler untuk input berat
+            // input berat
             $(document).on('input', '.berat-input', function() {
                 const row = $(this).data('row');
                 validateBeratInput(row);
             });
 
-            // Validasi form sebelum submit
+            // Validasi form
             $('#pengirimanForm').on('submit', function(e) {
                 let isValid = true;
                 let errorMessage = '';
@@ -258,7 +258,7 @@
             const select = $(`.kode-limbah-select[data-row="${row}"]`);
             select.empty().append('<option value="">Pilih Kode Limbah</option>');
             
-            // Group antrean residu berdasarkan kode limbah
+            // antrean residu
             const groupedResidu = {};
             antreanResiduData.forEach(residu => {
                 if (!groupedResidu[residu.kode_limbah_id]) {
@@ -276,7 +276,6 @@
         }
 
         function updateTanggalMasukOptions(row, kodeLimbahId) {
-            // Fungsi ini tidak digunakan lagi karena sistem FIFO otomatis
         }
 
         function updateStokTersediaFifo(row, kodeLimbahId) {
@@ -290,7 +289,7 @@
                 );
                 
                 if (filteredResidu.length > 0) {
-                    // Hitung total stok tersedia (jumlahkan semua sisa berat)
+                    // Hitung total stok tersedia (total sisa berat)
                     const totalStok = filteredResidu.reduce((total, residu) => {
                         return total + parseFloat(residu.sisa_berat_raw);
                     }, 0);
