@@ -22,6 +22,13 @@
                             <small id="error-file_limbah_olah" class="error-text form-text text-danger"></small>
                         </a>
                     </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="tanggal_import">Tanggal Input</label>
+                        <input type="date" name="tanggal" id="tanggal_import" class="form-control" value="{{ date('Y-m-d') }}" required>
+                        <small class="form-text text-muted">Tanggal ini akan digunakan untuk semua data yang diimport</small>
+                    </div>
+
                 <div class="form-group mb-3">
                         <label>Pilih File Excel</label>
                         <input type="file" name="file_limbah_olah" id="file_limbah_olah" class="form-control" accept=".xlsx,.xls" required>
