@@ -23,8 +23,14 @@
                 <div class="card-header">
                     <h5 class="card-title mb-0">Data Limbah Masuk</h5>
                     <div class="card-tools">
-                        <a href="{{ route('datalimbahmasuk.export_excel') }}" class="btn btn-success btn-sm"><i
-                                class="fas fa-file-excel"></i> Export Excel</a>
+                        <a href="{{ route('datalimbahmasuk.export_excel', [
+                            'tanggal' => request('tanggal'),
+                            'sort' => request('sort', 'tanggal'),
+                            'direction' => request('direction', 'desc'),
+                        ]) }}"
+                            class="btn btn-success btn-sm">
+                            <i class="fas fa-file-excel"></i> Export Excel
+                        </a>
                     </div>
                 </div>
 
@@ -44,18 +50,30 @@
                                 @endif
                             </form>
                         </div>
-
                     </div>
 
                     <table class="table table-bordered table-striped ">
                         <thead class="table-light">
                             <tr>
                                 <th>No</th>
-                                <th>Tanggal Masuk</th>
+                                <th>
+                                    <a href="{{ route('datalimbahmasuk.index', [
+                                        'tanggal' => request('tanggal'),
+                                        'sort' => 'tanggal',
+                                        'direction' => request('direction') === 'asc' ? 'desc' : 'asc',
+                                    ]) }}"
+                                        class="text-decoration-none text-dark d-flex align-items-center justify-content-between">
+                                        <span>Tanggal Masuk</span>
+                                        <span class="sort-icon">
+                                            <i class="fas fa-sort"></i>
+                                        </span>
+                                    </a>
+                                </th>
                                 <th>Berat (Kg)</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
+
                         <tbody>
                             @foreach ($limbahMasuk as $index => $item)
                                 <tr>
@@ -130,5 +148,10 @@
         .btn-close-custom:hover {
             opacity: 1;
         }
+
+        .sort-icon i {
+            color: #a4aaaf;
+        }
+
     </style>
 @endpush
