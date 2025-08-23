@@ -359,6 +359,38 @@ class DashboardController extends Controller
             ->whereYear('tanggal_pengiriman', $tahun)
             ->get();
 
+        // Hitung sisa limbah dari bulan sebelumnya
+        $bulanSebelumnya = $bulan - 1;
+        $tahunSebelumnya = $tahun;
+        
+        if ($bulanSebelumnya <= 0) {
+            $bulanSebelumnya = 12;
+            $tahunSebelumnya = $tahun - 1;
+        }
+
+        // Total limbah masuk bulan sebelumnya
+        $totalMasukBulanSebelumnya = LimbahMasuk::with(['detailLimbahMasuk'])
+            ->whereMonth('tanggal', $bulanSebelumnya)
+            ->whereYear('tanggal', $tahunSebelumnya)
+            ->get()
+            ->sum(function ($item) {
+                return $item->detailLimbahMasuk->sum('berat_kg');
+            });
+
+        // Total limbah diolah bulan sebelumnya
+        $totalDiolahBulanSebelumnya = LimbahDiolah::with(['detailLimbahDiolah'])
+            ->whereHas('detailLimbahDiolah', function($query) use ($bulanSebelumnya, $tahunSebelumnya) {
+                $query->whereMonth('tanggal_input', $bulanSebelumnya)
+                      ->whereYear('tanggal_input', $tahunSebelumnya);
+            })
+            ->get()
+            ->sum(function ($item) {
+                return $item->detailLimbahDiolah->sum('berat_kg');
+            });
+
+        // Sisa limbah dari bulan sebelumnya
+        $sisaLimbahBulanSebelumnya = $totalMasukBulanSebelumnya - $totalDiolahBulanSebelumnya;
+
         $namaBulan = [
             1 => 'Januari',
             2 => 'Februari',
@@ -465,8 +497,8 @@ class DashboardController extends Controller
             $totalKumulatifResidu += $totalResiduHari;
             $totalKumulatifPengiriman += $totalPengirimanHari;
 
-            // Hitung sisa limbah = Total Masuk Kumulatif - Total Diolah Kumulatif
-            $sisaLimbah = $totalKumulatifMasuk - $totalKumulatifDiolah;
+            // Hitung sisa limbah = (Sisa Bulan Sebelumnya + Total Masuk Kumulatif) - Total Diolah Kumulatif
+            $sisaLimbah = $sisaLimbahBulanSebelumnya + $totalKumulatifMasuk - $totalKumulatifDiolah;
             $sisaResidu = $totalKumulatifResidu - $totalKumulatifPengiriman;
             // Hanya tampilkan baris jika ada data
             if ($totalMasukHari > 0 || $totalDiolahHari > 0 || $sisaLimbah > 0 || $totalResiduHari > 0 || $totalPengirimanHari > 0 || $sisaResidu > 0) {
@@ -531,6 +563,38 @@ class DashboardController extends Controller
             ->whereYear('tanggal_pengiriman', $tahun)
             ->get();
 
+        // Hitung sisa limbah dari bulan sebelumnya
+        $bulanSebelumnya = $bulan - 1;
+        $tahunSebelumnya = $tahun;
+        
+        if ($bulanSebelumnya <= 0) {
+            $bulanSebelumnya = 12;
+            $tahunSebelumnya = $tahun - 1;
+        }
+
+        // Total limbah masuk bulan sebelumnya
+        $totalMasukBulanSebelumnya = LimbahMasuk::with(['detailLimbahMasuk'])
+            ->whereMonth('tanggal', $bulanSebelumnya)
+            ->whereYear('tanggal', $tahunSebelumnya)
+            ->get()
+            ->sum(function ($item) {
+                return $item->detailLimbahMasuk->sum('berat_kg');
+            });
+
+        // Total limbah diolah bulan sebelumnya
+        $totalDiolahBulanSebelumnya = LimbahDiolah::with(['detailLimbahDiolah'])
+            ->whereHas('detailLimbahDiolah', function($query) use ($bulanSebelumnya, $tahunSebelumnya) {
+                $query->whereMonth('tanggal_input', $bulanSebelumnya)
+                      ->whereYear('tanggal_input', $tahunSebelumnya);
+            })
+            ->get()
+            ->sum(function ($item) {
+                return $item->detailLimbahDiolah->sum('berat_kg');
+            });
+
+        // Sisa limbah dari bulan sebelumnya
+        $sisaLimbahBulanSebelumnya = $totalMasukBulanSebelumnya - $totalDiolahBulanSebelumnya;
+
         $namaBulan = [
             1 => 'Januari',
             2 => 'Februari',
@@ -594,7 +658,7 @@ class DashboardController extends Controller
             $kumMasuk  += $masukHarian;
             $kumDiolah += $diolahHarian;
             $kumResidu += $residuHarian;
-            $sisa       = $kumMasuk - $kumDiolah;
+            $sisa       = $sisaLimbahBulanSebelumnya + $kumMasuk - $kumDiolah;
 
             if ($firstDayWithData !== null && $d->greaterThanOrEqualTo($firstDayWithData)) {
                 $rows[] = [
