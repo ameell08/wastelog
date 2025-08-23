@@ -118,10 +118,11 @@
 
 <!-- Styling khusus -->
 <style>
+    .main-sidebar {
+        background-color: #0a3926 !important;
+    }
     .sidebar {
-        background-color: #0a3926;
         height: 100vh;
-        position: fixed;
         width: 250px;
         overflow-y: auto;
         padding: 8px;
