@@ -56,6 +56,7 @@
                             <input type="date" name="tanggal" class="form-control" value="{{ date('Y-m-d') }}" required>
                         </div>
 
+                        <div class="table-responsive">
                         <table class="table table-bordered" id="limbahTable">
                             <thead class="table-light">
                                 <tr>
@@ -68,7 +69,7 @@
                             <tbody>
                                 <tr>
                                     <td>
-                                        <select name="detail[0][mesin_id]" class="form-control" required>
+                                        <select name="detail[0][mesin_id]" class="form-control" required style="min-width:120px;>
                                             <option value="">Pilih Mesin</option>
                                             @foreach ($mesin as $m)
                                                 <option value="{{ $m->id }}">{{ $m->no_mesin }} 
@@ -88,7 +89,7 @@
                                     </td>
                                     <td>
                                         <input type="number" name="detail[0][berat_kg]" class="form-control" required
-                                             min="0.01" step="0.01">
+                                             min="0.01" step="0.01" style="min-width:120px;">
                                     </td>
                                     <td>
                                         <button type="button" class="btn btn-sm btn-danger remove-row">Hapus</button>
@@ -96,6 +97,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        </div>
 
                         <button type="button" id="addRow" class="btn btn-outline-primary mb-3">
                             <i class="fas fa-plus me-1"></i> Tambah Baris
