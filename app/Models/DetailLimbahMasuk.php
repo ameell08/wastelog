@@ -12,6 +12,7 @@ class DetailLimbahMasuk extends Model
         'limbah_masuk_id',
         'truk_id',
         'kode_limbah_id',
+        'sumber_id',
         'berat_kg',
         'kode_festronik'
     ];
@@ -29,6 +30,11 @@ class DetailLimbahMasuk extends Model
     public function kodeLimbah()
     {
         return $this->belongsTo(KodeLimbah::class);
+    }
+
+    public function sumber()
+    {
+        return $this->belongsTo(Sumber::class);
     }
 }
 
