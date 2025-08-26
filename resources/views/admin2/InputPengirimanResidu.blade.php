@@ -45,6 +45,7 @@
                             <input type="date" name="tanggal_pengiriman" class="form-control" value="{{ date('Y-m-d') }}" required>
                         </div>
 
+                        <div class="table-responsive">
                         <table class="table table-bordered" id="pengirimanTable">
                             <thead class="table-light">
                                 <tr>
@@ -73,7 +74,7 @@
                                     </td>
                                     <td>
                                         <input type="number" name="detail[0][berat]" class="form-control berat-input" required
-                                            min="0.0001" step="0.0001" data-row="0">
+                                            min="0.0001" step="0.0001" data-row="0" style="min-width:120px;">
                                     </td>
                                     <td>
                                         <span class="badge bg-info stok-badge" data-row="0">0 kg</span>
@@ -84,6 +85,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        </div>
 
                         <button type="button" id="addRow" class="btn btn-outline-primary mb-3">
                             <i class="fas fa-plus me-1"></i> Tambah Baris

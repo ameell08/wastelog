@@ -8,7 +8,7 @@ use App\Http\Controllers\KodeLimbahController;
 use App\Http\Controllers\TrukController;
 use App\Http\Controllers\MesinController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\SumberController;
 use App\Http\Controllers\LimbahMasukController;
 use App\Http\Controllers\PengirimanResiduController;
 use App\Http\Controllers\DataPengirimanResiduController;
@@ -99,6 +99,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/datamesin/{id}/edit', [MesinController::class, 'edit'])->name('mesin.edit');
     Route::put('/datamesin/{id}', [MesinController::class, 'update'])->name('mesin.update');
     Route::delete('/datamesin/{id}', [MesinController::class, 'destroy'])->name('mesin.destroy');
+});
+
+// Data sumber limbah
+Route::middleware('auth')->group(function () {
+    Route::get('/datasumber', [SumberController::class, 'index'])->name('sumber.index');
+    Route::get('/datasumber/create', [SumberController::class, 'create'])->name('sumber.create');
+    Route::post('/datasumber', [SumberController::class, 'store'])->name('sumber.store');
+    Route::get('/datasumber/{id}/edit', [SumberController::class, 'edit'])->name('sumber.edit');
+    Route::put('/datasumber/{id}', [SumberController::class, 'update'])->name('sumber.update');
+    Route::delete('/datasumber/{id}', [SumberController::class, 'destroy'])->name('sumber.destroy');
 });
 
 // Pengiriman Residu

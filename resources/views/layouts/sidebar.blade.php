@@ -48,6 +48,13 @@
                         <p>Data Mesin</p>
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a href="{{ url('/datasumber') }}"
+                        class="nav-link {{ $activeMenu == 'datasumber' ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-building"></i>
+                        <p>Data Sumber Limbah</p>
+                    </a>
+                </li>
             @endif
 
             <!-- Sidebar Admin 1 -->
