@@ -109,6 +109,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/datasumber/{id}/edit', [SumberController::class, 'edit'])->name('sumber.edit');
     Route::put('/datasumber/{id}', [SumberController::class, 'update'])->name('sumber.update');
     Route::delete('/datasumber/{id}', [SumberController::class, 'destroy'])->name('sumber.destroy');
+    Route::post('/datasumber/import_ajax', [SumberController::class, 'import_ajax'])->name('sumber.import_ajax');
 });
 
 // Pengiriman Residu

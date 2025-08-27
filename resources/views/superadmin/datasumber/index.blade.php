@@ -21,6 +21,12 @@
                     autoHideAlert();
                 </script>
             @endif
+            <!--import excel -->
+            <div class="mb-3">
+                <button type="button" class="btn btn-success btn-sm" data-toggle="modal" data-target="#importModal">
+                    <i class="fas fa-file-import"></i> Import Excel
+                </button>
+            </div>
 
             <div class="card card-primary card-outline">
                 <div class="card-header">
@@ -77,6 +83,7 @@
     @include('superadmin.datasumber.create')
     @include('superadmin.datasumber.update')
     @include('superadmin.datasumber.delete')
+    @include('superadmin.datasumber.import')
 @endsection
 
 @section('scripts')
@@ -201,6 +208,55 @@
                     $(this).addClass('d-none');
                 });
         }
+
+        // Handle Import Form
+        $('#form-import').submit(function(e) {
+            e.preventDefault();
+            
+            let formData = new FormData(this);
+            let submitBtn = $(this).find('button[type="submit"]');
+            let originalText = submitBtn.text();
+            
+            // Disable submit button dan ubah text
+            submitBtn.prop('disabled', true).text('Mengimpor...');
+            
+            // Clear previous errors
+            $('.error-text').text('');
+            
+            $.ajax({
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    $('#importModal').modal('hide');
+                    showAlert('Data berhasil diimpor dari Excel!');
+                    
+                    // Reload halaman untuk menampilkan data baru
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1000);
+                },
+                error: function(xhr) {
+                    if (xhr.status === 422) {
+                        // Validation errors
+                        let errors = xhr.responseJSON.errors;
+                        $.each(errors, function(key, messages) {
+                            $('#error-' + key).text(messages[0]);
+                        });
+                    } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                        alert('Error: ' + xhr.responseJSON.message);
+                    } else {
+                        alert('Terjadi kesalahan saat mengimpor data.');
+                    }
+                },
+                complete: function() {
+                    // Re-enable submit button dan kembalikan text
+                    submitBtn.prop('disabled', false).text(originalText);
+                }
+            });
+        });
 
         // Auto-hide untuk alert dari session (server-side)
         $(document).ready(function() {
