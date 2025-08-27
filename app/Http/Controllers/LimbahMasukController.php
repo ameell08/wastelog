@@ -7,6 +7,7 @@ use App\Models\LimbahMasuk;
 use App\Models\DetailLimbahMasuk;
 use App\Models\Truk;
 use App\Models\KodeLimbah;
+use App\Models\Sumber;
 use App\Models\SisaLimbah;
 use Illuminate\Support\Facades\DB;
 use App\Imports\LimbahMasukImport;
@@ -21,12 +22,13 @@ class LimbahMasukController extends Controller
     {
         $truks = Truk::all();
         $kodeLimbahs = KodeLimbah::all();
+        $sumbers = Sumber::all();
         $breadcrumb = (object)[
             'title' => 'Input Limbah Masuk',
             'list' => ['Login', 'Input Limbah Masuk']
         ];
 
-        return view('admin1.InputLimbahMasuk', compact('truks', 'kodeLimbahs', 'breadcrumb'))->with('activeMenu', 'inputlimbahmasuk');
+        return view('admin1.InputLimbahMasuk', compact('truks', 'kodeLimbahs', 'sumbers', 'breadcrumb'))->with('activeMenu', 'inputlimbahmasuk');
     }
 
     public function store(Request $request)
@@ -35,6 +37,7 @@ class LimbahMasukController extends Controller
             'tanggal' => 'required|date',
             'detail.*.truk_id' => 'required|exists:truk,id',
             'detail.*.kode_limbah_id' => 'required|exists:kode_limbah,id',
+            'detail.*.sumber_id' => 'required|exists:sumber,id',
             'detail.*.berat_kg' => 'required|numeric|min:1',
             'detail.*.kode_festronik' => 'required|string|distinct:ignore_case'
         ]);
@@ -51,6 +54,7 @@ class LimbahMasukController extends Controller
                 $limbahMasuk->detailLimbahMasuk()->create([
                     'truk_id' => $item['truk_id'],
                     'kode_limbah_id' => $item['kode_limbah_id'],
+                    'sumber_id' => $item['sumber_id'],
                     'berat_kg' => $item['berat_kg'],
                     'kode_festronik'  => $item['kode_festronik'] ?? null,
                 ]);
@@ -104,8 +108,9 @@ class LimbahMasukController extends Controller
 
                 $platNomor = $row['B'];
                 $kodeLimbah = $row['C'];
-                $beratKg = (float) $row['D'];
-                $kodeFestronik = $row['E'];
+                $sumber = $row['D'];
+                $beratKg = (float) $row['E'];
+                $kodeFestronik = $row['F'];
 
                 // Ambil truk_id dari plat_nomor
                 $truk = \App\Models\Truk::where('plat_nomor', $platNomor)->first();
@@ -114,6 +119,10 @@ class LimbahMasukController extends Controller
                 // Ambil kode_limbah_id dari kode
                 $kode = \App\Models\KodeLimbah::where('kode', $kodeLimbah)->first();
                 if (!$kode) throw new \Exception("Kode limbah {$kodeLimbah} tidak ditemukan.");
+
+                // Ambil sumber_id dari nama sumber
+                $sumber = \App\Models\Sumber::where('nama_sumber', $sumber)->first();
+                if (!$sumber) throw new \Exception("Sumber {$sumber} tidak ditemukan.");
 
                 // Cek apakah sudah ada LimbahMasuk di tanggal tsb
                 $limbahMasuk = LimbahMasuk::firstOrCreate(
@@ -125,6 +134,7 @@ class LimbahMasukController extends Controller
                 $limbahMasuk->detailLimbahMasuk()->create([
                     'truk_id' => $truk->id,
                     'kode_limbah_id' => $kode->id,
+                    'sumber_id' => $sumber->id,
                     'berat_kg' => $beratKg,
                     'kode_festronik' => $kodeFestronik,
                 ]);
