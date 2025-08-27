@@ -44,6 +44,7 @@
                                 <tr>
                                     <th>Plat Nomor</th>
                                     <th>Kode Limbah</th>
+                                    <th>Sumber</th>
                                     <th>Berat (Kg)</th>
                                     <th>Kode Festronik</th>
                                     <th>Aksi</th>
@@ -65,6 +66,14 @@
                                             @foreach ($kodeLimbahs as $kode)
                                                 <option value="{{ $kode->id }}">{{ $kode->kode }} -
                                                     {{ $kode->deskripsi }}</option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <select name="detail[0][sumber_id]" class="form-control select2" required>
+                                            <option value="">Pilih Sumber</option>
+                                            @foreach ($sumbers as $sumber)
+                                                <option value="{{ $sumber->id }}">{{ $sumber->nama_sumber }}</option>
                                             @endforeach
                                         </select>
                                     </td>
@@ -158,6 +167,14 @@
                             <option value="">Pilih Kode Limbah</option>
                             @foreach ($kodeLimbahs as $kode)
                                 <option value="{{ $kode->id }}">{{ $kode->kode }} - {{ $kode->deskripsi }}</option>
+                            @endforeach
+                        </select>
+                    </td>
+                    <td>
+                        <select name="detail[${rowIndex}][sumber_id]" class="form-control select2" required>
+                            <option value="">Pilih Sumber</option>
+                            @foreach ($sumbers as $sumber)
+                                <option value="{{ $sumber->id }}">{{ $sumber->nama_sumber }}</option>
                             @endforeach
                         </select>
                     </td>

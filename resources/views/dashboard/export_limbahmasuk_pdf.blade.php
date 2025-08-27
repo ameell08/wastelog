@@ -125,6 +125,7 @@
                     <th>Tanggal</th>
                     <th>Plat Nomor Truk</th>
                     <th>Kode Limbah</th>
+                    <th>Sumber</th>
                     <th>Berat (Kg)</th>
                     <th>Kode Festronik</th>
                 </tr>
@@ -138,6 +139,7 @@
                             <td>{{ \Carbon\Carbon::parse($m->tanggal)->format('d/m/Y') }}</td>
                             <td>{{ $detail->truk->plat_nomor ?? '-' }}</td>
                             <td>{{ $detail->kodeLimbah->kode ?? '-' }}</td>
+                            <td>{{ $detail->sumber->nama_sumber ?? '-' }}</td>
                             <td>{{ $detail->berat_kg }}</td>
                             <td>{{ $detail->kode_festronik ?? '-' }}</td>
                         </tr>

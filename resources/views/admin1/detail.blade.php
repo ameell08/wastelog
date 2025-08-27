@@ -18,6 +18,7 @@
                             <tr>
                                 <th>Plat Nomor</th>
                                 <th>Kode Limbah (Deskripsi)</th>
+                                <th>Sumber</th>
                                 <th>Berat (Kg)</th>
                                 <th>Kode Festronik</th>
                             </tr>
