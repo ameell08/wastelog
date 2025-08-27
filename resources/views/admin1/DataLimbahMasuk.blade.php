@@ -116,6 +116,7 @@
                         <tr>
                             <td>${item.plat_nomor}</td>
                             <td>${item.kode_limbah.kode} (${item.kode_limbah.deskripsi})</td>
+                            <td>${item.sumber}</td>
                             <td>${item.berat_kg}</td>
                             <td>${item.kode_festronik && item.kode_festronik.trim() !== '' ? item.kode_festronik : '-'}</td>
                         </tr>
