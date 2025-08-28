@@ -106,6 +106,32 @@
             </div>
         </div>
     </div>
+
+    <!-- Pie Chart Sumber -->
+    <div class="card card-success">
+        <div class="card-header">
+            <h3 class="card-title"><i class="fas fa-chart-pie"></i> Distribusi Berat Berdasarkan Sumber</h3>
+            <div class="d-flex justify-content-end align-items-center">
+                <div class="d-flex align-items-center">
+                    <label for="filterKategori" class="form-label me-2 mb-0">Filter Kategori:</label>
+                    <select id="filterKategori" class="form-select form-select-sm" style="width: 180px;">
+                        <option value="">Semua Kategori</option>
+                        @foreach($kategoriSumber as $kategori)
+                            <option value="{{ $kategori }}">{{ $kategori }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="chart-wrapper-pie">
+                <canvas id="chartSumber"></canvas>
+            </div>
+            <div id="noDataMessage" class="text-center text-muted" style="display: none;">
+                <i class="fas fa-info-circle"></i> Tidak ada data untuk kategori yang dipilih
+            </div>
+        </div>
+    </div>
 </div>
 @endsection
 
@@ -280,6 +306,120 @@ if (window.$) {
     });
   }
 
+// Data untuk pie chart sumber
+const dataSumber = @json($dataSumber);
+const dataSumberDetail = @json($dataSumberDetail);
+let chartSumber = null;
+
+// Fungsi untuk membuat pie chart
+function createPieChart(data) {
+    const ctx = document.getElementById('chartSumber').getContext('2d');
+    
+    // Destroy chart yang sudah ada
+    if (chartSumber) {
+        chartSumber.destroy();
+    }
+
+    if (data.length === 0) {
+        document.getElementById('noDataMessage').style.display = 'block';
+        document.getElementById('chartSumber').style.display = 'none';
+        return;
+    }
+
+    document.getElementById('noDataMessage').style.display = 'none';
+    document.getElementById('chartSumber').style.display = 'block';
+
+    // Generate warna untuk setiap slice
+    const colors = [
+        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF',
+        '#FF9F40', '#FF6384', '#C9CBCF', '#4BC0C0', '#FF6384',
+        '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
+    ];
+
+    const chartData = {
+        labels: data.map(item => item.nama || item.nama_sumber),
+        datasets: [{
+            data: data.map(item => item.total_berat),
+            backgroundColor: colors.slice(0, data.length),
+            borderColor: '#fff',
+            borderWidth: 2
+        }]
+    };
+
+    chartSumber = new Chart(ctx, {
+        type: 'pie',
+        data: chartData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        boxWidth: 20,
+                        padding: 15,
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return label + ': ' + value.toLocaleString() + ' kg (' + percentage + '%)';
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Inisialisasi pie chart dengan semua data
+createPieChart(dataSumber);
+
+// Event listener untuk filter kategori
+document.getElementById('filterKategori').addEventListener('change', function() {
+    const selectedKategori = this.value;
+    let filteredData;
+
+    if (selectedKategori === '') {
+        // Jika tidak ada filter, menampilkan data kategori
+        filteredData = dataSumber;
+    } else {
+        // Jika di filter, menampilkan detail sumber dari kategori yang dipilih
+        const kategoriData = dataSumber.find(item => item.kategori === selectedKategori);
+        if (kategoriData && kategoriData.detail_sumber) {
+            filteredData = kategoriData.detail_sumber;
+        } else {
+            filteredData = [];
+        }
+    }
+
+    createPieChart(filteredData);
+});
+
+// Resize handler untuk pie chart
+window.addEventListener('resize', () => {
+    if (chartSumber) {
+        chartSumber.resize();
+    }
+});
+
+if (window.$) {
+    $(document).on('collapsed.lte.pushmenu expanded.lte.pushmenu', () => {
+        setTimeout(() => {
+            if (chartSumber) {
+                chartSumber.resize();
+            }
+        }, 150);
+    });
+}
+
 </script>
 <style>
   .chart-wrapper{
@@ -287,8 +427,19 @@ if (window.$) {
     width: 100%;
     height: 320px;          
   }
-  @media (min-width: 768px){  .chart-wrapper{ height: 360px; } }
-  @media (min-width: 1200px){ .chart-wrapper{ height: 420px; } }
+  .chart-wrapper-pie{
+    position: relative;
+    width: 100%;
+    height: 400px;          
+  }
+  @media (min-width: 768px){  
+    .chart-wrapper{ height: 360px; } 
+    .chart-wrapper-pie{ height: 450px; }
+  }
+  @media (min-width: 1200px){ 
+    .chart-wrapper{ height: 420px; } 
+    .chart-wrapper-pie{ height: 500px; }
+  }
 </style>
 
 @endsection
