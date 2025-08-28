@@ -44,6 +44,48 @@ class DashboardController extends Controller
         $antreanResidu = AntreanResidu::with('kodeLimbah')->get();
         $totalResiduLimbah = $antreanResidu->sum('sisa_berat');
 
+        // Data sumber untuk pie chart
+        $dataSumberDetail = \App\Models\DetailLimbahMasuk::with(['sumber'])
+            ->whereHas('sumber')
+            ->get()
+            ->groupBy('sumber.nama_sumber')
+            ->map(function ($details, $namaSumber) {
+                $sumber = $details->first()->sumber;
+                $totalBerat = $details->sum('berat_kg');
+                return [
+                    'nama_sumber' => $namaSumber,
+                    'kategori' => $sumber->kategori ?? 'Tidak Ada Kategori',
+                    'total_berat' => $totalBerat
+                ];
+            })
+            ->filter(function ($item) {
+                return $item['total_berat'] > 0;
+            })
+            ->values();
+
+        // Data sumber berdasarkan kategori (untuk tampilan awal)
+        $dataSumber = $dataSumberDetail->groupBy('kategori')
+            ->map(function ($items, $kategori) {
+                $totalBerat = 0;
+                $detailSumber = [];
+                
+                foreach ($items as $item) {
+                    $totalBerat += $item['total_berat'];
+                    $detailSumber[] = $item;
+                }
+                
+                return [
+                    'nama' => $kategori,
+                    'total_berat' => $totalBerat,
+                    'kategori' => $kategori,
+                    'detail_sumber' => $detailSumber
+                ];
+            })
+            ->values();
+
+        // Ambil kategori unik untuk filter
+        $kategoriSumber = $dataSumber->pluck('kategori')->unique()->values();
+
         // Data per bulan (chart)
         $bulan = [
             'Januari',
@@ -101,7 +143,10 @@ class DashboardController extends Controller
             'bulan',
             'limbahMasukBulanan',
             'limbahDiolahBulanan',
-            'sisaLimbahBulanan'
+            'sisaLimbahBulanan',
+            'dataSumber',
+            'dataSumberDetail',
+            'kategoriSumber'
         ))->with('activeMenu', 'dashboard');
     }
 
