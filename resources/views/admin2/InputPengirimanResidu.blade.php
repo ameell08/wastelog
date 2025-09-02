@@ -106,6 +106,7 @@
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
+                        <div class="table-wrap">
                         <table class="table table-striped table-hover" id="antreanTable">
                             <thead class="table-light">
                                 <tr>
@@ -147,6 +148,7 @@
                                 @endforelse
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -383,6 +385,35 @@
 
         .stok-badge {
             font-size: 0.9em;
+        }
+        /* Area scroll khusus untuk tabel */
+        .table-wrap {
+            height: 100vh;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            border: 1px solid #e9ecef;
+            border-radius: .25rem;
+            background: #fff;
+        }
+
+        .table-wrap thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .table-wrap thead { 
+            position: sticky; 
+            top:0; 
+            z-index: 50; 
+        }
+
+        .table-wrap table {
+            margin-bottom: 0;
+            min-width: 1000px;
         }
     </style>
 @endpush
