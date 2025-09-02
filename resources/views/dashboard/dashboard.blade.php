@@ -356,8 +356,8 @@ function createPieChart(data) {
                 legend: {
                     position: 'right',
                     labels: {
-                        boxWidth: 20,
-                        padding: 15,
+                        boxWidth: 15,
+                        padding: 13,
                         font: {
                             size: 12
                         }
@@ -438,7 +438,7 @@ if (window.$) {
   }
   @media (min-width: 1200px){ 
     .chart-wrapper{ height: 420px; } 
-    .chart-wrapper-pie{ height: 500px; }
+    .chart-wrapper-pie{ height: 350px; }
   }
 </style>
 

@@ -223,4 +223,10 @@
             }
         });
     </script>
+    
+     <style>
+        #mesinTable thead th {
+            border-right: 1px solid #dee2e6; 
+        }
+        </style>
 @endsection

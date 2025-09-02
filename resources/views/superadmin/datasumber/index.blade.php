@@ -32,8 +32,7 @@
                 <div class="card-header">
                     <h5 class="card-title mb-0">Data Sumber Limbah</h5>
                     <div class="card-tools">
-                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
-                            data-target="#tambahModal">
+                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#tambahModal">
                             Tambah Data <i class="fas fa-plus ms-1"></i>
                         </button>
                     </div>
@@ -45,36 +44,37 @@
                         <input type="text" id="searchInput" class="form-control"
                             placeholder="Cari nama sumber limbah atau kategori limbah...">
                     </div>
-                    <table class="table table-bordered" id="sumberTable">
-                        <thead class="table-light">
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Sumber</th>
-                                <th>Kategori</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($dataSumber as $index => $item)
-                                <tr id="row-{{ $item->id }}">
-                                    <td>{{ $index + 1 }}</td>
-                                    <td class="namasumber">{{ $item->nama_sumber }}</td>
-                                    <td class="kategori">{{ $item->kategori}}</td>
-                                    <td>
-                                        <button class="btn btn-warning btn-sm btn-edit"
-                                            data-id="{{ $item->id }}"
-                                            data-namasumber="{{ $item->nama_sumber }}"
-                                            data-kategori="{{ $item->kategori }}">
-                                            Edit
-                                        </button>
-                                        <button class="btn btn-danger btn-sm btn-delete" data-id="{{ $item->id }}">
-                                            Hapus
-                                        </button>
-                                    </td>
+                    <div class="table-wrap">
+                        <table class="table table-bordered" id="sumberTable">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Sumber</th>
+                                    <th>Kategori</th>
+                                    <th>Aksi</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach ($dataSumber as $index => $item)
+                                    <tr id="row-{{ $item->id }}">
+                                        <td>{{ $index + 1 }}</td>
+                                        <td class="namasumber">{{ $item->nama_sumber }}</td>
+                                        <td class="kategori">{{ $item->kategori }}</td>
+                                        <td>
+                                            <button class="btn btn-warning btn-sm btn-edit" data-id="{{ $item->id }}"
+                                                data-namasumber="{{ $item->nama_sumber }}"
+                                                data-kategori="{{ $item->kategori }}">
+                                                Edit
+                                            </button>
+                                            <button class="btn btn-danger btn-sm btn-delete" data-id="{{ $item->id }}">
+                                                Hapus
+                                            </button>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -212,17 +212,17 @@
         // Handle Import Form
         $('#form-import').submit(function(e) {
             e.preventDefault();
-            
+
             let formData = new FormData(this);
             let submitBtn = $(this).find('button[type="submit"]');
             let originalText = submitBtn.text();
-            
+
             // Disable submit button dan ubah text
             submitBtn.prop('disabled', true).text('Mengimpor...');
-            
+
             // Clear previous errors
             $('.error-text').text('');
-            
+
             $.ajax({
                 url: $(this).attr('action'),
                 method: 'POST',
@@ -232,7 +232,7 @@
                 success: function(response) {
                     $('#importModal').modal('hide');
                     showAlert('Data berhasil diimpor dari Excel!');
-                    
+
                     // Reload halaman untuk menampilkan data baru
                     setTimeout(function() {
                         location.reload();
@@ -269,4 +269,36 @@
             }
         });
     </script>
+    
+    <style>
+        /* Area scroll khusus untuk tabel */
+        .table-wrap {
+            height: 100vh;
+            overflow: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
+            border: 1px solid #e9ecef;
+            border-radius: .25rem;
+            background: #fff;
+        }
+
+        .table-wrap thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background: #f8f9fa;
+            border-right: 1px solid #dee2e6;
+        }
+
+        .table-wrap thead { 
+            position: sticky; 
+            top:0; 
+            z-index: 50; 
+        }
+
+        .table-wrap table {
+            margin-bottom: 0;
+            min-width: 1000px;
+        }
+    </style>
 @endsection

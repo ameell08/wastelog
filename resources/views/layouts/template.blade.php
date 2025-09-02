@@ -107,6 +107,7 @@
 
     @yield('scripts')
     <!-- digunakan untuk memanggil custom js dari perintah push('scripts') pada masing - masing view -->
+    <body style="height:100%; overscroll-behavior: none;">
 </body>
 
 </html>
