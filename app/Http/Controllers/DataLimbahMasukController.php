@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Maatwebsite\Excel\Facades\Excel;
 
 class DataLimbahMasukController extends Controller
@@ -88,23 +90,29 @@ class DataLimbahMasukController extends Controller
 
             $sheet->setCellValue('A1', 'DATA LIMBAH MASUK');
             $sheet->getStyle('A1')->getFont()->setBold(true);
+            $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            $sheet->mergeCells('A1:G1');
+            $sheet->mergeCells('A2:G2');
 
             $headers = [
-                'A2' => 'No',
-                'B2' => 'Tanggal',
-                'C2' => 'Plat Nomor Truk',
-                'D2' => 'Kode Limbah (Deskripsi)',
-                'E2' => 'Sumber',
-                'F2' => 'Berat (Kg)',
-                'G2' => 'Kode Festronik',
+                'A3' => 'No',
+                'B3' => 'Tanggal',
+                'C3' => 'Truk',
+                'D3' => 'Kode Limbah (Deskripsi)',
+                'E3' => 'Sumber',
+                'F3' => 'Berat (Kg)',
+                'G3' => 'Kode Festronik',
             ];
             foreach ($headers as $cell => $text) {
                 $sheet->setCellValue($cell, $text);
                 $sheet->getStyle($cell)->getFont()->setBold(true);
-            }
+                $sheet->getStyle($cell)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle($cell)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('E8E8E8');
+            }   
 
             $no  = 1;
-            $row = 3;
+            $row = 4;
 
             foreach ($tanggalOrdered as $g) {
                 $list = LimbahMasuk::whereDate('tanggal', $g->tanggal)
@@ -132,15 +140,24 @@ class DataLimbahMasukController extends Controller
                 }
             }
             $lastRow = $row - 1;
-            $sheet->getStyle("A2:G{$lastRow}")
+            $sheet->getStyle("A3:G{$lastRow}")
                 ->getBorders()
                 ->getAllBorders()
                 ->setBorderStyle(Border::BORDER_THIN);
 
-            foreach (range('A', 'G') as $col) {
-                $sheet->getColumnDimension($col)->setAutoSize(true);
-            }
+                $sheet->getColumnDimension('A')->setWidth(3); 
+                $sheet->getColumnDimension('B')->setWidth(10); 
+                $sheet->getColumnDimension('C')->setWidth(12); 
+                $sheet->getColumnDimension('D')->setWidth(70); 
+                $sheet->getColumnDimension('E')->setWidth(50);
+                $sheet->getColumnDimension('F')->setWidth(12);
+                $sheet->getColumnDimension('G')->setWidth(22);
 
+            $sheet->setCellValue('G' . ($lastRow + 2), 'Dicetak pada: ' . now()->format('d/m/Y H:i'));
+            $sheet->setCellValue('G' . ($lastRow + 3), 'Dicetak oleh: ' . auth()->user()->nama);
+            $sheet->getStyle('G' . ($lastRow + 2) . ':G' . ($lastRow + 3))->getFont()->setSize(10)->setItalic(true);
+            $sheet->getStyle('G' . ($lastRow + 2) . ':G' . ($lastRow + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);  
+            
             $sheet->setTitle('Data Limbah Masuk');
 
             $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
@@ -205,13 +222,19 @@ class DataLimbahMasukController extends Controller
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
 
-            $sheet->setCellValue('B1', 'DETAIL LIMBAH MASUK ');
-            $sheet->setCellValue('B2', 'TANGGAL : ' . Carbon::createFromFormat('d-m-Y', $tanggal)->format('d/m/Y'));
-            $sheet->getStyle(('B1'))->getFont()->setBold(true);
-            $sheet->getStyle(('B2'))->getFont()->setBold(true);
+            $sheet->setCellValue('A1', 'DETAIL LIMBAH MASUK ');
+            $sheet->setCellValue('A2', 'TANGGAL : ' . Carbon::createFromFormat('d-m-Y', $tanggal)->format('d/m/Y'));
+            $sheet->getStyle(('A1'))->getFont()->setBold(true);
+            $sheet->getStyle(('A2'))->getFont()->setBold(true);
+            $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('A4:E4')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('E8E8E8');
+
+            $sheet->mergeCells('A1:E1');
+            $sheet->mergeCells('A2:E2');
+            $sheet->mergeCells('A3:E3');
 
             $headers = [
-                'A4' => 'Plat Nomor Truk',
+                'A4' => 'Truk',
                 'B4' => 'Kode Limbah',
                 'C4' => 'Sumber',
                 'D4' => 'Berat (Kg)',
@@ -220,6 +243,15 @@ class DataLimbahMasukController extends Controller
             foreach ($headers as $cell => $text) {
                 $sheet->setCellValue($cell, $text);
                 $sheet->getStyle($cell)->getFont()->setBold(true);
+                $sheet->getStyle($cell)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            }
+
+             foreach (range('A', 'E') as $columID) {
+                $sheet->getColumnDimension('A')->setWidth(10); 
+                $sheet->getColumnDimension('B')->setWidth(70); 
+                $sheet->getColumnDimension('C')->setWidth(50); 
+                $sheet->getColumnDimension('D')->setWidth(10); 
+                $sheet->getColumnDimension('E')->setWidth(22); 
             }
 
             $row = 5;
@@ -245,9 +277,11 @@ class DataLimbahMasukController extends Controller
                 ->getBorders()
                 ->getAllBorders()
                 ->setBorderStyle(Border::BORDER_THIN);
-            foreach (range('A', 'E') as $columID) {
-                $sheet->getColumnDimension($columID)->setAutoSize(true);
-            }
+
+            $sheet->setCellValue('E' . ($lastRow + 2), 'Dicetak pada: ' . now()->format('d/m/Y H:i'));
+            $sheet->setCellValue('E' . ($lastRow + 3), 'Dicetak oleh: ' . auth()->user()->nama);
+            $sheet->getStyle('E' . ($lastRow + 2) . ':E' . ($lastRow + 3))->getFont()->setSize(10)->setItalic(true);
+            $sheet->getStyle('E' . ($lastRow + 2) . ':E' . ($lastRow + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);  
 
             $tanggalFormatted = Carbon::parse($parsedTanggal)->format('d-m-Y');
             $sheet->setTitle('Detail Limbah Masuk ' . $tanggalFormatted);
