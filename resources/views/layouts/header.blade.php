@@ -25,18 +25,18 @@
       </a>
       <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
         <a class="dropdown-item" href="#" data-toggle="modal" data-target="#profileModal">
-          <i class="fas fa-user mr-2"></i> Profile
+          <i class="fas fa-user mr-2"></i> Profil
         </a>
         <a class="dropdown-item" href="#" data-toggle="modal" data-target="#editProfileModal">
-          <i class="fas fa-edit mr-2"></i> Edit Profile
+          <i class="fas fa-edit mr-2"></i> Edit Profil
         </a>
         <a class="dropdown-item" href="#" data-toggle="modal" data-target="#changePasswordModal">
-          <i class="fas fa-key mr-2"></i> Change Password
+          <i class="fas fa-key mr-2"></i> Ganti Sandi
         </a>
         <div class="dropdown-divider"></div>
         <a class="dropdown-item text-danger" href="{{ url('/logout') }}" 
            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-          <i class="fas fa-sign-out-alt mr-2"></i> Logout
+          <i class="fas fa-sign-out-alt mr-2"></i> Keluar
         </a>
       </div>
     </li>
@@ -53,18 +53,18 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="profileModalLabel">User Profile</h5>
+        <h5 class="modal-title" id="profileModalLabel">Profil Pengguna</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         <div class="text-center mb-3">
-          <img src="{{ asset('adminlte/dist/img/user2-160x160.jpg') }}" class="img-circle elevation-2" alt="User Image" style="width: 80px; height: 80px;">
+          <img src="{{ asset('img/user.png') }}" class="img-circle elevation-2" alt="User Image" style="width: 80px; height: 80px;">
         </div>
         <form>
           <div class="form-group">
-            <label for="userName">Name</label>
+            <label for="userName">Nama</label>
             <input type="text" class="form-control" id="userName" value="{{ Auth::user()->nama ?? '' }}" readonly>
           </div>
           <div class="form-group">
@@ -78,7 +78,7 @@
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Keluar</button>
       </div>
     </div>
   </div>
@@ -88,7 +88,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+        <h5 class="modal-title" id="changePasswordModalLabel">Ganti Sandi</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -97,21 +97,21 @@
         <div class="modal-body">
           @csrf
           <div class="form-group">
-            <label for="currentPassword">Current Password</label>
+            <label for="currentPassword">Sandi Saat Ini</label>
             <input type="password" class="form-control" id="currentPassword" name="current_password" required>
           </div>
           <div class="form-group">
-            <label for="newPassword">New Password</label>
+            <label for="newPassword">Sandi Baru</label>
             <input type="password" class="form-control" id="newPassword" name="new_password" required>
           </div>
           <div class="form-group">
-            <label for="confirmPassword">Confirm New Password</label>
+            <label for="confirmPassword">Konfirmasi Sandi Baru</label>
             <input type="password" class="form-control" id="confirmPassword" name="new_password_confirmation" required>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Change Password</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Ganti Sandi</button>
         </div>
       </form>
     </div>
@@ -123,7 +123,7 @@
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+        <h5 class="modal-title" id="editProfileModalLabel">Edit Profil</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -135,7 +135,7 @@
             <img src="{{ asset('img/user.png') }}" class="img-circle elevation-2" alt="User Image" style="width: 80px; height: 80px;">
           </div>
           <div class="form-group">
-            <label for="editUserName">Name</label>
+            <label for="editUserName">Nama</label>
             <input type="text" class="form-control" id="editUserName" name="nama" value="{{ Auth::user()->nama ?? '' }}" required>
           </div>
           <div class="form-group">
@@ -148,8 +148,8 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-          <button type="submit" class="btn btn-primary">Update Profile</button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+          <button type="submit" class="btn btn-primary">Perbarui Profil</button>
         </div>
       </form>
     </div>

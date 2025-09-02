@@ -19,8 +19,8 @@
         th,
         td {
             border: 1px solid #000;
-            padding: 6px 5px;
-            font-size: 11pt;
+            padding: 3px 2px;
+            font-size: 9pt;
         }
 
         thead th {
@@ -66,8 +66,8 @@
         }
 
         /* Lebar kolom agar mirip contoh */
-        colgroup col.c1 {
-            width: 12%;
+           colgroup col.c1 {
+            width: 5% !important;
         }
 
         colgroup col.c2,
@@ -75,7 +75,15 @@
         colgroup col.c4,
         colgroup col.c5,
         colgroup col.c6 {
-            width: 17.6%;
+            width: 19% !important;
+        }
+
+        /* CSS tambahan untuk memaksa lebar kolom */
+        table:nth-of-type(2) th:first-child,
+        table:nth-of-type(2) td:first-child {
+            width: 7% !important;
+            max-width: 40px !important;
+            min-width: 30px !important;
         }
     </style>
 </head>
@@ -145,7 +153,7 @@
     </p>
     <p style="font-size:10pt; text-align:right;">
         Dicetak oleh: {{ Auth::user()->nama }}
-
+    </p>
     <table class="no-border" style="margin-top:30px; width:100%;">
         <tr class="no-border">
             <td class="no-border" style="width:65%"></td>

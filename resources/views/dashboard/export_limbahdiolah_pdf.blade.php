@@ -75,6 +75,7 @@
         .border-all th,
         .border-all td {
             border: 1px solid;
+            font-size: 9pt;
         }
 
         .footer {
@@ -159,10 +160,12 @@
     <p class="tanggal-cetak">
         Dicetak pada: {{ \Carbon\Carbon::now()->format('d/m/Y H:i') }}
     </p>
-
+    <p style="font-size:10pt; text-align:right;">
+         Dicetak oleh: {{ Auth::user()->nama }}
+    </p>
     <table class="footer-table">
         <tr>
-            <td width="70%"></td>
+            <td width="80%"></td>
             <td class="text-center">
                 Mengetahui,<br>
                 Kepala Manajer<br><br><br><br><br>
