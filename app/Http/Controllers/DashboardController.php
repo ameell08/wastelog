@@ -170,7 +170,7 @@ class DashboardController extends Controller
             12 => 'Desember'
         ][$bulan] ?? '-';
 
-        $pdf = Pdf::loadView('dashboard.export_limbahmasuk_pdf', compact('limbahMasuk', 'namaBulan'));
+        $pdf = Pdf::loadView('dashboard.export_limbahmasuk_pdf', compact('limbahMasuk', 'namaBulan'))->setPaper('a4', 'landscape');
 
         return $pdf->download('limbah_masuk_' . now()->format('d-m-y H:i:s') . '.pdf');
     }
@@ -222,7 +222,8 @@ class DashboardController extends Controller
             }
         }
 
-        $pdf = Pdf::loadView('dashboard.export_limbahdiolah_pdf', compact('limbahDiolah', 'namaBulan'));
+        $pdf = Pdf::loadView('dashboard.export_limbahdiolah_pdf', compact('limbahDiolah', 'namaBulan'))->setPaper('a4', 'landscape');
+        
 
         return $pdf->download('limbah_diolah_' . now()->format('d-m-y H:i:s') . '.pdf');
     }
@@ -778,7 +779,7 @@ class DashboardController extends Controller
                 ->sum(fn($pr) => $pr->detailPengirimanResidu->sum('berat'));
 
             //  hari pertama yang punya data
-            if ($firstDayWithData === null && ($masukHarian > 0 || $diolahHarian > 0 || $residuHarian > 0 || $kirimHarian > 0)) {
+            if ($firstDayWithData === null && ($masukHarian > 0 || $diolahHarian > 0 || $residuHarian > 0 || $kirimHarian > 0 || $d->day == 1)) {
                 $firstDayWithData = $d->copy();
             }
 
@@ -818,7 +819,7 @@ class DashboardController extends Controller
                 'namaBulan' => $namaBulan,
                 'tahun'     => (int) $tahun,
             ]
-        )->setPaper('a4', 'portrait');
+        )->setPaper('a4', 'landscape');
 
         return $pdf->download('neraca_' . $namaBulan . '_' . $tahun . '_' . now()->format('d-m-y_H-i-s') . '.pdf');
     }
