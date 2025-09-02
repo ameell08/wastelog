@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Carbon;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class DashboardController extends Controller
 {
@@ -249,22 +251,46 @@ class DashboardController extends Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        $sheet->setCellValue('A1', 'Bulan: ' . $namaBulan);
-        $sheet->getStyle(('A1'))->getFont()->setBold(true);
+        // Header utama
+        $sheet->setCellValue('A1', 'PENGOLAHAN LIMBAH BAHAN BERBAHAYA DAN BERACUN');
+        $sheet->setCellValue('A2', 'PT PUTRA RESTU IBU ABADI');
+        $sheet->setCellValue('A3', 'Kegiatan : Penerimaan Limbah');
+        $sheet->setCellValue('A4', 'Bulan : ' . $namaBulan);
+
+        // Merge cells untuk header
+        $sheet->mergeCells('A1:G1');
+        $sheet->mergeCells('A2:G2');
+        $sheet->mergeCells('A3:G3');
+        $sheet->mergeCells('A4:G4');
+
+        // Style header
+        $sheet->getStyle('A1:A2')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A6:F6')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('E8E8E8');
+        $sheet->getStyle('A3:A4')->getFont()->setBold(true);
 
         $headers = [
-            'A2' => 'Tanggal',
-            'B2' => 'Truk',
-            'C2' => 'Kode Limbah',
-            'D2' => 'Sumber',
-            'E2' => 'Jumlah (kg)',
-            'F2' => 'Kode Festronik'
+            'A6' => 'Tanggal',
+            'B6' => 'Truk',
+            'C6' => 'Kode Limbah',
+            'D6' => 'Sumber',
+            'E6' => 'Jumlah (kg)',
+            'F6' => 'Kode Festronik'
         ];
         foreach ($headers as $cell => $text) {
             $sheet->setCellValue($cell, $text);
             $sheet->getStyle($cell)->getFont()->setBold(true);
+            $sheet->getStyle($cell)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         }
-        $row = 3;
+
+        $sheet->getColumnDimension('A')->setWidth(11); 
+        $sheet->getColumnDimension('B')->setWidth(10); 
+        $sheet->getColumnDimension('C')->setWidth(12); 
+        $sheet->getColumnDimension('D')->setWidth(50); 
+        $sheet->getColumnDimension('E')->setWidth(11); 
+        $sheet->getColumnDimension('F')->setWidth(24);
+        
+        $row = 7;
 
         foreach ($limbahMasuk as $item) {
             foreach ($item->detailLimbahMasuk as $detail) {
@@ -279,10 +305,15 @@ class DashboardController extends Controller
         }
 
         $lastRow = $row - 1;
-        $sheet->getStyle("A2:F{$lastRow}")
+        $sheet->getStyle("A6:F{$lastRow}")
             ->getBorders()
             ->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
+        
+        $sheet->setCellValue('F' . ($lastRow + 2), 'Dicetak pada: ' . now()->format('d/m/Y H:i'));
+        $sheet->setCellValue('F' . ($lastRow + 3), 'Dicetak oleh: ' . auth()->user()->nama);
+        $sheet->getStyle('F' . ($lastRow + 2) . ':F' . ($lastRow + 3))->getFont()->setSize(10)->setItalic(true);
+        $sheet->getStyle('F' . ($lastRow + 2) . ':F' . ($lastRow + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);  
 
         $filename = 'limbah_masuk_' . $namaBulan . '_'  . now()->format('d-m-y H:i:s') . '.xlsx';
         $writer = new Xlsx($spreadsheet);
@@ -321,25 +352,55 @@ class DashboardController extends Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        $sheet->setCellValue('A1', 'Bulan: ' . $namaBulan);
-        $sheet->getStyle('A1')->getFont()->setBold(true);
+        // Header utama
+        $sheet->setCellValue('A1', 'PENGOLAHAN LIMBAH BAHAN BERBAHAYA DAN BERACUN');
+        $sheet->setCellValue('A2', 'PT PUTRA RESTU IBU ABADI');
+        $sheet->setCellValue('A3', 'Kegiatan : Pengolahan dengan Insinerator');
+        $sheet->setCellValue('A4', 'Bulan : ' . $namaBulan);
+
+        // Merge cells untuk header
+        $sheet->mergeCells('A1:G1');
+        $sheet->mergeCells('A2:G2');
+        $sheet->mergeCells('A3:G3');
+        $sheet->mergeCells('A4:G4');
+
+        // Style header
+        $sheet->getStyle('A1:A2')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A3:A4')->getFont()->setBold(true);
+
+        // Tinggi baris header
+        $sheet->getRowDimension(6)->setRowHeight(30);
+        
+        //Lebar kolom
+        $sheet->getColumnDimension('A')->setWidth(11); 
+        $sheet->getColumnDimension('B')->setWidth(7); 
+        $sheet->getColumnDimension('C')->setWidth(12); 
+        $sheet->getColumnDimension('D')->setWidth(12); 
+        $sheet->getColumnDimension('E')->setWidth(11); 
+        $sheet->getColumnDimension('F')->setWidth(11); 
+        $sheet->getColumnDimension('G')->setWidth(11);
 
         // Header kolom
         $headers = [
-            'A2' => 'Tanggal',
-            'B2' => 'Mesin',
-            'C2' => 'Kode Limbah',
-            'D2' => 'Jumlah (Kg)',
-            'E2' => 'Bottom Ash (2%) Kg',
-            'F2' => 'Fly Ash (0.4%) Kg',
-            'G2' => 'Flue Gas (1%) Kg'
+            'A6' => 'Tanggal',
+            'B6' => 'Mesin',
+            'C6' => 'Kode Limbah',
+            'D6' => 'Jumlah (Kg)',
+            'E6' => "Bottom Ash\n(2%) Kg",
+            'F6' => "Fly Ash\n(0.4%) Kg",
+            'G6' => "Flue Gas\n(1%) Kg"
         ];
         foreach ($headers as $cell => $text) {
             $sheet->setCellValue($cell, $text);
             $sheet->getStyle($cell)->getFont()->setBold(true);
-        }
+            $sheet->getStyle($cell)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER)
+                ->setVertical(Alignment::VERTICAL_CENTER)
+                ->setWrapText(true);;
+            $sheet->getStyle($cell)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('E8E8E8');
+        } 
 
-        $row = 3;
+        $row = 7;
 
         foreach ($limbahDiolah as $item) {
             foreach ($item->detailLimbahDiolah as $detail) {
@@ -364,10 +425,15 @@ class DashboardController extends Controller
         }
 
         $lastRow = $row - 1;
-        $sheet->getStyle("A2:G{$lastRow}")
+        $sheet->getStyle("A6:G{$lastRow}")
             ->getBorders()
             ->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
+
+        $sheet->setCellValue('G' . ($lastRow + 2), 'Dicetak pada: ' . now()->format('d/m/Y H:i'));
+        $sheet->setCellValue('G' . ($lastRow + 3), 'Dicetak oleh: ' . auth()->user()->nama);
+        $sheet->getStyle('G' . ($lastRow + 2) . ':G' . ($lastRow + 3))->getFont()->setSize(10)->setItalic(true);
+        $sheet->getStyle('G' . ($lastRow + 2) . ':G' . ($lastRow + 3))->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 
         $filename = 'limbah_diolah_' . $namaBulan . '_' . now()->format('d-m-y H:i:s') . '.xlsx';
         $writer = new Xlsx($spreadsheet);
@@ -378,6 +444,7 @@ class DashboardController extends Controller
         $writer->save('php://output');
         exit;
     }
+
     public function exportNeracaExcel($bulan, $tahun)
     {
         // Data Limbah Masuk
@@ -466,34 +533,51 @@ class DashboardController extends Controller
         // Merge cells untuk header
         $sheet->mergeCells('A1:G1');
         $sheet->mergeCells('A2:G2');
+        $sheet->mergeCells('A3:G3');
+        $sheet->mergeCells('A4:G4');
+        $sheet->mergeCells('A5:G5');
 
         // Style header
         $sheet->getStyle('A1:A2')->getFont()->setBold(true)->setSize(14);
-        $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $sheet->getStyle('A3:A5')->getFont()->setBold(true);
-
+        
+        // Tinggi baris header
+        $sheet->getRowDimension(7)->setRowHeight(30);
+        
+        //Lebar kolom
+        $sheet->getColumnDimension('A')->setWidth(6); 
+        $sheet->getColumnDimension('B')->setWidth(14); 
+        $sheet->getColumnDimension('C')->setWidth(14); 
+        $sheet->getColumnDimension('D')->setWidth(14); 
+        $sheet->getColumnDimension('E')->setWidth(14); 
+        $sheet->getColumnDimension('F')->setWidth(15); 
+        $sheet->getColumnDimension('G')->setWidth(14); 
+        
         // Header tabel
         $headers = [
             'A7' => 'Tanggal',
-            'B7' => 'Total Limbah Masuk (Kg)',
-            'C7' => 'Total Limbah diolah (Kg)',
+            'B7' => "Total Limbah\nMasuk (Kg)",
+            'C7' => "Total Limbah\nDiolah (Kg)",
             'D7' => 'Sisa Limbah',
             'E7' => 'Total Residu',
-            'F7' => 'Total pengiriman residu',
+            'F7' => "Total Pengiriman\nResidu (Kg)",
             'G7' => 'Sisa Residu'
         ];
 
         foreach ($headers as $cell => $text) {
             $sheet->setCellValue($cell, $text);
             $sheet->getStyle($cell)->getFont()->setBold(true);
-            $sheet->getStyle($cell)->getFill()->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
-                ->getStartColor()->setRGB('E8E8E8');
+            $sheet->getStyle($cell)->getAlignment()
+                ->setHorizontal(Alignment::HORIZONTAL_CENTER)
+                ->setVertical(Alignment::VERTICAL_CENTER)
+                ->setWrapText(true);
+            $sheet->getStyle('A7:G7')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('E8E8E8');
         }
 
         // Ambil semua tanggal dalam bulan
         $startDate = \Carbon\Carbon::createFromDate($tahun, $bulan, 1);
         $endDate = $startDate->copy()->endOfMonth();
-        $row = 8;
 
         // Variabel untuk menyimpan total kumulatif
         $totalKumulatifMasuk = 0;
@@ -502,6 +586,7 @@ class DashboardController extends Controller
         $totalKumulatifPengiriman = 0;
 
         // Loop untuk setiap hari dalam bulan
+        $row = 8;
         for ($date = $startDate->copy(); $date <= $endDate; $date->addDay()) {
             $tanggal = $date->format('Y-m-d');
 
@@ -556,14 +641,10 @@ class DashboardController extends Controller
                 $sheet->setCellValue('E' . $row, number_format($totalKumulatifResidu, 2));
                 $sheet->setCellValue('F' . $row, number_format($totalPengirimanHari, 2));
                 $sheet->setCellValue('G' . $row, number_format($sisaResidu, 2));
-                $sheet->getStyle('A' . $row . ':G' . $row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+                $sheet->getStyle("A{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle("B{$row}:G{$row}")->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
                 $row++;
             }
-        }
-
-        // Auto-resize kolom
-        foreach (range('A', 'G') as $col) {
-            $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
         // Border untuk tabel

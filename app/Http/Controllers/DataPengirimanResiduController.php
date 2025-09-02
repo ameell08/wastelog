@@ -10,6 +10,8 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class DataPengirimanResiduController extends Controller
 {
@@ -95,8 +97,12 @@ class DataPengirimanResiduController extends Controller
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
 
-            $sheet->setCellValue('E1', 'DATA KESELURUHAN PENGIRIMAN RESIDU');
-            $sheet->getStyle(('E1'))->getFont()->setBold(true);
+            $sheet->setCellValue('A1', 'DATA KESELURUHAN PENGIRIMAN RESIDU');
+            $sheet->getStyle(('A1'))->getFont()->setBold(true);
+            $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            $sheet->mergeCells('A1:E1');
+            $sheet->mergeCells('A2:E2');
 
             $headers = [
                 'A3' => 'No',
@@ -110,6 +116,8 @@ class DataPengirimanResiduController extends Controller
             foreach ($headers as $cell => $text) {
                 $sheet->setCellValue($cell, $text);
                 $sheet->getStyle($cell)->getFont()->setBold(true);
+                $sheet->getStyle($cell)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle($cell)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('E8E8E8');
             }
 
             $row = 4;
@@ -139,10 +147,19 @@ class DataPengirimanResiduController extends Controller
                     ],
                 ],
             ]);
-            // Auto width
-            foreach (range('A', 'G') as $col) {
-                $sheet->getColumnDimension($col)->setAutoSize(true);
-            }
+
+            $sheet->getColumnDimension('A')->setWidth(3); 
+            $sheet->getColumnDimension('B')->setWidth(18); 
+            $sheet->getColumnDimension('C')->setWidth(11); 
+            $sheet->getColumnDimension('D')->setWidth(12); 
+            $sheet->getColumnDimension('E')->setWidth(35);
+            $sheet->getColumnDimension('F')->setWidth(18);
+            $sheet->getColumnDimension('G')->setWidth(9);
+
+            $sheet->setCellValue('G' . ($lastRow + 2), 'Dicetak pada: ' . now()->format('d/m/Y H:i'));
+            $sheet->setCellValue('G' . ($lastRow + 3), 'Dicetak oleh: ' . auth()->user()->nama);
+            $sheet->getStyle('G' . ($lastRow + 2) . ':G' . ($lastRow + 3))->getFont()->setSize(10)->setItalic(true);
+            $sheet->getStyle('G' . ($lastRow + 2) . ':G' . ($lastRow + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);  
 
             $filename = 'Data_Pengiriman_Residu_' . date('Y-m-d_H-i-s') . '.xlsx';
 
@@ -177,8 +194,12 @@ class DataPengirimanResiduController extends Controller
             $spreadsheet = new Spreadsheet();
             $sheet = $spreadsheet->getActiveSheet();
 
-            $sheet->setCellValue('D1', 'DATA PENGIRIMAN RESIDU' . ' - ' . Carbon::createFromFormat('d-m-Y', $tanggal)->format('d/m/Y'));
-            $sheet->getStyle(('D1'))->getFont()->setBold(true);
+            $sheet->setCellValue('A1', 'DATA PENGIRIMAN RESIDU' . ' - ' . Carbon::createFromFormat('d-m-Y', $tanggal)->format('d/m/Y'));
+            $sheet->getStyle(('A1'))->getFont()->setBold(true);
+            $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            $sheet->mergeCells('A1:F1');
+            $sheet->mergeCells('A2:F2');
 
             $headers = [
                 'A3' => 'No',
@@ -191,7 +212,10 @@ class DataPengirimanResiduController extends Controller
             foreach ($headers as $cell => $text) {
                 $sheet->setCellValue($cell, $text);
                 $sheet->getStyle($cell)->getFont()->setBold(true);
+                $sheet->getStyle($cell)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle($cell)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('E8E8E8');
             }
+            
             $row = 4;
             $no = 1;
             $totalBerat = 0;
@@ -225,10 +249,17 @@ class DataPengirimanResiduController extends Controller
                 ],
             ]);
 
-            // Auto width
-            foreach (range('A', 'G') as $col) {
-                $sheet->getColumnDimension($col)->setAutoSize(true);
-            }
+            $sheet->getColumnDimension('A')->setWidth(3); 
+            $sheet->getColumnDimension('B')->setWidth(12); 
+            $sheet->getColumnDimension('C')->setWidth(15); 
+            $sheet->getColumnDimension('D')->setWidth(35); 
+            $sheet->getColumnDimension('E')->setWidth(15);
+            $sheet->getColumnDimension('F')->setWidth(10);
+
+            $sheet->setCellValue('F' . ($row + 2), 'Dicetak pada: ' . now()->format('d/m/Y H:i'));
+            $sheet->setCellValue('F' . ($row + 3), 'Dicetak oleh: ' . auth()->user()->nama);
+            $sheet->getStyle('F' . ($row + 2) . ':F' . ($row + 3))->getFont()->setSize(10)->setItalic(true);
+            $sheet->getStyle('F' . ($row + 2) . ':F' . ($row + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);  
 
             $tanggalFilename = Carbon::createFromFormat('d-m-Y', $tanggal)->format('Y-m-d');
             $filename = 'Detail_Pengiriman_Residu_' . $tanggalFilename . '.xlsx';

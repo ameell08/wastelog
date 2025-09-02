@@ -15,6 +15,8 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 class LimbahDiolahController extends Controller
 {
@@ -289,8 +291,12 @@ class LimbahDiolahController extends Controller
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        $sheet->setCellValue('C1', 'DATA LIMBAH DIOLAH');
-        $sheet->getStyle(('C1'))->getFont()->setBold(true);
+        $sheet->setCellValue('A1', 'DATA LIMBAH DIOLAH');
+        $sheet->getStyle(('A1'))->getFont()->setBold(true);
+        $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $sheet->mergeCells('A1:E1');
+        $sheet->mergeCells('A2:E2');
 
         $headers = [
             'A3' => 'No',
@@ -302,6 +308,8 @@ class LimbahDiolahController extends Controller
         foreach ($headers as $cell => $text) {
             $sheet->setCellValue($cell, $text);
             $sheet->getStyle($cell)->getFont()->setBold(true);
+            $sheet->getStyle($cell)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle($cell)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('E8E8E8');
         }
 
         $row = 4;
@@ -332,6 +340,16 @@ class LimbahDiolahController extends Controller
                 ->setBorderStyle(Border::BORDER_THIN);
         }
 
+            $sheet->getColumnDimension('A')->setWidth(3); 
+            $sheet->getColumnDimension('B')->setWidth(10); 
+            $sheet->getColumnDimension('C')->setWidth(8); 
+            $sheet->getColumnDimension('D')->setWidth(70); 
+            $sheet->getColumnDimension('E')->setWidth(12);
+
+            $sheet->setCellValue('E' . ($lastRow + 2), 'Dicetak pada: ' . now()->format('d/m/Y H:i'));
+            $sheet->setCellValue('E' . ($lastRow + 3), 'Dicetak oleh: ' . auth()->user()->nama);
+            $sheet->getStyle('E' . ($lastRow + 2) . ':E' . ($lastRow + 3))->getFont()->setSize(10)->setItalic(true);
+            $sheet->getStyle('E' . ($lastRow + 2) . ':E' . ($lastRow + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);  
         // Simpan dan download file
         $fileName = 'data_limbah_diolah.xlsx';
         $writer = new Xlsx($spreadsheet);
@@ -408,10 +426,14 @@ class LimbahDiolahController extends Controller
             11 => 'November',
             12 => 'Desember'
         ];
-        $sheet->setCellValue('D1', 'DETAIL LIMBAH DIOLAH ');
-        $sheet->setCellValue('D2', 'Bulan : ' . ($namaBulan[(int)$bulan] ?? $bulan));
-        $sheet->getStyle(('D1'))->getFont()->setBold(true);
-        $sheet->getStyle(('D2'))->getFont()->setBold(true);
+        $sheet->setCellValue('A1', 'DETAIL LIMBAH DIOLAH ');
+        $sheet->setCellValue('A2', 'Bulan : ' . ($namaBulan[(int)$bulan] ?? $bulan));
+        $sheet->getStyle(('A1:A2'))->getFont()->setBold(true);
+        $sheet->getStyle('A1:A2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $sheet->mergeCells('A1:H1');
+        $sheet->mergeCells('A2:H2');
+        $sheet->mergeCells('A3:H3');
 
         $headers = [
             'A4' => 'No',
@@ -426,6 +448,8 @@ class LimbahDiolahController extends Controller
         foreach ($headers as $cell => $text) {
             $sheet->setCellValue($cell, $text);
             $sheet->getStyle($cell)->getFont()->setBold(true);
+            $sheet->getStyle($cell)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle($cell)->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('E8E8E8');
         }
 
         $row = 5;
@@ -455,7 +479,7 @@ class LimbahDiolahController extends Controller
             $kodeDeskripsi = $kodeLimbah ? $kodeLimbah->kode . ' (' . $kodeLimbah->deskripsi . ')' : '-';
             $sheet->setCellValue('D' . $row, $kodeDeskripsi);
 
-            $sheet->setCellValue('E' . $row, number_format($detail->berat_kg, 2) . ' Kg');
+            $sheet->setCellValue('E' . $row, number_format($detail->berat_kg, 2) );
             $sheet->setCellValue('F' . $row, ($bottomAsh == (int)$bottomAsh ? number_format($bottomAsh, 0) : rtrim(rtrim(number_format($bottomAsh, 4), '0'), '.')) . ' Kg');
             $sheet->setCellValue('G' . $row, ($flyAsh == (int)$flyAsh ? number_format($flyAsh, 0) : rtrim(rtrim(number_format($flyAsh, 4), '0'), '.')) . ' Kg');
             $sheet->setCellValue('H' . $row, ($flueGas == (int)$flueGas ? number_format($flueGas, 0) : rtrim(rtrim(number_format($flueGas, 4), '0'), '.')) . ' Kg');
@@ -468,6 +492,20 @@ class LimbahDiolahController extends Controller
             ->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
 
+        $sheet->getColumnDimension('A')->setWidth(3); 
+        $sheet->getColumnDimension('B')->setWidth(10); 
+        $sheet->getColumnDimension('C')->setWidth(7); 
+        $sheet->getColumnDimension('D')->setWidth(70); 
+        $sheet->getColumnDimension('E')->setWidth(14);
+        $sheet->getColumnDimension('F')->setWidth(15);
+        $sheet->getColumnDimension('G')->setWidth(15);
+        $sheet->getColumnDimension('H')->setWidth(15);
+
+        $sheet->setCellValue('H' . ($lastRow + 2), 'Dicetak pada: ' . now()->format('d/m/Y H:i'));
+        $sheet->setCellValue('H' . ($lastRow + 3), 'Dicetak oleh: ' . auth()->user()->nama);
+        $sheet->getStyle('H' . ($lastRow + 2) . ':H' . ($lastRow + 3))->getFont()->setSize(10)->setItalic(true);
+        $sheet->getStyle('H' . ($lastRow + 2) . ':H' . ($lastRow + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);  
+        
         // Ambil nama mesin untuk nama file
         $mesin = Mesin::find($mesin_id);
         $namaFile = 'detail_limbah_diolah_' . ($mesin ? $mesin->no_mesin : 'mesin') . '_bulan_' . str_pad($bulan, 2, '0', STR_PAD_LEFT) . '.xlsx';
