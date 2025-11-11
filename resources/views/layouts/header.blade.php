@@ -98,15 +98,15 @@
           @csrf
           <div class="form-group">
             <label for="currentPassword">Sandi Saat Ini</label>
-            <input type="password" class="form-control" id="currentPassword" name="current_password" required>
+            <input type="password" class="form-control" id="currentPassword" name="current_password" placeholder="Masukkan sandi lama" required>
           </div>
           <div class="form-group">
             <label for="newPassword">Sandi Baru</label>
-            <input type="password" class="form-control" id="newPassword" name="new_password" required>
+            <input type="password" class="form-control" id="newPassword" name="new_password" placeholder="Minimal 8 karakter" required>
           </div>
           <div class="form-group">
             <label for="confirmPassword">Konfirmasi Sandi Baru</label>
-            <input type="password" class="form-control" id="confirmPassword" name="new_password_confirmation" required>
+            <input type="password" class="form-control" id="confirmPassword" name="new_password_confirmation" placeholder="Masukkan sandi baru" required>
           </div>
         </div>
         <div class="modal-footer">
@@ -214,6 +214,35 @@ $(document).ready(function() {
     });
     
     // Change Password Form
+    const minLength = 8;
+
+    $('#newPassword').on('input', function() {
+        const val = $(this).val();
+
+        if (val.length < minLength) {
+            $(this).addClass('is-invalid');
+        } else {
+            $(this).removeClass('is-invalid');
+        }
+    });
+
+    checkPasswordMatch();
+
+    $('#confirmPassword').on('input', function() {
+        checkPasswordMatch();
+    });
+
+    function checkPasswordMatch() {
+        const newPassword = $('#newPassword').val();
+        const confirmPassword = $('#confirmPassword').val();
+
+        if (confirmPassword.length > 0 && confirmPassword !== newPassword) {
+            $('#confirmPassword').addClass('is-invalid');
+        } else {
+            $('#confirmPassword').removeClass('is-invalid');
+        }
+    }
+
     $('#changePasswordForm').on('submit', function(e) {
         e.preventDefault();
         
@@ -234,7 +263,7 @@ $(document).ready(function() {
                     Swal.fire({
                         icon: 'success',
                         title: 'Success!',
-                        text: response.message,
+                        text: response.message || 'Kata sandi berhasil diperbarui.',
                         showConfirmButton: false,
                         timer: 1500
                     });
@@ -260,7 +289,11 @@ $(document).ready(function() {
                 Swal.fire({
                     icon: 'error',
                     title: 'Error!',
-                    text: errorMessage
+                    text: errorMessage.replace('The new password field must be at least 8 characters.', 
+                                               'Sandi baru harus memiliki minimal 8 karakter.')
+                                      .replace('The current password is incorrect.', 
+                                               'Sandi saat ini tidak sesuai.')
+                                      .replace('The new password confirmation does not match.', 'Konfirmasi sandi baru tidak sama.')
                 });
             }
         });
@@ -284,6 +317,19 @@ $(document).ready(function() {
 
   .dropdown-menu .dropdown-item.text-danger:hover {
     color: #dc3545 !important;   
+  }
+  
+  .is-invalid {
+    border-color: #dc3545 !important;
+    box-shadow: 0 0 5px rgba(220, 53, 69, 0.5);
+  }
+
+  .main-header {
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    right: 0; 
+    z-index: 1037; 
   }
   
 </style>

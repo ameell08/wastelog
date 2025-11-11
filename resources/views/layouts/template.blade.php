@@ -30,9 +30,37 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     @stack('css') <!-- digunakan untuk memanggil custom css dari perintah push('css') pada masing - masing view -->
+     <!-- Adjust layout to account for fixed header -->
+    <style>
+        /* tinggi header */
+        .main-header {
+            height: 65px;
+        }
+
+        /* Jarak vertikal */
+        .content-wrapper {
+            padding-top: 60px; 
+            transition: padding 0.15s ease;
+            background-color: #f4f6f9;
+             min-height: calc(100vh - 72px);
+        }
+
+        /* Geser kiri */
+        .content .container-fluid {
+            padding-left: 10px;
+            transition: padding 0.15s ease;
+        }
+
+        /* menyesuaikan ukuran layar kecil */
+        @media (max-width: 767px) {
+            .main-header { height: 72px; }
+            .content-wrapper { padding-top: 88px; }
+            .content .container-fluid { padding-left: 10px; padding-right: 10px; }
+        }
+    </style>
 </head>
 
-<body class="hold-transition sidebar-mini">
+<body class="hold-transition sidebar-mini layout-fixed">
     <!-- Site wrapper -->
     <div class="wrapper">
         <!-- Navbar -->
@@ -51,9 +79,15 @@
             <!-- Content Header (Page header) -->
             @include('layouts.breadcrumb')
 
-            <!-- Main content -->
-            @yield('content')
-            <!-- /.content -->
+       <!-- Main content -->
+        <section class="content">
+            <div class="container-fluid">
+                @yield('content')
+            </div>
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
         </div>
 
         <!-- Footer -->
