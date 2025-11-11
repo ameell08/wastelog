@@ -11,8 +11,8 @@
                     <div id="form-errors" class="alert alert-danger d-none"></div>
 
                     <div class="form-group">
-                        <label>No Mesin</label>
-                        <input type="text" name="no_mesin" class="form-control" required>
+                        <label>No Mesin </label>
+                        <input type="number" name="no_mesin" class="form-control" placeholder="Hanya Angka" required>
                     </div>
 
                     <div class="form-group mt-2">
@@ -25,7 +25,7 @@
 
                     <div class="form-group mt-2">
                         <label>Keterangan</label>
-                        <textarea name="keterangan" class="form-control" rows="3"></textarea>
+                        <textarea name="keterangan" class="form-control" rows="3" placeholder="Kondisi Mesin"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
