@@ -43,22 +43,25 @@
         }
 
         body {
+            background: url('img/background.jpg') no-repeat center center fixed;
+            background-size: cover;
             font-family: 'Inter', sans-serif;
             line-height: 1.6;
             color: var(--text-color);
+            backdrop-filter: blur(5px); /* Efek blur lembut */
+            -webkit-backdrop-filter: blur(100px);
         }
 
         .bg-header {
-            background: linear-gradient(135deg, rgba(25, 109, 75, 0.9), rgba(34, 197, 94, 0.8)), 
-                        url('img/background.jpg') no-repeat center center;
+            /*background: linear-gradient(135deg, rgba(16, 58, 41, 0.9), rgba(34, 197, 94, 0.8));*/
             background-size: cover;
             background-attachment: fixed;
-            min-height: 100vh;
+            height: 67vh;
             display: flex;
             align-items: center;
             color: white;
             position: relative;
-            overflow: hidden;
+            overflow : hidden;
         }
 
         .bg-header::before {
@@ -82,7 +85,7 @@
             font-size: clamp(3rem, 8vw, 7rem);
             text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, #fff, #feed7c);
+            background: linear-gradient(135deg, #f2eb18, #f8b71f);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -145,7 +148,7 @@
         }
 
         .fitur-header {
-            background: var(--gradient-primary);
+            background: linear-gradient(135deg, rgba(25, 109, 75, 0.9), rgba(26, 57, 38, 0.8));
             color: white;
             padding: 20px 0;
             position: relative;
@@ -304,6 +307,7 @@
             color: #e5e7eb;
             position: relative;
             overflow: hidden;
+            border-top: 3px solid orange;
         }
 
         .footer-modern::before {
@@ -313,7 +317,7 @@
             left: 0;
             right: 0;
             height: 4px;
-            background: var(--gradient-primary);
+            /*background: var(--gradient-primary);*/
         }
 
         .footer-logo {
@@ -426,8 +430,8 @@
                     <h4 class="fw-bold text-selection">Tentang Waste Log</h4>
                     <p class="text-justify text-selection" style="padding-top: 10px;">
                         Waste Log adalah platform berbasis web yang dirancang untuk memantau jumlah limbah B3 (Bahan
-                        Berbahaya dan Beracun) yang masuk dan diolah setiap harinya. Sistem ini membantu pengelola,
-                        tim operasional, dan manajemen dalam memantau data limbah secara akurat dan efisien.
+                        Berbahaya dan Beracun) yang masuk dan diolah setiap harinya, serta memantau jumlah residu (hasil pembakaran insinerator) yang dikirim kepada pihak ke tiga setiap harinya.
+                        Sistem ini membantu pengelola, tim operasional, dan manajemen dalam memantau data limbah dan residu insinerator secara akurat dan efisien.
                     </p>
                 </div>
             </div>
