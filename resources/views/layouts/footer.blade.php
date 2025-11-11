@@ -15,8 +15,8 @@
         background: #ffffff;
         color: #8f8f8f;
         padding: 0.5rem 1rem;
-        font-size: 0.75rem;
-        line-height: 1.2;
+        font-size: 0.88rem;
+        line-height: 2;
     }
 
     .main-footer a {
