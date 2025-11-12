@@ -410,7 +410,7 @@
         <div class="container">
             <h1 class="display-4 fade-in text-selection">Waste Log</h1>
             <p class="lead mb-4 text-selection" style="font-size: 1.2rem; opacity: 0.9;">
-                Sistem Manajemen Limbah B3 Modern & Terpercaya
+                Sistem Manajemen Limbah Medis dan Residu Insinerator Modern & Terpercaya
             </p>
             <a href="/login" class="btn-login mt-3 d-inline-block">
                 <i></i>Login
